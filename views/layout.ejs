@@ -1,0 +1,471 @@
+<%#
+  NODE Landing Page — Swiss International Typographic Style
+  Sections: Nav, Hero, About, Focus Areas, Team, Contact/Footer
+%>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NODE — Autonomous Systems. Built in the Open.</title>
+  <meta name="description" content="NODE is a student and alumni collective at IAAC Barcelona, building autonomous surface vehicles at the intersection of design, engineering, and robotics.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+  <%- themeCSS %>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black: #1a1a1a;
+      --near-white: #f5f5f3;
+      --gray-mid: #888;
+      --gray-light: #d8d8d4;
+      --gray-xlight: #f0f0ee;
+      --teal-dark: #3a7a7a;
+      --teal-light: #c8e0e0;
+      --white: #ffffff;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--near-white);
+      color: var(--black);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ─── NAV ─────────────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 48px;
+      height: 64px;
+      background: var(--near-white);
+      border-bottom: 1px solid var(--gray-light);
+    }
+
+    nav .logo-link { display: flex; align-items: center; }
+    nav .logo-link svg { height: 32px; width: auto; }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 36px;
+    }
+
+    nav ul a {
+      text-decoration: none;
+      color: var(--gray-mid);
+      font-size: 0.8125rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+
+    nav ul a:hover { color: var(--black); }
+
+    /* ─── HERO ────────────────────────────────────────── */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-end;
+      padding: 0 48px 80px;
+      overflow: hidden;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background: url('/images/landing.png') center center / cover no-repeat;
+    }
+
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        105deg,
+        rgba(245,245,243,0.97) 0%,
+        rgba(245,245,243,0.75) 45%,
+        rgba(245,245,243,0.2) 100%
+      );
+    }
+
+    .hero-content { position: relative; max-width: 720px; }
+
+    .hero-label {
+      display: inline-block;
+      font-size: 0.6875rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--gray-mid);
+      margin-bottom: 20px;
+      border: 1px solid var(--gray-light);
+      padding: 5px 10px;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.5rem, 5.5vw, 4rem);
+      font-weight: 700;
+      line-height: 1.08;
+      letter-spacing: -0.025em;
+      margin-bottom: 24px;
+      color: var(--black);
+    }
+
+    .hero p {
+      font-size: 1.0625rem;
+      line-height: 1.65;
+      color: #444;
+      max-width: 560px;
+    }
+
+    /* ─── SECTIONS ─────────────────────────────────────── */
+    section { padding: 96px 48px; }
+
+    .section-label {
+      font-size: 0.6875rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--gray-mid);
+      margin-bottom: 48px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .section-label::after {
+      content: '';
+      display: block;
+      height: 1px;
+      width: 60px;
+      background: var(--gray-light);
+    }
+
+    /* ─── ABOUT ────────────────────────────────────────── */
+    .about { background: var(--white); }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 280px;
+      gap: 80px;
+      max-width: 1200px;
+    }
+
+    .about-text {
+      font-size: 1.0625rem;
+      line-height: 1.75;
+      color: #333;
+    }
+
+    .about-meta {
+      border-left: 2px solid var(--black);
+      padding-left: 28px;
+    }
+
+    .about-meta dl { display: flex; flex-direction: column; gap: 28px; }
+    .about-meta dt {
+      font-size: 0.6875rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gray-mid);
+      margin-bottom: 4px;
+    }
+    .about-meta dd { font-size: 0.9375rem; font-weight: 500; }
+
+    /* ─── FOCUS AREAS ──────────────────────────────────── */
+    .focus { background: var(--gray-xlight); }
+
+    .focus-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      max-width: 1200px;
+    }
+
+    .focus-card {
+      background: var(--white);
+      padding: 48px 40px;
+      border: 1px solid var(--gray-light);
+    }
+
+    .focus-card-number {
+      font-size: 0.6875rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: var(--gray-mid);
+      margin-bottom: 28px;
+    }
+
+    .focus-card h3 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      margin-bottom: 16px;
+    }
+
+    .focus-card p {
+      font-size: 0.9375rem;
+      line-height: 1.65;
+      color: #555;
+    }
+
+    /* ─── TEAM ─────────────────────────────────────────── */
+    .team { background: var(--white); }
+
+    .team-photo-wrap {
+      max-width: 1200px;
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+
+    .team-photo-wrap img {
+      width: 100%;
+      height: auto;
+      display: block;
+      object-fit: cover;
+    }
+
+    .team-caption {
+      font-size: 0.8125rem;
+      color: var(--gray-mid);
+      letter-spacing: 0.04em;
+    }
+
+    /* ─── PARTNERS ─────────────────────────────────────── */
+    .partners { background: var(--gray-xlight); }
+
+    .partners-logos {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 56px;
+      max-width: 1200px;
+    }
+
+    .partners-logos img {
+      height: 40px;
+      width: auto;
+      opacity: 0.7;
+    }
+
+    /* ─── CONTACT ───────────────────────────────────────── */
+    .contact {
+      background: var(--black);
+      color: var(--near-white);
+    }
+
+    .contact .section-label { color: #666; }
+    .contact .section-label::after { background: #333; }
+
+    .contact-heading {
+      font-size: clamp(2rem, 4vw, 3.25rem);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      margin-bottom: 56px;
+      line-height: 1.1;
+    }
+
+    .contact-bottom {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 48px;
+      border-top: 1px solid #2a2a2a;
+      padding-top: 48px;
+    }
+
+    .contact-logo svg { height: 48px; width: auto; opacity: 0.6; }
+
+    .contact-info { text-align: right; }
+
+    .contact-info p {
+      font-size: 0.875rem;
+      color: #888;
+      line-height: 1.8;
+    }
+
+    .contact-info a {
+      color: var(--near-white);
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+
+    .contact-info a:hover { opacity: 0.7; }
+
+    /* ─── MOBILE ───────────────────────────────────────── */
+    @media (max-width: 768px) {
+      nav { padding: 0 24px; }
+      nav ul { gap: 20px; }
+
+      section { padding: 72px 24px; }
+
+      .hero { padding: 0 24px 64px; min-height: 85vh; }
+      .hero h1 { font-size: 2.25rem; }
+
+      .about-grid {
+        grid-template-columns: 1fr;
+        gap: 48px;
+      }
+      .about-meta { border-left: none; border-top: 2px solid var(--black); padding-left: 0; padding-top: 28px; }
+      .about-meta dl { flex-direction: row; flex-wrap: wrap; gap: 16px 32px; }
+
+      .focus-grid { grid-template-columns: 1fr; gap: 2px; }
+
+      .contact-bottom { flex-direction: column; }
+      .contact-info { text-align: left; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a href="/" class="logo-link" aria-label="NODE Home">
+      <svg width="160" height="32" viewBox="0 0 749 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M153.323 30.9743C150.916 33.7632 149.601 35.0993 146.42 38.7789C138.435 48.0149 125.085 63.4756 104.651 63.4756C84.217 63.4756 70.8666 48.0149 62.8818 38.7789C59.9763 35.4174 58.4811 33.8692 55.9785 30.9743C46.6682 20.1476 29.2989 0 0 0V22.7986C18.8539 22.7986 30.8046 36.6793 38.7152 45.8623C41.186 48.736 42.6811 50.2736 45.629 53.6881C48.0467 56.4875 51.1537 60.0717 54.9818 63.8467H0V85.9031H54.9924C51.1643 89.6781 48.0574 93.2728 45.6396 96.0617C42.5433 99.6459 41.1541 101.067 38.7258 103.887C30.8152 113.071 18.8539 126.951 0.010604 126.951V149.75C29.3095 149.75 46.6788 129.602 55.9998 118.775C58.4069 115.987 59.7218 114.651 62.903 110.971C70.8772 101.735 84.2382 86.2742 104.672 86.2742C125.106 86.2742 138.457 101.735 146.441 110.971C149.347 114.332 150.842 115.881 153.345 118.775C162.676 129.602 180.035 149.75 209.334 149.75V126.951C190.48 126.951 178.529 113.071 170.618 103.887C168.211 101.099 166.769 99.614 163.705 96.0617C161.287 93.2622 158.18 89.6781 154.352 85.9031H209.344V63.8467H154.352C158.18 60.0717 161.287 56.4769 163.705 53.6881C166.801 50.1039 168.19 48.683 170.618 45.8623C178.529 36.6793 190.49 22.7986 209.334 22.7986V0C180.014 0 162.644 20.1476 153.323 30.9743Z" fill="#4D4D4D"/>
+        <path d="M368.354 94.9481L309.979 20.105H286.926V129.644H309.64V54.8119L367.739 129.644H391.068V20.105H368.354V94.9481Z" fill="#4D4D4D"/>
+        <path d="M465.78 18.4931C449.831 18.4931 436.237 23.9224 424.975 34.7703C413.724 45.6288 408.094 59.0217 408.094 74.9701C408.094 90.9185 413.682 104.449 424.88 115.17C436.067 125.891 449.704 131.246 465.78 131.246C481.855 131.246 495.29 125.859 506.478 115.064C517.665 104.28 523.264 90.9079 523.264 74.9595C523.264 59.0111 517.665 45.6182 506.478 34.7597C495.29 23.9012 481.717 18.4825 465.78 18.4825V18.4931ZM490.201 99.6032C483.838 106.103 475.694 109.348 465.78 109.348C455.865 109.348 447.519 106.135 441.157 99.6986C434.795 93.262 431.613 85.0227 431.613 74.9701C431.613 64.9175 434.795 56.4767 441.157 50.0507C447.519 43.614 455.727 40.401 465.78 40.401C475.832 40.401 483.838 43.614 490.201 50.0507C496.563 56.4873 499.744 64.7902 499.744 74.9701C499.744 85.1499 496.563 93.0923 490.201 99.5926V99.6032Z" fill="#4D4D4D"/>
+        <path d="M626.983 35.5763C616.124 25.2586 602.795 20.0944 586.984 20.0944H540.295V129.644H586.984C602.795 129.644 616.135 124.523 626.983 114.269C637.841 104.015 643.26 90.855 643.26 74.7687C643.26 58.6824 637.831 45.894 626.983 35.5763ZM610.907 98.5959C605.011 104.428 597.037 107.344 586.984 107.344H563.613V42.2144H586.984C597.037 42.2144 605.011 45.1305 610.907 50.9521C616.803 56.7843 619.751 64.7267 619.751 74.7687C619.751 84.8107 616.803 92.7531 610.907 98.5853V98.5959Z" fill="#4D4D4D"/>
+        <path d="M748.41 41.2812V20.105H659.771V129.644H748.41V108.267H683.079V85.0863H745.197V63.8995H683.079V41.2812H748.41Z" fill="#4D4D4D"/>
+      </svg>
+    </a>
+    <ul>
+      <li><a href="#about">About</a></li>
+      <li><a href="#focus">Mission</a></li>
+      <li><a href="#team">Team</a></li>
+      <li><a href="#partners">Partners</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero" id="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <span class="hero-label">IAAC BCN — Engineering Club — Est. 2024</span>
+      <h1>Autonomous Systems.<br>Built in the Open.</h1>
+      <p>NODE is advancing open research at the intersection of design, engineering, and robotics.</p>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="about" id="about">
+    <div class="section-label">About Us</div>
+    <div class="about-grid">
+      <p class="about-text">
+        NODE started as a student and alumni collective founded at the Institute for Advanced Architecture of Catalonia (IAAC), building autonomous systems at the intersection of design, engineering, and robotics. Rooted in open-source principles and student–industry collaboration, we don't just research, we deploy. In our second year, NODE is advancing its presence in the marine sector, developing Autonomous Surface Vehicles capable of operating in rivers, ports, and coastal environments. We bridge academia and industry through real projects, international competitions, and active partnerships, proving that open research can produce systems that work in the field. Our mission is to make intelligent machines accessible across sectors, and our next frontier is autonomous marine data collection and environmental monitoring.
+      </p>
+      <aside class="about-meta">
+        <dl>
+          <div>
+            <dt>Founded</dt>
+            <dd>2024</dd>
+          </div>
+          <div>
+            <dt>Location</dt>
+            <dd>IAAC Barcelona</dd>
+          </div>
+          <div>
+            <dt>Sector</dt>
+            <dd>Marine Autonomy</dd>
+          </div>
+          <div>
+            <dt>Type</dt>
+            <dd>Open-Source Research Collective</dd>
+          </div>
+        </dl>
+      </aside>
+    </div>
+  </section>
+
+  <!-- FOCUS AREAS -->
+  <section class="focus" id="focus">
+    <div class="section-label">Focus Areas</div>
+    <div class="focus-grid">
+      <div class="focus-card">
+        <div class="focus-card-number">01</div>
+        <h3>Marine Autonomy</h3>
+        <p>ASV design and deployment for rivers, ports, and coastal environments. We build systems that operate reliably in the field, not just in simulation.</p>
+      </div>
+      <div class="focus-card">
+        <div class="focus-card-number">02</div>
+        <h3>Sensor Integration</h3>
+        <p>Full data pipeline: sensor selection, onboard processing, and visualization. From raw signal to actionable intelligence, end-to-end.</p>
+      </div>
+      <div class="focus-card">
+        <div class="focus-card-number">03</div>
+        <h3>Open Research</h3>
+        <p>International competitions, academic partnerships, and open-source systems. We publish our work so others can build on it.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- TEAM -->
+  <section class="team" id="team">
+    <div class="section-label">The Team</div>
+    <div class="team-photo-wrap">
+      <img
+        src="https://pub-629428d185ca4960a0a73c850d32294b.r2.dev/company_206502/images/fd34036b-094c-4fe4-ba48-042501028240.png"
+        alt="NODE Engineering Club — IAAC Barcelona"
+        loading="lazy"
+      >
+    </div>
+    <p class="team-caption">NODE Engineering Club — IAAC Barcelona, 2026</p>
+  </section>
+
+  <!-- PARTNERS -->
+  <section class="partners" id="partners">
+    <div class="section-label">Partners</div>
+    <div class="partners-logos">
+      <img src="/images/partners/partner-1.svg" alt="Partner 1" loading="lazy">
+      <img src="/images/partners/partner-2.svg" alt="Partner 2" loading="lazy">
+      <img src="/images/partners/partner-3.svg" alt="Partner 3" loading="lazy">
+      <img src="/images/partners/partner-4.svg" alt="Partner 4" loading="lazy">
+      <img src="/images/partners/partner-5.svg" alt="Partner 5" loading="lazy">
+      <img src="/images/partners/partner-6.svg" alt="Partner 6" loading="lazy">
+      <img src="/images/partners/partner-7.svg" alt="Partner 7" loading="lazy">
+      <img src="/images/partners/partner-8.svg" alt="Partner 8" loading="lazy">
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="contact" id="contact">
+    <div class="contact-inner">
+      <div class="section-label">Contact</div>
+      <h2 class="contact-heading">Let's get in touch</h2>
+      <div class="contact-bottom">
+        <div class="contact-logo">
+          <svg width="160" height="32" viewBox="0 0 749 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M153.323 30.9743C150.916 33.7632 149.601 35.0993 146.42 38.7789C138.435 48.0149 125.085 63.4756 104.651 63.4756C84.217 63.4756 70.8666 48.0149 62.8818 38.7789C59.9763 35.4174 58.4811 33.8692 55.9785 30.9743C46.6682 20.1476 29.2989 0 0 0V22.7986C18.8539 22.7986 30.8046 36.6793 38.7152 45.8623C41.186 48.736 42.6811 50.2736 45.629 53.6881C48.0467 56.4875 51.1537 60.0717 54.9818 63.8467H0V85.9031H54.9924C51.1643 89.6781 48.0574 93.2728 45.6396 96.0617C42.5433 99.6459 41.1541 101.067 38.7258 103.887C30.8152 113.071 18.8539 126.951 0.010604 126.951V149.75C29.3095 149.75 46.6788 129.602 55.9998 118.775C58.4069 115.987 59.7218 114.651 62.903 110.971C70.8772 101.735 84.2382 86.2742 104.672 86.2742C125.106 86.2742 138.457 101.735 146.441 110.971C149.347 114.332 150.842 115.881 153.345 118.775C162.676 129.602 180.035 149.75 209.334 149.75V126.951C190.48 126.951 178.529 113.071 170.618 103.887C168.211 101.099 166.769 99.614 163.705 96.0617C161.287 93.2622 158.18 89.6781 154.352 85.9031H209.344V63.8467H154.352C158.18 60.0717 161.287 56.4769 163.705 53.6881C166.801 50.1039 168.19 48.683 170.618 45.8623C178.529 36.6793 190.49 22.7986 209.334 22.7986V0C180.014 0 162.644 20.1476 153.323 30.9743Z" fill="#4D4D4D"/>
+            <path d="M368.354 94.9481L309.979 20.105H286.926V129.644H309.64V54.8119L367.739 129.644H391.068V20.105H368.354V94.9481Z" fill="#4D4D4D"/>
+            <path d="M465.78 18.4931C449.831 18.4931 436.237 23.9224 424.975 34.7703C413.724 45.6288 408.094 59.0217 408.094 74.9701C408.094 90.9185 413.682 104.449 424.88 115.17C436.067 125.891 449.704 131.246 465.78 131.246C481.855 131.246 495.29 125.859 506.478 115.064C517.665 104.28 523.264 90.9079 523.264 74.9595C523.264 59.0111 517.665 45.6182 506.478 34.7597C495.29 23.9012 481.717 18.4825 465.78 18.4825V18.4931ZM490.201 99.6032C483.838 106.103 475.694 109.348 465.78 109.348C455.865 109.348 447.519 106.135 441.157 99.6986C434.795 93.262 431.613 85.0227 431.613 74.9701C431.613 64.9175 434.795 56.4767 441.157 50.0507C447.519 43.614 455.727 40.401 465.78 40.401C475.832 40.401 483.838 43.614 490.201 50.0507C496.563 56.4873 499.744 64.7902 499.744 74.9701C499.744 85.1499 496.563 93.0923 490.201 99.5926V99.6032Z" fill="#4D4D4D"/>
+            <path d="M626.983 35.5763C616.124 25.2586 602.795 20.0944 586.984 20.0944H540.295V129.644H586.984C602.795 129.644 616.135 124.523 626.983 114.269C637.841 104.015 643.26 90.855 643.26 74.7687C643.26 58.6824 637.831 45.894 626.983 35.5763ZM610.907 98.5959C605.011 104.428 597.037 107.344 586.984 107.344H563.613V42.2144H586.984C597.037 42.2144 605.011 45.1305 610.907 50.9521C616.803 56.7843 619.751 64.7267 619.751 74.7687C619.751 84.8107 616.803 92.7531 610.907 98.5853V98.5959Z" fill="#4D4D4D"/>
+            <path d="M748.41 41.2812V20.105H659.771V129.644H748.41V108.267H683.079V85.0863H745.197V63.8995H683.079V41.2812H748.41Z" fill="#4D4D4D"/>
+          </svg>
+        </div>
+        <div class="contact-info">
+          <p><a href="mailto:node.engineering.club@gmail.com">node.engineering.club@gmail.com</a></p>
+          <p>IAAC Barcelona<br>Carrer de Pujades, 102<br>Sant Martí, 08005 Barcelona</p>
+          <p style="margin-top: 16px; opacity: 0.5;">© 2026 NODE</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <%- analyticsSnippet %>
+</body>
+</html>
