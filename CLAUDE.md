@@ -13,11 +13,13 @@ Express.js + EJS + Neon PostgreSQL (static site, no DB queries needed).
 - `public/` — static assets (CSS lives here via landing-context)
 
 ## Database
-No tables. Landing page is static. Neon DB provisioned for future use.
+`users` table exists (created by `migrate.js`, currently unused). Landing
+page itself is static and doesn't query the DB. No analytics/tracking
+scripts are wired up.
 
 ## External integrations
 - Google Fonts (Space Grotesk)
-- Polsia Analytics (beacon pixel injected via `buildAnalyticsSnippet`)
 
 ## Recent changes
 - 2026-06-21 — Full NODE landing page built. Swiss International Typographic Style. Nav, Hero (ASV image bg), About (two-column), Focus Areas (3-card grid), Team photo, dark Contact/Footer. All brand assets embedded.
+- 2026-09-12 — Repo cleanup: removed leftover Polsia-platform scaffolding (analytics beacon, unused `openai` dep, unused Stripe/subscription columns on `users`, generic package/README naming), added `dotenv` + `.env.example` for local dev, removed stale `TODO.md`. See `WEBSITE-PLAN.md` for the Phase 1+ roadmap.
