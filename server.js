@@ -1,35 +1,28 @@
 require('dotenv').config();
 
 const express = require('express');
-const { Pool } = require('pg');
 const path = require('path');
-const { buildLandingContext } = require('./lib/landing-context');
+require('./lib/db'); // initializes the shared pg Pool as a side effect
+const { buildLandingContext, buildThemeCSS } = require('./lib/landing-context');
+const missionsRouter = require('./routes/missions');
+const adminRouter = require('./routes/admin');
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-// DATABASE_URL is optional — the landing page is static and doesn't query the DB.
-if (process.env.DATABASE_URL) {
-  const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-    ssl: process.env.DATABASE_URL.includes('localhost') ? false : { rejectUnauthorized: false }
-  });
-
-  // Neon closes idle connections (auto-suspend). Without this listener the pooled
-  // client emits an unhandled 'error' event, which Node throws on and crashes the
-  // whole process. Log it and keep serving; the pool reconnects on the next query.
-  pool.on('error', (err) => {
-    console.error('[pg pool] idle client error (non-fatal):', err && err.message);
-  });
-} else {
-  console.log('DATABASE_URL not set — skipping database connection');
-}
-
 app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 
 // EJS view engine. Templates live in ./views/ (entry point: layout.ejs).
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
+
+// Every view needs the site stylesheet link — set it once here instead of
+// passing it explicitly from every route.
+app.use((req, res, next) => {
+  res.locals.themeCSS = buildThemeCSS();
+  next();
+});
 
 // Health check endpoint (required for Render)
 // Note: Does NOT query database to allow Neon auto-suspend
@@ -47,6 +40,13 @@ app.use(express.static(path.join(__dirname, 'public'), { index: false }));
 app.get('/', (_req, res) => {
   res.render('layout', buildLandingContext());
 });
+
+app.get('/support', (_req, res) => {
+  res.render('support');
+});
+
+app.use('/missions', missionsRouter);
+app.use('/admin', adminRouter);
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);

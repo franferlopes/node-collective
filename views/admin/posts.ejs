@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <title>Admin | Posts | NODE</title>
+  <meta name="robots" content="noindex">
+  <%- themeCSS %>
+</head>
+<body>
+  <div class="admin">
+    <h1>Posts</h1>
+    <p class="admin-sub"><a href="/">&larr; Back to site</a></p>
+
+    <form method="POST" action="/admin/posts">
+      <label>Title
+        <input type="text" name="title" required>
+      </label>
+      <label>Slug (URL-friendly, e.g. njord-2026-kickoff; leave blank to auto-generate)
+        <input type="text" name="slug">
+      </label>
+      <label>Category
+        <select name="category">
+          <option value="mission">Mission</option>
+          <option value="press">Press</option>
+          <option value="update">Update</option>
+        </select>
+      </label>
+      <label>Cover image URL (optional)
+        <input type="text" name="cover_image_url">
+      </label>
+      <label>Body
+        <textarea name="body" required></textarea>
+      </label>
+      <div class="checkbox-row">
+        <input type="checkbox" id="published" name="published" checked>
+        <label for="published">Published</label>
+      </div>
+      <button type="submit">Create post</button>
+    </form>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Category</th>
+          <th>Status</th>
+          <th>Updated</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% posts.forEach(function(post) { %>
+          <tr>
+            <td><%= post.title %></td>
+            <td><%= post.category %></td>
+            <td class="<%= post.published_at ? '' : 'status-draft' %>">
+              <%= post.published_at ? 'Published' : 'Draft' %>
+            </td>
+            <td><%= post.updatedAtFormatted %></td>
+            <td class="row-actions">
+              <a href="/admin/posts/<%= post.id %>/edit">Edit</a>
+              <form method="POST" action="/admin/posts/<%= post.id %>/delete" onsubmit="return confirm('Delete this post?');">
+                <button type="submit" class="danger">Delete</button>
+              </form>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>

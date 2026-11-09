@@ -1,0 +1,558 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --black: #1a1a1a;
+  --near-white: #f5f5f3;
+  --gray-mid: #888;
+  --gray-light: #d8d8d4;
+  --gray-xlight: #f0f0ee;
+  --teal-dark: #3a7a7a;
+  --teal-light: #c8e0e0;
+  --white: #ffffff;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--near-white);
+  color: var(--black);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── NAV ─────────────────────────────────────────── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 48px;
+  height: 64px;
+  background: var(--near-white);
+  border-bottom: 1px solid var(--gray-light);
+}
+
+nav .logo-link { display: flex; align-items: center; }
+nav .logo-link svg { height: 32px; width: auto; }
+
+nav ul {
+  list-style: none;
+  display: flex;
+  gap: 36px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+nav ul::-webkit-scrollbar { display: none; }
+
+nav ul a {
+  text-decoration: none;
+  color: var(--gray-mid);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition: color 0.2s;
+}
+
+nav ul a:hover, nav ul a.active { color: var(--black); }
+
+/* ─── HERO ────────────────────────────────────────── */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: flex-end;
+  padding: 0 48px 80px;
+  overflow: hidden;
+}
+
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  background: url('/images/landing.png') center center / cover no-repeat;
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    rgba(245,245,243,0.97) 0%,
+    rgba(245,245,243,0.75) 45%,
+    rgba(245,245,243,0.2) 100%
+  );
+}
+
+.hero-content { position: relative; max-width: 720px; }
+
+.hero-label {
+  display: inline-block;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gray-mid);
+  margin-bottom: 20px;
+  border: 1px solid var(--gray-light);
+  padding: 5px 10px;
+}
+
+.hero h1 {
+  font-size: clamp(2.5rem, 5.5vw, 4rem);
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+  margin-bottom: 24px;
+  color: var(--black);
+}
+
+.hero p {
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  color: #444;
+  max-width: 560px;
+}
+
+/* ─── PAGE HEADER (non-home pages) ──────────────────── */
+.page-header {
+  padding: 160px 48px 64px;
+  background: var(--white);
+  border-bottom: 1px solid var(--gray-light);
+}
+
+.page-header h1 {
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  margin-bottom: 16px;
+}
+
+.page-header p {
+  font-size: 1.0625rem;
+  color: #444;
+  max-width: 640px;
+  line-height: 1.6;
+}
+
+/* ─── SECTIONS ─────────────────────────────────────── */
+section { padding: 96px 48px; }
+
+.section-label {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gray-mid);
+  margin-bottom: 48px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.section-label::after {
+  content: '';
+  display: block;
+  height: 1px;
+  width: 60px;
+  background: var(--gray-light);
+}
+
+/* ─── ABOUT ────────────────────────────────────────── */
+.about { background: var(--white); }
+
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 80px;
+  max-width: 1200px;
+}
+
+.about-text {
+  font-size: 1.0625rem;
+  line-height: 1.75;
+  color: #333;
+}
+
+.about-meta {
+  border-left: 2px solid var(--black);
+  padding-left: 28px;
+}
+
+.about-meta dl { display: flex; flex-direction: column; gap: 28px; }
+.about-meta dt {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gray-mid);
+  margin-bottom: 4px;
+}
+.about-meta dd { font-size: 0.9375rem; font-weight: 500; }
+
+/* ─── FOCUS AREAS / CARD GRIDS ───────────────────────
+   Shared by Focus Areas and Missions list. */
+.focus { background: var(--gray-xlight); }
+
+.focus-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  max-width: 1200px;
+}
+
+.focus-card {
+  background: var(--white);
+  padding: 48px 40px;
+  border: 1px solid var(--gray-light);
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.focus-card-number {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--gray-mid);
+  margin-bottom: 28px;
+}
+
+.focus-card h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin-bottom: 16px;
+}
+
+.focus-card p {
+  font-size: 0.9375rem;
+  line-height: 1.65;
+  color: #555;
+}
+
+/* ─── MISSIONS (list + detail) ──────────────────────── */
+.missions { background: var(--white); }
+
+.missions-empty {
+  font-size: 0.9375rem;
+  color: var(--gray-mid);
+}
+
+.mission-category {
+  display: inline-block;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--teal-dark);
+  margin-bottom: 16px;
+}
+
+.mission-date {
+  font-size: 0.8125rem;
+  color: var(--gray-mid);
+  margin-top: 16px;
+}
+
+.mission-detail {
+  max-width: 720px;
+}
+
+.mission-detail .back-link {
+  display: inline-block;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--gray-mid);
+  text-decoration: none;
+  margin-bottom: 32px;
+}
+
+.mission-detail .back-link:hover { color: var(--black); }
+
+.mission-detail h1 {
+  font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  margin-bottom: 16px;
+}
+
+.mission-detail .mission-body {
+  font-size: 1.0625rem;
+  line-height: 1.75;
+  color: #333;
+  margin-top: 32px;
+  white-space: pre-wrap;
+}
+
+.mission-detail img.cover {
+  width: 100%;
+  height: auto;
+  display: block;
+  margin-top: 32px;
+}
+
+/* ─── TEAM ─────────────────────────────────────────── */
+.team { background: var(--white); }
+
+.team-photo-wrap {
+  max-width: 1200px;
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.team-photo-wrap img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+}
+
+.team-caption {
+  font-size: 0.8125rem;
+  color: var(--gray-mid);
+  letter-spacing: 0.04em;
+}
+
+/* ─── PARTNERS ─────────────────────────────────────── */
+.partners { background: var(--gray-xlight); }
+
+.partners-logos {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 48px 64px;
+  max-width: 1200px;
+}
+
+.partners-logos img {
+  height: 32px;
+  width: auto;
+  max-width: 160px;
+  object-fit: contain;
+  opacity: 1;
+}
+
+/* ─── SUPPORT ───────────────────────────────────────── */
+.support { background: var(--gray-xlight); }
+
+.support-grid {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 80px;
+  max-width: 1200px;
+}
+
+.support-text {
+  font-size: 1.0625rem;
+  line-height: 1.75;
+  color: #333;
+}
+
+.support-text h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  margin-bottom: 20px;
+  color: var(--black);
+}
+
+.support-cta {
+  border-left: 2px solid var(--black);
+  padding-left: 28px;
+  align-self: start;
+}
+
+.support-cta a.button {
+  display: inline-block;
+  background: var(--black);
+  color: var(--near-white);
+  text-decoration: none;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 14px 24px;
+  margin-top: 8px;
+}
+
+.support-cta a.button:hover { opacity: 0.85; }
+
+.support-cta p {
+  font-size: 0.875rem;
+  color: var(--gray-mid);
+  margin-top: 16px;
+  line-height: 1.6;
+}
+
+/* ─── CONTACT ───────────────────────────────────────── */
+.contact {
+  background: var(--black);
+  color: var(--near-white);
+}
+
+.contact .section-label { color: #666; }
+.contact .section-label::after { background: #333; }
+
+.contact-heading {
+  font-size: clamp(2rem, 4vw, 3.25rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  margin-bottom: 56px;
+  line-height: 1.1;
+}
+
+.contact-bottom {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 48px;
+  border-top: 1px solid #2a2a2a;
+  padding-top: 48px;
+}
+
+.contact-logo svg { height: 48px; width: auto; opacity: 0.6; }
+
+.contact-info { text-align: right; }
+
+.contact-info p {
+  font-size: 0.875rem;
+  color: #888;
+  line-height: 1.8;
+}
+
+.contact-info a {
+  color: var(--near-white);
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+.contact-info a:hover { opacity: 0.7; }
+
+/* ─── ADMIN (utilitarian, doesn't need to match marketing site) ─── */
+.admin { background: var(--white); padding: 96px 48px; max-width: 900px; }
+.admin h1 { font-size: 1.75rem; margin-bottom: 8px; }
+.admin .admin-sub { color: var(--gray-mid); font-size: 0.875rem; margin-bottom: 40px; }
+.admin form { display: flex; flex-direction: column; gap: 14px; margin-bottom: 48px; padding: 24px; border: 1px solid var(--gray-light); }
+.admin label { font-size: 0.8125rem; font-weight: 500; }
+.admin input[type="text"],
+.admin select,
+.admin textarea {
+  font-family: inherit;
+  font-size: 0.9375rem;
+  padding: 10px 12px;
+  border: 1px solid var(--gray-light);
+  background: var(--white);
+  color: var(--black);
+  width: 100%;
+}
+.admin textarea { min-height: 200px; resize: vertical; }
+.admin .checkbox-row { display: flex; align-items: center; gap: 8px; }
+.admin .checkbox-row input { width: auto; }
+.admin button {
+  align-self: flex-start;
+  background: var(--black);
+  color: var(--near-white);
+  border: none;
+  padding: 10px 20px;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+.admin button.danger { background: #a33; }
+.admin table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+.admin table th, .admin table td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--gray-light); }
+.admin table .status-draft { color: var(--gray-mid); }
+.admin table .row-actions { display: flex; gap: 12px; }
+.admin table .row-actions form { display: inline; margin: 0; padding: 0; border: none; }
+.admin table .row-actions button { padding: 4px 10px; font-size: 0.75rem; }
+
+/* ─── MOBILE ───────────────────────────────────────── */
+@media (max-width: 768px) {
+  nav { padding: 0 24px; }
+  nav ul { gap: 20px; }
+
+  section { padding: 72px 24px; }
+
+  .hero { padding: 0 24px 64px; min-height: 85vh; }
+  .hero h1 { font-size: 2.25rem; }
+
+  .page-header { padding: 140px 24px 48px; }
+
+  .about-grid {
+    grid-template-columns: 1fr;
+    gap: 48px;
+  }
+  .about-meta { border-left: none; border-top: 2px solid var(--black); padding-left: 0; padding-top: 28px; }
+  .about-meta dl { flex-direction: row; flex-wrap: wrap; gap: 16px 32px; }
+
+  .support-grid { grid-template-columns: 1fr; gap: 48px; }
+  .support-cta { border-left: none; border-top: 2px solid var(--black); padding-left: 0; padding-top: 28px; }
+
+  .focus-grid { grid-template-columns: 1fr; gap: 2px; }
+
+  .contact-bottom { flex-direction: column; }
+  .contact-info { text-align: left; }
+}
+
+/* ─── MISSION PAGE: NAMIBIA 2026 ───────────────────── */
+.mission-featured {
+  display: block;
+  max-width: 720px;
+  padding: 32px;
+  border: 1px solid var(--gray-light);
+  background: var(--near-white);
+  text-decoration: none;
+  color: var(--black);
+  margin-bottom: 48px;
+  transition: border-color 0.2s;
+}
+.mission-featured:hover { border-color: var(--black); }
+.mission-featured h3 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.01em; margin-bottom: 8px; }
+.mission-featured p { color: #444; }
+
+.mission-hero { padding: 144px 48px 72px; background: var(--white); border-bottom: 1px solid var(--gray-light); }
+.mission-hero-inner, .mission-section-inner, .mission-live-inner { max-width: 880px; }
+.mission-hero .back-link { display: block; width: fit-content; font-size: 0.8125rem; font-weight: 500; color: var(--gray-mid); text-decoration: none; margin-bottom: 32px; }
+.mission-hero .back-link:hover { color: var(--black); }
+.mission-hero h1 { font-size: clamp(2.25rem, 5vw, 3.5rem); font-weight: 700; line-height: 1.08; letter-spacing: -0.025em; margin-bottom: 20px; }
+.mission-lead { font-size: 1.25rem; color: #444; max-width: 600px; }
+.mission-facts { display: flex; flex-wrap: wrap; gap: 48px; margin-top: 48px; }
+.mission-facts dt { font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-mid); margin-bottom: 6px; }
+.mission-facts dd { font-size: 1rem; font-weight: 500; }
+
+.mission-section { padding: 72px 48px; background: var(--white); }
+.mission-section-alt { background: var(--near-white); }
+.mission-text { font-size: 1.125rem; line-height: 1.7; color: #333; max-width: 680px; }
+.mission-plan { list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 24px; }
+.mission-plan li { border-top: 2px solid var(--black); padding-top: 16px; }
+.mission-plan span { display: block; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--teal-dark); }
+.mission-plan strong { display: block; font-size: 1.25rem; margin: 6px 0 8px; }
+.mission-plan p { color: #444; font-size: 0.9375rem; }
+.mission-team { list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 24px; }
+.mission-team strong { display: block; font-size: 1.0625rem; }
+.mission-team span { font-size: 0.875rem; color: var(--gray-mid); }
+
+/* The live view is its own dark world, like the mission GUI. */
+.mission-live { padding: 80px 48px; background: #0f1a1f linear-gradient(120deg, #0f1a1f 0%, #1b2b2a 60%, #24352c 100%); color: #e8eeec; }
+.mission-live-label { font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #7fc8c0; margin-bottom: 16px; }
+.mission-live h2 { font-size: clamp(1.75rem, 3.5vw, 2.5rem); font-weight: 700; letter-spacing: -0.02em; margin-bottom: 12px; }
+.mission-live p { color: #b7c6c3; max-width: 560px; margin-bottom: 32px; }
+.mission-live-btn { display: inline-block; padding: 14px 24px; border: 1px solid #7fc8c0; color: #e8eeec; text-decoration: none; font-weight: 500; font-size: 0.9375rem; }
+.mission-live-btn.is-soon { border-style: dashed; color: #b7c6c3; cursor: default; }
+
+@media (max-width: 640px) {
+  .mission-hero, .mission-section, .mission-live { padding-left: 16px; padding-right: 16px; }
+}
+
+.contact-social { display: flex; justify-content: flex-end; gap: 16px; margin: 12px 0; }
+.contact-social a { color: inherit; opacity: 0.7; transition: opacity 0.2s; }
+.contact-social a:hover { opacity: 1; }
+.crew-link { color: inherit; text-decoration: none; }
+.crew-link strong { border-bottom: 1px solid var(--gray-light); transition: border-color 0.2s; }
+.crew-link:hover strong { border-color: var(--black); }

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <title>Missions | NODE</title>
+  <meta name="description" content="Mission updates, press, and news from NODE, an autonomous surface vehicle collective at IAAC Barcelona.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+  <%- themeCSS %>
+</head>
+<body>
+
+  <%- include('../partials/nav') %>
+
+  <section class="page-header">
+    <h1>Missions</h1>
+    <p>Updates from the field: deployments, competitions, and partnerships.</p>
+  </section>
+
+  <section class="missions">
+    <a class="mission-featured" href="/missions/namibia-2026">
+      <div class="mission-category">Mission · Now</div>
+      <h3>Namibia 2026: the kelp below the canopy</h3>
+      <p>ASKET in Lüderitz with Kelp Blue, 7 November to 2 December 2026.</p>
+    </a>
+    <% if (posts.length === 0) { %>
+    <% } else { %>
+      <div class="focus-grid">
+        <% posts.forEach(function(post) { %>
+          <a class="focus-card" href="/missions/<%= post.slug %>">
+            <div class="mission-category"><%= post.category %></div>
+            <h3><%= post.title %></h3>
+            <p><%= post.excerpt %></p>
+            <div class="mission-date"><%= post.publishedAtFormatted %></div>
+          </a>
+        <% }); %>
+      </div>
+    <% } %>
+  </section>
+
+  <%- include('../partials/footer') %>
+
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <title>Edit | <%= post.title %> | NODE</title>
+  <meta name="robots" content="noindex">
+  <%- themeCSS %>
+</head>
+<body>
+  <div class="admin">
+    <h1>Edit post</h1>
+    <p class="admin-sub"><a href="/admin/posts">&larr; Back to posts</a></p>
+
+    <form method="POST" action="/admin/posts/<%= post.id %>">
+      <label>Title
+        <input type="text" name="title" required value="<%= post.title %>">
+      </label>
+      <label>Slug
+        <input type="text" name="slug" required value="<%= post.slug %>">
+      </label>
+      <label>Category
+        <select name="category">
+          <option value="mission" <%= post.category === 'mission' ? 'selected' : '' %>>Mission</option>
+          <option value="press" <%= post.category === 'press' ? 'selected' : '' %>>Press</option>
+          <option value="update" <%= post.category === 'update' ? 'selected' : '' %>>Update</option>
+        </select>
+      </label>
+      <label>Cover image URL (optional)
+        <input type="text" name="cover_image_url" value="<%= post.cover_image_url || '' %>">
+      </label>
+      <label>Body
+        <textarea name="body" required><%= post.body %></textarea>
+      </label>
+      <div class="checkbox-row">
+        <input type="checkbox" id="published" name="published" <%= post.published_at ? 'checked' : '' %>>
+        <label for="published">Published</label>
+      </div>
+      <button type="submit">Save changes</button>
+    </form>
+  </div>
+</body>
+</html>
