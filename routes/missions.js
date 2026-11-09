@@ -34,6 +34,10 @@ router.get('/namibia-2026', (req, res) => {
   res.render('missions/namibia');
 });
 
+router.get('/njord-2026', (req, res) => {
+  res.render('missions/njord');
+});
+
 router.get('/:slug', async (req, res) => {
   if (!pool) return res.status(503).send('Database not configured');
 

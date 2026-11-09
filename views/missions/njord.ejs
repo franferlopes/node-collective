@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <title>Njord 2026 | NODE</title>
+  <meta name="description" content="NODE's ASKET 2.0 autonomous surface vessel at the Njord Challenge 2026 in Trondheim, Norway.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+  <%- themeCSS %>
+</head>
+<body>
+
+  <%- include('../partials/nav') %>
+
+  <section class="mission-hero">
+    <div class="mission-hero-inner">
+      <a class="back-link" href="/missions">&larr; All missions</a>
+      <div class="mission-category">Competition · Trondheim, Norway</div>
+      <h1>Njord 2026: ASKET 2.0 in Trondheim</h1>
+      <p class="mission-lead">Five places higher than last year, with an upgraded boat and a team that kept going when the boat was stuck in customs.</p>
+      <dl class="mission-facts">
+        <div><dt>Dates</dt><dd>August 2026</dd></div>
+        <div><dt>Event</dt><dd>Njord Challenge, NTNU</dd></div>
+        <div><dt>Vessel</dt><dd>ASKET 2.0</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="mission-section">
+    <div class="mission-section-inner">
+      <div class="section-label">Purpose</div>
+      <p class="mission-text">Njord is an international autonomous ship challenge for student teams. For 2026 we redesigned ASKET around what we learned in 2025: a single-piece hull that no longer leaks, a navigation stack built on ROS 2, and a vessel that combines camera and LiDAR to find its way through the course.</p>
+    </div>
+  </section>
+
+  <section class="mission-section mission-section-alt">
+    <div class="mission-section-inner">
+      <div class="section-label">The vessel</div>
+      <ol class="mission-plan">
+        <li><span>Hull</span><strong>Single-piece trimaran</strong><p>1.5 x 0.7 x 0.4 m, printed in one piece by a 6-axis robot in reinforced PETG with La Máquina. No seams, no leaks.</p></li>
+        <li><span>Propulsion</span><strong>Two thrusters</strong><p>Differential drive with no rudder, for tight turns and fewer moving parts.</p></li>
+        <li><span>Autonomy</span><strong>ROS 2 and Nav2</strong><p>GPS waypoints, path planning and automatic replanning around obstacles.</p></li>
+        <li><span>Perception</span><strong>Camera and LiDAR</strong><p>A YOLO model detects buoys and obstacles, fused with 360° LiDAR scans.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="mission-section">
+    <div class="mission-section-inner">
+      <div class="section-label">Two weeks in Trondheim</div>
+      <ol class="mission-plan">
+        <li><span>Week 1</span><strong>Preparation and assembly</strong><p>Assembling ASKET 2.0 on site, presenting our team and boat to the other competitors.</p></li>
+        <li><span>Week 2</span><strong>The competition</strong><p>Around 20 teams from across the world. We were the only team representing Catalonia and Spain.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="mission-section mission-section-alt">
+    <div class="mission-section-inner">
+      <div class="section-label">How it went</div>
+      <p class="mission-text">Our boat spent longer than expected in customs, most likely because of the custom-sized box we built around the recycled plastic hull. While we waited, we used what we had on the ground: we rearranged the antennas, kept developing and testing the software, and kept the team learning.</p>
+      <p class="mission-text" style="margin-top:16px">In the end we climbed five places compared to 2025, with a better overall performance from ASKET 2.0. We left Trondheim with more experience, a clear list of things to improve and a stronger motivation to keep building. Thank you to the Njord organisers for their help with the logistics, and to the other teams for their support.</p>
+    </div>
+  </section>
+
+  <section class="mission-section">
+    <div class="mission-section-inner">
+      <div class="section-label">The team</div>
+      <ul class="mission-team">
+        <%
+          // The team that represented NODE in Trondheim (Njord recap, 31 Aug 2026).
+          const crew = [
+            { name: 'Francisco Ferrer', role: 'Captain', linkedin: 'https://www.linkedin.com/in/francisco-ferrer-195862152/' },
+            { name: 'Maximilian Becht', role: 'Co-Lead of Hardware', linkedin: 'https://www.linkedin.com/in/maximilian-becht-61a929207/' },
+            { name: 'Lakshmi Narayanan', role: 'Co-Lead of Software', linkedin: 'https://www.linkedin.com/in/lakshmi-narayanan-2b9b75177/' },
+            { name: 'Marita Georganta', role: 'Founder', linkedin: 'https://www.linkedin.com/in/marita-georganta/' },
+          ];
+        %>
+        <% crew.forEach(function(m) { %>
+          <li>
+            <% if (m.linkedin) { %>
+              <a class="crew-link" href="<%= m.linkedin %>" target="_blank" rel="noopener"><strong><%= m.name %></strong></a>
+            <% } else { %>
+              <strong><%= m.name %></strong>
+            <% } %>
+            <span><%= m.role %></span>
+          </li>
+        <% }); %>
+      </ul>
+    </div>
+  </section>
+
+  <section class="mission-section mission-section-alt">
+    <div class="mission-section-inner">
+      <div class="section-label">With the support of</div>
+      <p class="mission-text">IAAC Robotics Lab, Kelp Forest Foundation, La Máquina, Cerulean Sonar, Open Cosmos and Women in Aerospace Europe.</p>
+    </div>
+  </section>
+
+  <%- include('../partials/footer') %>
+
+</body>
+</html>
