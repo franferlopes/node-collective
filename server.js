@@ -2,7 +2,7 @@ require('dotenv').config();
 
 const express = require('express');
 const path = require('path');
-require('./lib/db'); // initializes the shared pg Pool as a side effect
+const { pool } = require('./lib/db');
 const { buildLandingContext, buildThemeCSS } = require('./lib/landing-context');
 const missionsRouter = require('./routes/missions');
 const adminRouter = require('./routes/admin');
@@ -54,6 +54,35 @@ app.get('/', (_req, res) => {
 
 app.get('/support', (_req, res) => {
   res.render('support');
+});
+
+// Crawl files for search engines and AI search. Mission posts from the
+// database are added to the sitemap when the database is available.
+const SITE_URL = 'https://www.nodeengineering.club';
+const STATIC_PAGES = ['/', '/missions', '/missions/namibia-2026', '/missions/njord-2026', '/missions/njord-2025', '/support'];
+
+app.get('/robots.txt', (_req, res) => {
+  res.type('text/plain').send(`User-agent: *\nAllow: /\nDisallow: /admin\n\nSitemap: ${SITE_URL}/sitemap.xml\n`);
+});
+
+app.get('/sitemap.xml', async (_req, res) => {
+  let slugs = [];
+  if (pool) {
+    try {
+      const { rows } = await pool.query(
+        `SELECT slug FROM posts WHERE published_at IS NOT NULL AND published_at <= NOW()`
+      );
+      slugs = rows.map((r) => `/missions/${r.slug}`);
+    } catch (err) {
+      console.error('sitemap query failed:', err.message);
+    }
+  }
+  const urls = [...STATIC_PAGES, ...slugs]
+    .map((p) => `  <url><loc>${SITE_URL}${p}</loc></url>`)
+    .join('\n');
+  res.type('application/xml').send(
+    `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`
+  );
 });
 
 app.use('/missions', missionsRouter);

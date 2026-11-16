@@ -139,6 +139,16 @@ nav ul a:hover, nav ul a.active { color: var(--black); }
   line-height: 1.6;
 }
 
+/* Text for screen readers and search engines only. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
 /* ─── SECTIONS ─────────────────────────────────────── */
 section { padding: 96px 48px; }
 
@@ -193,6 +203,47 @@ section { padding: 96px 48px; }
   margin-bottom: 4px;
 }
 .about-meta dd { font-size: 0.9375rem; font-weight: 500; }
+
+/* ─── VALUES ───────────────────────────────────────── */
+.values { background: var(--white); border-top: 1px solid var(--gray-light); }
+
+.values-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2px;
+  max-width: 1200px;
+  background: var(--gray-light);
+  border: 1px solid var(--gray-light);
+}
+
+.value {
+  background: var(--white);
+  padding: 40px 32px;
+}
+
+.value svg {
+  width: 28px;
+  height: 28px;
+  fill: none;
+  stroke: var(--black);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  margin-bottom: 14px;
+}
+
+.value h4 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin-bottom: 8px;
+}
+
+.value p {
+  font-size: 0.9375rem;
+  line-height: 1.65;
+  color: #555;
+}
 
 /* ─── FOCUS AREAS / CARD GRIDS ───────────────────────
    Shared by Focus Areas and Missions list. */
@@ -495,6 +546,8 @@ section { padding: 96px 48px; }
   .support-cta { border-left: none; border-top: 2px solid var(--black); padding-left: 0; padding-top: 28px; }
 
   .focus-grid { grid-template-columns: 1fr; gap: 2px; }
+  .values-grid { grid-template-columns: 1fr 1fr; }
+  .value { padding: 32px 24px; }
 
   .contact-bottom { flex-direction: column; }
   .contact-info { text-align: left; }

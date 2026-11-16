@@ -1,0 +1,22 @@
+# NODE
+
+> NODE is a student and alumni collective founded in 2024 at the Institute for Advanced Architecture of Catalonia (IAAC) in Barcelona. We design and build open-source autonomous surface vehicles (ASVs) for marine data collection and environmental monitoring, and take them to international competitions and real field missions.
+
+- Vessel: ASKET, an autonomous surface vessel with a 3D-printed hull, camera and LiDAR perception and a ROS 2 navigation stack.
+- Values: innovation, curiosity, collaboration and openness.
+- Contact: node.engineering.club@gmail.com
+
+## Missions
+
+- [Namibia 2026](https://www.nodeengineering.club/missions/namibia-2026): field mission in Lüderitz, Namibia, with Kelp Blue (7 November to 2 December 2026), measuring the kelp below the canopy.
+- [Njord 2026](https://www.nodeengineering.club/missions/njord-2026): ASKET 2.0 at the Njord autonomous ship challenge in Trondheim, Norway, five places higher than in 2025.
+- [Njord 2025](https://www.nodeengineering.club/missions/njord-2025): NODE's first Njord Challenge, where the team won the Team Spirit Award.
+- [All missions](https://www.nodeengineering.club/missions)
+
+## More
+
+- [Home](https://www.nodeengineering.club/): about NODE, focus areas, team, values and partners.
+- [Support NODE](https://www.nodeengineering.club/support): how to sponsor or support the next vessel and missions.
+- [LinkedIn](https://www.linkedin.com/company/node-engineering-club/)
+- [Instagram](https://www.instagram.com/node_ec/)
+- [GitHub](https://github.com/NODE-Engineering-Club)

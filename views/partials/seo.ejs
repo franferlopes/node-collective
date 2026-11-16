@@ -1,0 +1,24 @@
+<%#
+  Shared <head> tags for search engines, AI search and link previews.
+  Pass: title, description, path (e.g. '/missions/njord-2025'),
+  optional image (site path, defaults to the landing photo),
+  optional type ('website' | 'article'), optional schema (schema.org object or array).
+%>
+<%
+  const siteUrl = 'https://www.nodeengineering.club';
+  const url = siteUrl + (locals.path || '/');
+  const image = siteUrl + (locals.image || '/images/landing.jpg');
+%>
+  <title><%= title %></title>
+  <meta name="description" content="<%= description %>">
+  <link rel="canonical" href="<%= url %>">
+  <meta property="og:site_name" content="NODE">
+  <meta property="og:type" content="<%= locals.type || 'website' %>">
+  <meta property="og:title" content="<%= title %>">
+  <meta property="og:description" content="<%= description %>">
+  <meta property="og:url" content="<%= url %>">
+  <meta property="og:image" content="<%= image %>">
+  <meta name="twitter:card" content="summary_large_image">
+  <% if (locals.schema) { %>
+  <script type="application/ld+json"><%- JSON.stringify(schema).replace(/</g, '\\u003c') %></script>
+  <% } %>

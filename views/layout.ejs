@@ -8,8 +8,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-  <title>NODE | Autonomous Systems. Built in the Open.</title>
-  <meta name="description" content="NODE is a student and alumni collective at IAAC Barcelona, building autonomous surface vehicles at the intersection of design, engineering, and robotics.">
+  <%- include('partials/seo', {"title": "NODE | Autonomous Systems. Built in the Open.", "description": "NODE is a student and alumni collective at IAAC Barcelona, building autonomous surface vehicles at the intersection of design, engineering, and robotics.", "path": "/", "schema": {"@context": "https://schema.org", "@graph": [{"@type": "Organization", "@id": "https://www.nodeengineering.club/#org", "name": "NODE", "alternateName": ["NODE Engineering Club", "NODE Collective"], "url": "https://www.nodeengineering.club/", "logo": "https://www.nodeengineering.club/images/node-logo.png", "description": "NODE is a student and alumni collective founded at the Institute for Advanced Architecture of Catalonia (IAAC) in Barcelona, building open-source autonomous surface vehicles for marine data collection and environmental monitoring.", "foundingDate": "2024", "founder": {"@type": "Person", "name": "Marita Georganta"}, "parentOrganization": {"@type": "CollegeOrUniversity", "name": "Institute for Advanced Architecture of Catalonia (IAAC)", "url": "https://iaac.net"}, "address": {"@type": "PostalAddress", "addressLocality": "Barcelona", "addressCountry": "ES"}, "email": "node.engineering.club@gmail.com", "sameAs": ["https://www.linkedin.com/company/node-engineering-club/", "https://www.instagram.com/node_ec/", "https://github.com/NODE-Engineering-Club"], "knowsAbout": ["Autonomous surface vehicles", "Marine robotics", "ROS 2", "Environmental monitoring", "Open-source robotics"]}, {"@type": "WebSite", "@id": "https://www.nodeengineering.club/#website", "url": "https://www.nodeengineering.club/", "name": "NODE", "publisher": {"@id": "https://www.nodeengineering.club/#org"}}]}}) %>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
@@ -25,14 +24,14 @@
     <div class="hero-overlay"></div>
     <div class="hero-content">
       <span class="hero-label">IAAC BCN · Engineering Club · Est. 2024</span>
-      <h1>Autonomous Systems.<br>Built in the Open.</h1>
+      <h1><span class="visually-hidden">NODE: </span>Autonomous Systems.<br>Built in the Open.</h1>
       <p>NODE is advancing open research at the intersection of design, engineering, and robotics.</p>
     </div>
   </section>
 
   <!-- ABOUT -->
   <section class="about" id="about">
-    <div class="section-label">About Us</div>
+    <h2 class="section-label">About Us</h2>
     <div class="about-grid">
       <p class="about-text">
         NODE started as a student and alumni collective founded at the Institute for Advanced Architecture of Catalonia (IAAC), building autonomous systems at the intersection of design, engineering, and robotics. Rooted in open-source principles and student–industry collaboration, we don't just research, we deploy. In our second year, NODE is advancing its presence in the marine sector, developing Autonomous Surface Vehicles capable of operating in rivers, ports, and coastal environments. We bridge academia and industry through real projects, international competitions, and active partnerships, proving that open research can produce systems that work in the field. Our mission is to make intelligent machines accessible across sectors, and our next frontier is autonomous marine data collection and environmental monitoring.
@@ -62,7 +61,7 @@
 
   <!-- FOCUS AREAS -->
   <section class="focus" id="focus">
-    <div class="section-label">Focus Areas</div>
+    <h2 class="section-label">Focus Areas</h2>
     <div class="focus-grid">
       <div class="focus-card">
         <div class="focus-card-number">01</div>
@@ -84,7 +83,7 @@
 
   <!-- TEAM -->
   <section class="team" id="team">
-    <div class="section-label">The Team</div>
+    <h2 class="section-label">The Team</h2>
     <div class="team-photo-wrap">
       <img
         src="https://pub-629428d185ca4960a0a73c850d32294b.r2.dev/company_206502/images/fd34036b-094c-4fe4-ba48-042501028240.png"
@@ -95,9 +94,36 @@
     <p class="team-caption">NODE Engineering Club, IAAC Barcelona, 2026</p>
   </section>
 
+  <!-- VALUES -->
+  <section class="values" id="values">
+    <h2 class="section-label">Our Values</h2>
+    <div class="values-grid">
+      <div class="value">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+        <h4>Innovation</h4>
+        <p>We push boundaries in autonomy, design and engineering.</p>
+      </div>
+      <div class="value">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m10.065 12.493-6.18 1.318a.934.934 0 0 1-1.108-.702l-.537-2.15a1.07 1.07 0 0 1 .691-1.265l13.504-4.44"/><path d="m13.56 11.747 4.332-.924"/><path d="m16 21-3.105-6.21"/><path d="M16.485 5.94a2 2 0 0 1 1.455-2.425l1.09-.272a1 1 0 0 1 1.212.727l1.515 6.06a1 1 0 0 1-.727 1.213l-1.09.272a2 2 0 0 1-2.425-1.455z"/><path d="m6.158 8.633 1.114 4.456"/><path d="m8 21 3.105-6.21"/><circle cx="12" cy="13" r="2"/></svg>
+        <h4>Curiosity</h4>
+        <p>We explore, question and learn something new on every mission.</p>
+      </div>
+      <div class="value">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="16" y="16" width="6" height="6" rx="1"/><rect x="2" y="16" width="6" height="6" rx="1"/><rect x="9" y="2" width="6" height="6" rx="1"/><path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3"/><path d="M12 12V8"/></svg>
+        <h4>Collaboration</h4>
+        <p>We build as a team, across disciplines and borders.</p>
+      </div>
+      <div class="value">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5c0 1.1.9 2 2 2h1"/><path d="M16 21h1a2 2 0 0 0 2-2v-5c0-1.1.9-2 2-2a2 2 0 0 1-2-2V5a2 2 0 0 0-2-2h-1"/></svg>
+        <h4>Openness</h4>
+        <p>We share what we build: code, designs, data and lessons.</p>
+      </div>
+    </div>
+  </section>
+
   <!-- PARTNERS -->
   <section class="partners" id="partners">
-    <div class="section-label">Partners</div>
+    <h2 class="section-label">Partners</h2>
     <div class="partners-logos">
       <img src="/images/partners/partner-1.svg" alt="IAAC" loading="lazy">
       <img src="/images/partners/partner-2.svg" alt="LaMaquina" loading="lazy">
