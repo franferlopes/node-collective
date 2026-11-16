@@ -74,7 +74,7 @@ nav ul a:hover, nav ul a.active { color: var(--black); }
 .hero-bg {
   position: absolute;
   inset: 0;
-  background: url('/images/landing.png') center center / cover no-repeat;
+  background: url('/images/landing.jpg') center center / cover no-repeat;
 }
 
 .hero-overlay {

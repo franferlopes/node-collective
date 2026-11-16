@@ -34,7 +34,18 @@ app.get('/health', (req, res) => {
 // `index: false` disables auto-serving public/index.html as the directory
 // index — `/` always hits the EJS render route below, which is the only
 // thing that should ever serve the landing page on this template.
-app.use(express.static(path.join(__dirname, 'public'), { index: false }));
+// Images can be cached for a week (by browsers and Cloudflare); CSS and JS for
+// an hour so design changes still show up quickly after a deploy.
+app.use(express.static(path.join(__dirname, 'public'), {
+  index: false,
+  setHeaders: (res, filePath) => {
+    if (/\.(jpe?g|png|webp|svg|gif)$/i.test(filePath)) {
+      res.setHeader('Cache-Control', 'public, max-age=604800');
+    } else if (/\.(css|js)$/i.test(filePath)) {
+      res.setHeader('Cache-Control', 'public, max-age=3600');
+    }
+  },
+}));
 
 // Landing page
 app.get('/', (_req, res) => {
