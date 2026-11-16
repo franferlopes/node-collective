@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <title>Njord 2025 | NODE</title>
+  <meta name="description" content="NODE's first Njord Challenge: architecture students from IAAC took ASKET to Trondheim, teamed up with Team AMORE and won the Team Spirit Award.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+  <%- themeCSS %>
+</head>
+<body>
+
+  <%- include('../partials/nav') %>
+
+  <section class="mission-hero">
+    <div class="mission-hero-inner">
+      <a class="back-link" href="/missions">&larr; All missions</a>
+      <div class="mission-category">Competition · Trondheim, Norway</div>
+      <h1>Njord 2025: our first edition</h1>
+      <p class="mission-lead">A team of architecture students built an autonomous ship in Barcelona, took it to Norway, and came home with the Team Spirit Award.</p>
+      <dl class="mission-facts">
+        <div><dt>Dates</dt><dd>August 2025</dd></div>
+        <div><dt>Event</dt><dd>Njord Challenge, NTNU</dd></div>
+        <div><dt>Vessel</dt><dd>ASKET</dd></div>
+        <div><dt>Result</dt><dd>Team Spirit Award</dd></div>
+      </dl>
+      <figure class="mission-cover">
+        <img src="/images/missions/njord-2025/njord25-team-amore.jpg" alt="NODE and Team AMORE with the boat on the quay in Trondheim">
+      </figure>
+    </div>
+  </section>
+
+  <section class="mission-section">
+    <div class="mission-section-inner">
+      <div class="section-label">Purpose</div>
+      <p class="mission-text">What started as a student project in Barcelona in November 2024 turned into an international adventure. A group of architecture students at IAAC set out to build an autonomous ship and compete at the Njord NTNU Autonomous Ship Championship, against teams from engineering schools around the world.</p>
+    </div>
+  </section>
+
+  <section class="mission-section mission-section-alt">
+    <div class="mission-section-inner">
+      <div class="section-label">The vessel</div>
+      <ol class="mission-plan">
+        <li><span>Hull</span><strong>3D printed</strong><p>Engineered and produced by La Máquina, our main fabrication sponsor.</p></li>
+        <li><span>Hardware</span><strong>Vision, brain and sensing</strong><p>Supplied with the support of Women in Aerospace Europe and the IAAC Robotics Lab.</p></li>
+        <li><span>Prototyping</span><strong>First stage</strong><p>The early prototypes of the boat, with the support of Ziknes.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="mission-section">
+    <div class="mission-section-inner">
+      <div class="section-label">In Trondheim</div>
+      <ol class="mission-plan">
+        <li><span>Step 1</span><strong>Technical inspection</strong><p>Passed, followed by the team presenting our system and how everything works.</p></li>
+        <li><span>Step 2</span><strong>A new partnership</strong><p>NODE x AMORE, formed in less than 24 hours.</p></li>
+        <li><span>Step 3</span><strong>The races</strong><p>Last-minute issues resolved, starting with the maneuvering task.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="mission-section mission-section-alt">
+    <div class="mission-section-inner">
+      <div class="section-label">How it went</div>
+      <p class="mission-text">After arriving in Trondheim, Team AMORE from Michigan could not find the youth kayak they normally use as their hull. We had a hull, but were missing parts of the software. What each team lacked, the other could provide, so in less than 24 hours we formed a partnership spanning 6,610 kilometres.</p>
+      <p class="mission-text" style="margin-top:16px">For ten intense days we worked side by side, integrating our hardware and their software into something new. We did not win the competition, but we came home with the Team Spirit Award: a recognition of determination, collaboration, and what can happen when people from different disciplines and continents work together.</p>
+      <div class="carousel" data-carousel>
+        <div class="carousel-track">
+          <figure class="carousel-slide"><img src="/images/missions/njord-2025/njord25-asket-dusk.jpg" alt="ASKET floating by the quay at dusk with its status light on" loading="lazy"></figure>
+          <figure class="carousel-slide"><img src="/images/missions/njord-2025/njord25-asket-sailing.jpg" alt="ASKET sailing on calm water in Trondheim harbour" loading="lazy"></figure>
+          <figure class="carousel-slide"><img src="/images/missions/njord-2025/njord25-race-start.jpg" alt="Competing boats lined up at the start of a race, with a support boat behind" loading="lazy"></figure>
+          <figure class="carousel-slide"><img src="/images/missions/njord-2025/njord25-presentation.jpg" alt="The team presenting their boat in a lecture hall at NTNU" loading="lazy"></figure>
+        </div>
+        <button class="carousel-btn carousel-prev" type="button" aria-label="Previous photo">&larr;</button>
+        <button class="carousel-btn carousel-next" type="button" aria-label="Next photo">&rarr;</button>
+        <div class="carousel-dots"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="mission-section">
+    <div class="mission-section-inner">
+      <div class="section-label">The team in Norway</div>
+      <ul class="mission-team">
+        <%
+          // Who represented NODE in Trondheim, and who supported remotely (Njord 2025 recap posts).
+          const crew = [
+            { name: 'Salvador Cantuarias', role: 'Software Team Lead', linkedin: 'https://www.linkedin.com/in/salvador-cantuarias/' },
+            { name: 'Maximilian Becht', role: 'Hardware Team Lead', linkedin: 'https://www.linkedin.com/in/maximilian-becht-61a929207/' },
+            { name: 'Aleksandra Kraeva', role: 'Captain, remote support', linkedin: 'https://www.linkedin.com/in/sashanosense/' },
+            { name: 'Marita Georganta', role: 'Founder, remote support', linkedin: 'https://www.linkedin.com/in/marita-georganta/' },
+          ];
+        %>
+        <% crew.forEach(function(m) { %>
+          <li>
+            <% if (m.linkedin) { %>
+              <a class="crew-link" href="<%= m.linkedin %>" target="_blank" rel="noopener"><strong><%= m.name %></strong></a>
+            <% } else { %>
+              <strong><%= m.name %></strong>
+            <% } %>
+            <span><%= m.role %></span>
+          </li>
+        <% }); %>
+      </ul>
+      <p class="mission-text" style="margin-top:32px"><strong>The whole team.</strong> Students: Aleksandra Kraeva, Salvador Cantuarias, Maximilian Becht, Mert Ozkilic, Auxence Daillen, Samarth Pachchigar, Geetham Pasumarty, Arun Prasad, Eleni Papakosta, Chanakan C., Yuvraj Shirke, Gautam Vohra, Brian Woodtli, Nitsan Mor and Naji Altala. Faculty: Marita Georganta and Huanyu Li.</p>
+    </div>
+  </section>
+
+  <section class="mission-section mission-section-alt">
+    <div class="mission-section-inner">
+      <div class="section-label">With the support of</div>
+      <p class="mission-text">La Máquina, the Institute for Advanced Architecture of Catalonia (IAAC), IAAC Robotics Lab, Women in Aerospace Europe, External Reference Architects and Ziknes. And our new friends from Team AMORE.</p>
+    </div>
+  </section>
+
+  <%- include('../partials/footer') %>
+
+  <script src="/js/carousel.js"></script>
+
+</body>
+</html>

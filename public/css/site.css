@@ -573,9 +573,29 @@ section { padding: 96px 48px; }
 .mission-featured-img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
 .mission-cover { margin: 48px 0 0; }
 .mission-cover img { display: block; width: 100%; height: auto; }
+/* Photo carousel: centred slide large, neighbours smaller and faded */
+.carousel { position: relative; margin-top: 40px; outline: none; }
+.carousel-track { display: flex; gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; padding: 8px 0; }
+.carousel-track::-webkit-scrollbar { display: none; }
+/* Spacers so the first and last photos can sit in the centre */
+.carousel-track::before, .carousel-track::after { content: ''; flex: 0 0 calc(20% - 16px); }
+.carousel-slide { flex: 0 0 60%; scroll-snap-align: center; cursor: pointer; transform: scale(0.82); opacity: 0.45; transition: transform 0.35s ease, opacity 0.35s ease; }
+.carousel-slide.is-active { transform: scale(1); opacity: 1; cursor: default; }
+.carousel-slide img { display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; }
+.carousel-btn { position: absolute; top: calc(50% - 22px); transform: translateY(-50%); width: 44px; height: 44px; border: 1px solid var(--gray-light); border-radius: 50%; background: var(--near-white); color: var(--black); font-size: 1.1rem; cursor: pointer; }
+.carousel-btn:disabled { opacity: 0.3; cursor: default; }
+.carousel-prev { left: 8px; }
+.carousel-next { right: 8px; }
+.carousel-dots { display: flex; justify-content: center; gap: 8px; margin-top: 20px; }
+.carousel-dots button { width: 8px; height: 8px; padding: 0; border: none; border-radius: 50%; background: var(--gray-light); cursor: pointer; }
+.carousel-dots button.is-active { background: var(--black); }
 .mission-gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 40px; }
 .mission-gallery img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
 @media (max-width: 640px) {
   .mission-gallery { grid-template-columns: 1fr; }
+  .carousel-track { gap: 10px; }
+  .carousel-track::before, .carousel-track::after { flex-basis: calc(7.5% - 10px); }
+  .carousel-slide { flex-basis: 85%; }
+  .carousel-btn { display: none; }
   .mission-featured.has-image > :not(img) { margin-left: 20px; margin-right: 20px; }
 }
