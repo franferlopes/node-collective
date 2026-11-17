@@ -37,8 +37,9 @@
         { name: 'Maximilian Becht', title: 'Hardware Lead', linkedin: 'https://www.linkedin.com/in/maximilian-becht-61a929207/' },
         { name: 'Lakshmi Narayanan', title: 'Software Lead', linkedin: 'https://www.linkedin.com/in/lakshmi-narayanan-2b9b75177/' },
         { name: 'Belén Comotto', title: null, linkedin: 'https://www.linkedin.com/in/belen-comotto-53aaaa197/' },
-        { name: 'Salvador', title: null },
-        { name: 'Auxence', title: null },
+        { name: 'Salvador Cantuarias', title: null, linkedin: 'https://www.linkedin.com/in/salvador-cantuarias' },
+        { name: 'Auxence Daillen', title: null },
+        { name: 'Saad', title: null },
         { name: 'Marita Georganta', title: 'Founder', linkedin: 'https://www.linkedin.com/in/marita-georganta/' },
       ];
     %>
@@ -55,7 +56,7 @@
           <% } else { %>
             <strong><%= m.name %></strong>
           <% } %>
-          <span><%= m.title || 'Title to confirm' %></span>
+          <% if (m.title) { %><span><%= m.title %></span><% } %>
         </li>
       <% }); %>
     </ul>

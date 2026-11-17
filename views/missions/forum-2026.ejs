@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <%- include('../partials/seo', {"title": "Marine Technology & Innovation Forum 2026 | NODE", "description": "NODE hosted the Marine Technology & Innovation Forum 2026 at IAAC Barcelona on 21 May 2026, bringing together students, researchers and industry working on marine technology and robotics.", "path": "/missions/marine-tech-forum-2026", "image": "/images/missions/forum/marine-tech-forum-2026.jpg", "schema": {"@context": "https://schema.org", "@type": "Event", "name": "Marine Technology & Innovation Forum 2026", "description": "A forum hosted by NODE at IAAC Barcelona for students, researchers and industry working on marine technology and robotics.", "startDate": "2026-05-21T18:30:00+02:00", "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode", "eventStatus": "https://schema.org/EventScheduled", "location": {"@type": "Place", "name": "IAAC Main Hall", "address": {"@type": "PostalAddress", "streetAddress": "Carrer de Pujades, 102", "addressLocality": "Barcelona", "postalCode": "08005", "addressCountry": "ES"}}, "image": "https://www.nodeengineering.club/images/missions/forum/marine-tech-forum-2026.jpg", "url": "https://www.nodeengineering.club/missions/marine-tech-forum-2026", "organizer": {"@type": "Organization", "name": "NODE", "url": "https://www.nodeengineering.club/"}}}) %>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+  <%- themeCSS %>
+</head>
+<body>
+
+  <%- include('../partials/nav') %>
+
+  <section class="mission-hero">
+    <div class="mission-hero-inner">
+      <a class="back-link" href="/missions">&larr; All missions</a>
+      <div class="mission-category">Event · Barcelona</div>
+      <h1>Marine Technology &amp; Innovation Forum 2026</h1>
+      <p class="mission-lead">An evening at IAAC where students, researchers, partners and industry shared their work on marine technology and robotics.</p>
+      <dl class="mission-facts">
+        <div><dt>Date</dt><dd>21 May 2026, 18:30</dd></div>
+        <div><dt>Venue</dt><dd>IAAC Main Hall, Barcelona</dd></div>
+        <div><dt>Hosted by</dt><dd>NODE Engineering Club</dd></div>
+      </dl>
+      <figure class="mission-cover">
+        <img src="/images/missions/forum/marine-tech-forum-2026.jpg" alt="Poster for the Marine Technology and Innovation Forum 2026, 21 May, 18:30 at IAAC Main Hall, with partner logos">
+      </figure>
+    </div>
+  </section>
+
+  <section class="mission-section">
+    <div class="mission-section-inner">
+      <div class="section-label">The forum</div>
+      <p class="mission-text">NODE brought together students, researchers, collaborators and industry professionals at the Institute for Advanced Architecture of Catalonia to share ongoing work, discuss emerging technologies and look for new ways to collaborate across marine technology and robotics.</p>
+    </div>
+  </section>
+
+  <section class="mission-section mission-section-alt">
+    <div class="mission-section-inner">
+      <div class="section-label">With thanks to</div>
+      <ol class="mission-plan">
+        <li><span>Host</span><strong>IAAC</strong><p>For hosting the forum in its Main Hall.</p></li>
+        <li><span>Talk</span><strong>Open Cosmos</strong><p>For their presentation and continued support.</p></li>
+        <li><span>New partner</span><strong>Cerulean Sonar</strong><p>Welcomed as a new partner of NODE.</p></li>
+        <li><span>Partners</span><strong>Kelp Blue and LaMáquina</strong><p>For supporting our projects and helping develop our hull.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="mission-section">
+    <div class="mission-section-inner">
+      <div class="section-label">What came next</div>
+      <p class="mission-text">The forum set the stage for <a href="/missions/njord-2026">Njord 2026</a> in Trondheim and for our first field mission, <a href="/missions/namibia-2026">Namibia 2026</a>. The next NODE event is planned for 2027.</p>
+    </div>
+  </section>
+
+  <%- include('../partials/footer') %>
+
+</body>
+</html>

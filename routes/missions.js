@@ -42,6 +42,10 @@ router.get('/njord-2025', (req, res) => {
   res.render('missions/njord-2025');
 });
 
+router.get('/marine-tech-forum-2026', (req, res) => {
+  res.render('missions/forum-2026');
+});
+
 router.get('/:slug', async (req, res) => {
   if (!pool) return res.status(503).send('Database not configured');
 

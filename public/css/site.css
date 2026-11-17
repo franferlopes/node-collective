@@ -789,3 +789,101 @@ section[id] { scroll-margin-top: 64px; }
 @media (max-width: 768px) {
   .values-grid, .focus-grid { gap: 12px; }
 }
+
+/* ─── MOBILE MENU ──────────────────────────────────── */
+.nav-toggle { display: none; }
+@media (max-width: 768px) {
+  .nav-toggle {
+    display: flex; flex-direction: column; justify-content: center; gap: 7px;
+    width: 44px; height: 44px; margin-right: -10px; padding: 0 10px;
+    background: none; border: none; cursor: pointer;
+  }
+  .nav-toggle span { display: block; height: 1.5px; background: var(--black); transition: transform 0.25s ease; }
+  nav.is-open .nav-toggle span:first-child { transform: translateY(4.25px) rotate(45deg); }
+  nav.is-open .nav-toggle span:last-child { transform: translateY(-4.25px) rotate(-45deg); }
+
+  nav > ul {
+    position: fixed; top: 64px; left: 0; right: 0; bottom: 0;
+    display: none; flex-direction: column; gap: 0;
+    padding: 16px 24px 48px; overflow-y: auto;
+    background: var(--near-white);
+  }
+  nav.is-open > ul { display: flex; }
+  nav > ul > li { border-bottom: 1px solid var(--gray-light); }
+  nav > ul > li > a { display: block; padding: 20px 0; font-size: 1.25rem; letter-spacing: 0.04em; color: var(--black); }
+  /* About's sub-links are listed under it, not in a dropdown */
+  nav .sub, nav li.has-sub:hover .sub, nav li.has-sub:focus-within .sub {
+    display: flex !important; position: static; margin: -8px 0 16px; padding: 0 0 0 16px;
+    border: none; background: none; min-width: 0;
+  }
+  nav .sub::before { display: none; }
+  nav .sub a { padding: 10px 0; font-size: 0.9375rem; }
+  body.menu-open { overflow: hidden; }
+}
+
+/* ─── UX PASS (17 Nov 2026) ────────────────────────── */
+/* Menu: current page, and Support as a small outlined button */
+nav ul a.active { color: var(--black); }
+nav .nav-cta a { color: var(--black); border: 1px solid var(--black); padding: 7px 14px; }
+nav .nav-cta a:hover { background: var(--black); color: var(--white); }
+@media (max-width: 768px) {
+  nav > ul > li.nav-cta { border-bottom: none; margin-top: 28px; }
+  nav > ul > li.nav-cta > a { display: inline-block; padding: 14px 22px; font-size: 1rem; }
+}
+
+/* Hero buttons */
+.hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
+.btn { display: inline-block; padding: 14px 24px; font-size: 0.9375rem; font-weight: 500; text-decoration: none; border: 1px solid var(--black); transition: opacity 0.2s, background 0.2s; }
+.btn-dark { background: var(--black); color: var(--white); }
+.btn-dark:hover { opacity: 0.85; }
+.btn-light { background: rgba(255, 255, 255, 0.6); color: var(--black); }
+.btn-light:hover { background: var(--white); }
+
+/* Proof bar */
+.proof { padding: 40px 48px; background: var(--white); border-bottom: 1px solid var(--gray-light); }
+.proof-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+.proof-grid div { border-left: 2px solid var(--black); padding-left: 16px; }
+.proof-grid dt { font-size: 1.75rem; font-weight: 700; letter-spacing: -0.02em; line-height: 1.1; }
+.proof-grid dd { font-size: 0.875rem; color: var(--gray-mid); margin-top: 6px; }
+
+/* Live mission band on the homepage */
+.home-live { padding: 56px 48px; background: #0f1a1f linear-gradient(120deg, #0f1a1f 0%, #1b2b2a 60%, #24352c 100%); color: #e8eeec; }
+.home-live-inner { display: flex; align-items: center; justify-content: space-between; gap: 32px; }
+.home-live h2 { font-size: clamp(1.5rem, 3vw, 2.25rem); font-weight: 700; letter-spacing: -0.02em; margin-bottom: 8px; }
+.home-live p { color: #b7c6c3; max-width: 560px; }
+.home-live .mission-live-btn { white-space: nowrap; flex-shrink: 0; }
+.home-live .mission-live-btn:hover { background: rgba(127, 200, 192, 0.12); }
+
+/* About: a short lead line, then paragraphs */
+.about-text p + p { margin-top: 16px; }
+.about-lead { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.015em; line-height: 1.3; }
+
+/* Partners: equal cells so every logo reads at a similar size */
+.partners .partners-logos { display: grid; grid-template-columns: repeat(8, 1fr); gap: 32px; align-items: center; justify-items: center; max-width: none; }
+.partners .partners-logos img { width: 100%; max-width: 140px; height: 44px; object-fit: contain; }
+.partners .partners-logos img.logo-stacked { height: 60px; }
+@media (max-width: 1024px) { .partners .partners-logos { grid-template-columns: repeat(4, 1fr); gap: 40px 24px; } }
+@media (max-width: 640px) { .partners .partners-logos { grid-template-columns: repeat(2, 1fr); } }
+
+/* Homepage team carousel: same left gutter as the section */
+.team:not(.team-page) .carousel { margin-top: 0; text-align: left; }
+.team:not(.team-page) .team-caption { margin-top: 16px; }
+
+@media (max-width: 768px) {
+  .proof { padding: 32px 24px; }
+  .proof-grid { grid-template-columns: 1fr 1fr; gap: 24px 16px; }
+  .proof-grid dt { font-size: 1.375rem; }
+  .home-live { padding: 48px 24px; }
+  .home-live-inner { flex-direction: column; align-items: flex-start; }
+  .about-lead { font-size: 1.25rem; }
+  /* Footer: icons follow the left-aligned text */
+  .contact-social { justify-content: flex-start; }
+}
+@media (max-width: 480px) {
+  .values-grid { grid-template-columns: 1fr; }
+}
+/* Team page members: use the full width like the other card grids */
+.member-grid { max-width: none; }
+.missions .mission-featured-row { max-width: none; }
+/* Live mission band: the logotype pattern in mint over the deep gradient */
+.home-live { background: url('/images/pattern-mint.svg') 0 0 / 84px 60px, #0f1a1f linear-gradient(120deg, #0f1a1f 0%, #1b2b2a 60%, #24352c 100%); }

@@ -2,7 +2,10 @@
   <a href="/" class="logo-link" aria-label="NODE Home">
     <%- include('logo') %>
   </a>
-  <ul>
+  <button class="nav-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-menu">
+    <span></span><span></span>
+  </button>
+  <ul id="nav-menu">
     <li class="has-sub">
       <a href="/#about">About</a>
       <ul class="sub">
@@ -15,5 +18,28 @@
     <li><a href="/missions">Missions</a></li>
     <li><a href="/publications">Publications</a></li>
     <li><a href="/contact">Contact</a></li>
+    <li class="nav-cta"><a href="/support">Support us</a></li>
   </ul>
 </nav>
+<script>
+  // Mobile menu: the toggle opens the list as a full-width panel; any link closes it.
+  (function() {
+    var nav = document.querySelector('nav');
+    var btn = nav.querySelector('.nav-toggle');
+    function set(open) {
+      nav.classList.toggle('is-open', open);
+      btn.setAttribute('aria-expanded', open);
+      btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+      document.body.classList.toggle('menu-open', open);
+    }
+    btn.addEventListener('click', function() { set(!nav.classList.contains('is-open')); });
+    nav.querySelectorAll('#nav-menu a').forEach(function(a) { a.addEventListener('click', function() { set(false); }); });
+    // Highlight the page you are on (mission pages count as Missions).
+    var here = location.pathname;
+    nav.querySelectorAll('#nav-menu > li > a').forEach(function(a) {
+      var p = a.getAttribute('href');
+      if (p !== '/#about' && (here === p || here.indexOf(p + '/') === 0)) a.classList.add('active');
+    });
+    document.addEventListener('keydown', function(e) { if (e.key === 'Escape') set(false); });
+  })();
+</script>

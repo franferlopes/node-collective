@@ -24,6 +24,7 @@ app.use((req, res, next) => {
   next();
 });
 
+
 // Health check endpoint (required for Render)
 // Note: Does NOT query database to allow Neon auto-suspend
 app.get('/health', (req, res) => {
@@ -72,7 +73,7 @@ app.get('/contact', (req, res) => {
 // Crawl files for search engines and AI search. Mission posts from the
 // database are added to the sitemap when the database is available.
 const SITE_URL = 'https://www.nodeengineering.club';
-const STATIC_PAGES = ['/', '/missions', '/missions/namibia-2026', '/missions/njord-2026', '/missions/njord-2025', '/team', '/publications', '/contact', '/support'];
+const STATIC_PAGES = ['/', '/missions', '/missions/namibia-2026', '/missions/njord-2026', '/missions/njord-2025', '/missions/marine-tech-forum-2026', '/team', '/publications', '/contact', '/support'];
 
 app.get('/robots.txt', (_req, res) => {
   res.type('text/plain').send(`User-agent: *\nAllow: /\nDisallow: /admin\n\nSitemap: ${SITE_URL}/sitemap.xml\n`);

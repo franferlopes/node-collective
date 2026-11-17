@@ -1,13 +1,16 @@
 <section class="contact" id="contact">
   <div class="contact-inner">
+    <% if (!locals.compact) { %>
     <div class="section-label">Contact</div>
     <h2 class="contact-heading">Let's get in touch</h2>
+    <% } %>
     <div class="contact-bottom">
       <div class="contact-logo">
         <%- include('logo') %>
       </div>
       <div class="contact-info">
         <p><a href="mailto:node.engineering.club@gmail.com">node.engineering.club@gmail.com</a></p>
+        <p><a href="/contact">Contact form</a> · <a href="/support">Support NODE</a></p>
         <% const social = { linkedin: 'https://www.linkedin.com/company/node-engineering-club/', instagram: 'https://www.instagram.com/node_ec/' }; // add NODE's page URLs to show the icons %>
         <% if (social.linkedin || social.instagram) { %>
         <p class="contact-social">
