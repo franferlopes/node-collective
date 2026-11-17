@@ -887,3 +887,7 @@ nav .nav-cta a:hover { background: var(--black); color: var(--white); }
 .missions .mission-featured-row { max-width: none; }
 /* Live mission band: the logotype pattern in mint over the deep gradient */
 .home-live { background: url('/images/pattern-mint.svg') 0 0 / 84px 60px, #0f1a1f linear-gradient(120deg, #0f1a1f 0%, #1b2b2a 60%, #24352c 100%); }
+
+/* Partner logos link to each partner's site */
+.partners .partners-logos a { display: flex; align-items: center; justify-content: center; width: 100%; transition: opacity .2s; }
+.partners .partners-logos a:hover { opacity: .6; }

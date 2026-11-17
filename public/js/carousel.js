@@ -6,6 +6,8 @@ document.querySelectorAll('[data-carousel]').forEach(function (carousel) {
   var dots = carousel.querySelector('.carousel-dots');
   var prev = carousel.querySelector('.carousel-prev');
   var next = carousel.querySelector('.carousel-next');
+  // Optional caption next to the carousel, filled from each slide's data-caption
+  var caption = carousel.parentNode.querySelector('[data-carousel-caption]');
   var active = 0;
 
   slides.forEach(function (slide, i) {
@@ -35,6 +37,7 @@ document.querySelectorAll('[data-carousel]').forEach(function (carousel) {
     Array.prototype.forEach.call(dots.children, function (dot, i) { dot.classList.toggle('is-active', i === active); });
     prev.disabled = active === 0;
     next.disabled = active === slides.length - 1;
+    if (caption && slides[active].dataset.caption) caption.textContent = slides[active].dataset.caption;
   }
 
   prev.addEventListener('click', function () { go(active - 1); });
