@@ -773,3 +773,8 @@ a.pub-row:hover { background: var(--near-white); padding-left: 12px; padding-rig
 /* Keep anchored sections clear of the fixed nav */
 section[id] { scroll-margin-top: 64px; }
 .focus + .partners { border-top: 1px solid var(--gray-light); }
+/* Homepage partners: one row across the full width on desktop */
+@media (min-width: 1025px) {
+  .partners .partners-logos { max-width: none; flex-wrap: nowrap; justify-content: space-between; gap: 32px; }
+  .partners .partners-logos img { min-width: 0; flex-shrink: 1; }
+}
