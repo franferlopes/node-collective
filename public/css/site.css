@@ -778,3 +778,14 @@ section[id] { scroll-margin-top: 64px; }
   .partners .partners-logos { max-width: none; flex-wrap: nowrap; justify-content: space-between; gap: 32px; }
   .partners .partners-logos img { min-width: 0; flex-shrink: 1; }
 }
+/* Values and focus cards: use the full width, with space between the cards */
+.values-grid, .focus-grid { max-width: none; gap: 24px; background: none; border: none; }
+.value { border: 1px solid var(--gray-light); }
+/* Homepage team photo: centred instead of hugging the left edge */
+.team:not(.team-page) .team-photo-wrap { margin-left: auto; margin-right: auto; }
+.team:not(.team-page) .team-caption, .team:not(.team-page) > .text-link { text-align: center; }
+.team:not(.team-page) { text-align: center; }
+.team:not(.team-page) .section-label { justify-content: flex-start; text-align: left; }
+@media (max-width: 768px) {
+  .values-grid, .focus-grid { gap: 12px; }
+}
