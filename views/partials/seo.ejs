@@ -1,13 +1,13 @@
 <%#
   Shared <head> tags for search engines, AI search and link previews.
   Pass: title, description, path (e.g. '/missions/njord-2025'),
-  optional image (site path, defaults to the landing photo),
+  optional image (site path, defaults to the NODE share banner),
   optional type ('website' | 'article'), optional schema (schema.org object or array).
 %>
 <%
   const siteUrl = 'https://www.nodeengineering.club';
   const url = siteUrl + (locals.path || '/');
-  const image = siteUrl + (locals.image || '/images/landing.jpg');
+  const image = siteUrl + (locals.image || '/images/share-banner.png');
 %>
   <title><%= title %></title>
   <meta name="description" content="<%= description %>">

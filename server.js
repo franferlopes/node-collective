@@ -56,10 +56,23 @@ app.get('/support', (_req, res) => {
   res.render('support');
 });
 
+app.get('/team', (_req, res) => {
+  res.render('team');
+});
+
+app.get('/publications', (_req, res) => {
+  res.render('publications');
+});
+
+// WEB3FORMS_KEY is the Web3Forms access key tied to the NODE inbox.
+app.get('/contact', (req, res) => {
+  res.render('contact', { formKey: process.env.WEB3FORMS_KEY || '', sent: req.query.sent === '1' });
+});
+
 // Crawl files for search engines and AI search. Mission posts from the
 // database are added to the sitemap when the database is available.
 const SITE_URL = 'https://www.nodeengineering.club';
-const STATIC_PAGES = ['/', '/missions', '/missions/namibia-2026', '/missions/njord-2026', '/missions/njord-2025', '/support'];
+const STATIC_PAGES = ['/', '/missions', '/missions/namibia-2026', '/missions/njord-2026', '/missions/njord-2025', '/team', '/publications', '/contact', '/support'];
 
 app.get('/robots.txt', (_req, res) => {
   res.type('text/plain').send(`User-agent: *\nAllow: /\nDisallow: /admin\n\nSitemap: ${SITE_URL}/sitemap.xml\n`);

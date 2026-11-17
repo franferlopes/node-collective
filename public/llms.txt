@@ -16,6 +16,9 @@
 ## More
 
 - [Home](https://www.nodeengineering.club/): about NODE, focus areas, team, values and partners.
+- [The Team](https://www.nodeengineering.club/team): the people behind NODE and their roles.
+- [Publications](https://www.nodeengineering.club/publications): technical reports and press features.
+- [Contact](https://www.nodeengineering.club/contact): contact form for partnerships, sponsorship and joining.
 - [Support NODE](https://www.nodeengineering.club/support): how to sponsor or support the next vessel and missions.
 - [LinkedIn](https://www.linkedin.com/company/node-engineering-club/)
 - [Instagram](https://www.instagram.com/node_ec/)

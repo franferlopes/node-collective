@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <%- include('partials/seo', {"title": "Publications | NODE", "description": "Technical reports, press features and public documents from NODE, an open-source autonomous surface vehicle collective at IAAC Barcelona.", "path": "/publications", "schema": {"@context": "https://schema.org", "@type": "CollectionPage", "name": "Publications | NODE", "url": "https://www.nodeengineering.club/publications", "about": {"@id": "https://www.nodeengineering.club/#org"}}}) %>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+  <%- themeCSS %>
+</head>
+<body>
+
+  <%- include('partials/nav') %>
+
+  <section class="page-header">
+    <h1>Publications</h1>
+    <p>Technical reports, press features and other documents we share in the open.</p>
+  </section>
+
+  <section class="publications">
+    <%
+      // Newest first. Add a url (a PDF in /public/docs or an external link)
+      // to make the row clickable; rows without one show as coming soon.
+      const items = [
+        { year: 2026, title: 'ASKET 2.0 Technical Report', kind: 'Report', note: 'Njord 2026 and the Namibia mission' },
+        { year: 2026, title: 'RhinoMag feature', kind: 'Press', note: 'Details to come' },
+        { year: 2025, title: 'ASKET Technical Report', kind: 'Report', note: 'Njord 2025' },
+      ];
+      const kinds = [...new Set(items.map(function(i) { return i.kind; }))];
+    %>
+    <div class="pub-filters" role="group" aria-label="Filter publications">
+      <button type="button" class="is-active" data-kind="all">All <sup><%= items.length %></sup></button>
+      <% kinds.forEach(function(k) { %>
+        <button type="button" data-kind="<%= k %>"><%= k %> <sup><%= items.filter(function(i) { return i.kind === k; }).length %></sup></button>
+      <% }); %>
+    </div>
+    <ol class="pub-list">
+      <% items.forEach(function(item, i) { %>
+        <li data-kind="<%= item.kind %>">
+          <% const Tag = item.url ? 'a' : 'div'; %>
+          <<%= Tag %> class="pub-row<%= item.url ? '' : ' is-soon' %>"<% if (item.url) { %> href="<%= item.url %>" target="_blank" rel="noopener"<% } %>>
+            <span class="pub-num"><%= String(items.length - i).padStart(3, '0') %></span>
+            <span class="pub-year"><%= item.year %></span>
+            <span class="pub-title"><%= item.title %><small><%= item.note %></small></span>
+            <span class="pub-kind"><%= item.kind %></span>
+            <span class="pub-go"><%= item.url ? '↗' : 'Soon' %></span>
+          </<%= Tag %>>
+        </li>
+      <% }); %>
+    </ol>
+  </section>
+
+  <script>
+    document.querySelectorAll('.pub-filters button').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.pub-filters button').forEach(function(b) { b.classList.toggle('is-active', b === btn); });
+        document.querySelectorAll('.pub-list li').forEach(function(li) {
+          li.hidden = btn.dataset.kind !== 'all' && li.dataset.kind !== btn.dataset.kind;
+        });
+      });
+    });
+  </script>
+
+  <%- include('partials/footer') %>
+
+</body>
+</html>

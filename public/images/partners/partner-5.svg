@@ -58,7 +58,7 @@
 <mask id="mask5_84_214" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="0" y="0" width="387" height="123">
 <path d="M0 122.684H386.004V0.00939941H0V122.684Z" fill="black"/>
 </mask>
-<g mask="url(#mask5_84_214)">
+<g>
 <path fill-rule="evenodd" clip-rule="evenodd" d="M326.042 97.7321L309.611 80.0463V98.2105H308.805V78.1063H311.476L325.664 93.3237V78.1063H326.47V98.2105L326.042 97.7321Z" fill="black"/>
 </g>
 </g>
