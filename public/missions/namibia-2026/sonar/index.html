@@ -45,7 +45,7 @@ body.clay .panel{box-shadow:0 1px 6px rgba(0,0,0,.12)}
 <div class="row"><span>8%</span><span>sparse → dense</span><span>68%+</span></div>
 <div style="margin-top:8px;font-size:12px;line-height:1.7">
 <span class="sw" style="background:#e1ff4f"></span> route · hover or click it for speed<br>
-<span class="sw" style="background:#111;border:1.5px solid #fff;box-sizing:border-box;border-radius:50% 50% 50% 0;transform:rotate(-45deg)"></span> deploy point (pin tool)</div></div>
+<span class="sw" style="background:#111;border:1.5px solid #fff;box-sizing:border-box;border-radius:50% 50% 50% 0;transform:rotate(-45deg)"></span> <span id="depLegend">deploy point (pin tool)</span></div></div>
 <div id="compass" class="panel" style="top:auto;bottom:12px;right:12px;width:auto;padding:6px;text-align:center"><div id="needle" style="font-size:22px;line-height:1">⬆</div><div style="font-size:11px">N</div></div>
 <button id="hide" class="panel" style="position:fixed;bottom:12px;left:12px;display:none;color:var(--fg);border:0;cursor:pointer">☰ Controls</button>
 <div id="ctl" class="panel">
@@ -304,10 +304,13 @@ function dzcol(d){if(d>0){const t=Math.min(1,d/2.5);return[.55+.45*t,.55-.35*t,.
   if(save)try{localStorage.setItem('deploy:'+S,JSON.stringify(deploy))}catch(_){}}
  document.getElementById('bDep').onclick=()=>{mode='deploy';pts=[];showOpts(true,false,true);msg.textContent=deploy?'Click the map to place it again, or drag the pin':'Click the map where the vessel was launched'};
  document.getElementById('bDepX').onclick=()=>{setDeploy(null);mode=null;showOpts(false)};
- try{const d=JSON.parse(localStorage.getItem('deploy:'+S)||'null');if(d)setDeploy(d.e,d.n,false);else setDeploy(null)}catch(_){setDeploy(null)}
- window._getDeploy=()=>deploy;window._setDeploy=setDeploy;
+ // a run with deploy.json has a fixed launch point: always shown, no pin tool, cannot be moved or removed
+ const FIXED_DEP=await fetch(R+'deploy.json').then(r=>r.ok?r.json():null).catch(()=>null);
+ if(FIXED_DEP){setDeploy(FIXED_DEP.e,FIXED_DEP.n,false);document.getElementById('bDep').style.display='none';document.getElementById('depLegend').textContent='deploy point (launch site)'}
+ else try{const d=JSON.parse(localStorage.getItem('deploy:'+S)||'null');if(d)setDeploy(d.e,d.n,false);else setDeploy(null)}catch(_){setDeploy(null)}
+ window._getDeploy=()=>deploy;window._setDeploy=FIXED_DEP?()=>{}:setDeploy;
  // drag the DEPLOY marker to move it (saved when you let go)
- let dragDep=false;const onDep=e=>{if(!depSprite.visible)return false;mv.set(e.clientX/innerWidth*2-1,-e.clientY/innerHeight*2+1);ray.setFromCamera(mv,cam);return ray.intersectObject(depSprite).length>0};
+ let dragDep=false;const onDep=e=>{if(!depSprite.visible||FIXED_DEP)return false;mv.set(e.clientX/innerWidth*2-1,-e.clientY/innerHeight*2+1);ray.setFromCamera(mv,cam);return ray.intersectObject(depSprite).length>0};
  r.domElement.addEventListener('pointerdown',e=>{if(e.button===0&&onDep(e)){dragDep=true;ctr.enabled=false;r.domElement.style.cursor='grabbing'}},true);
  addEventListener('pointermove',e=>{if(dragDep){const p=pickBed(e.clientX,e.clientY);if(p)setDeploy(p.x+cx,-p.z+cy,false)}else if(!e.buttons)r.domElement.style.cursor=onDep(e)?'grab':''});
  addEventListener('pointerup',e=>{if(!dragDep)return;{const p=pickBed(e.clientX,e.clientY);if(p)setDeploy(p.x+cx,-p.z+cy,false)}dragDep=false;ctr.enabled=true;r.domElement.style.cursor='';window._justDragged=performance.now();if(deploy)setDeploy(deploy.e,deploy.n,true)});
