@@ -1,0 +1,422 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<title>ASKET Sonar Layers</title>
+<style>
+:root{--font:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;--mono:'JetBrains Mono',ui-monospace,'SFMono-Regular',Menlo,Consolas,monospace;--bg:#0d1117;--panel:rgba(20,24,32,.9);--fg:#e6e6e6;--mut:#9aa4b2}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--fg);font:13px/1.45 var(--font);overflow:hidden}
+#c{position:fixed;inset:0}
+.panel{position:fixed;background:var(--panel);border-radius:8px;padding:10px 12px}
+#info{top:12px;left:12px;width:330px;box-sizing:border-box}
+#info h1{font-size:15px;margin:0 0 4px}
+.m{color:var(--mut)}
+#ctl{top:178px;left:12px;width:330px;box-sizing:border-box;overflow-y:auto}
+#ctl label{display:flex;gap:8px;align-items:center;margin:3px 0}
+#ctl .h{margin-top:6px;font-weight:600}
+#legend{top:12px;right:12px;width:210px;box-sizing:border-box}
+.bar{height:10px;border-radius:3px;background:linear-gradient(90deg,#fde725,#5ec962,#21918c,#3b528b,#440154)}
+.row{display:flex;justify-content:space-between;color:var(--mut);font-size:11px}
+#tip{position:fixed;pointer-events:none;display:none;background:#000d;color:#d6d6d6;padding:6px 8px;border-radius:5px;font-size:12px;max-width:240px}
+#load{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--mut)}
+.sw{display:inline-block;width:10px;height:10px;border-radius:50%;vertical-align:middle}
+button.on{outline:2px solid #6cf}
+button.ico{width:32px;height:30px;padding:0;display:inline-flex;align-items:center;justify-content:center;border-radius:6px;border:1px solid rgba(128,128,128,.35);background:rgba(128,128,128,.12);color:var(--fg);cursor:pointer}
+button.ico:hover{background:rgba(128,128,128,.28)}
+button,select,input,textarea{font-family:var(--font)}
+#scrubv,#depthHud,#depMsg,#toolMsg,#counts,.row,#tip,#sub,#copied textarea,select{font-family:var(--mono);font-size:11.5px}
+#ctl .h,#info h1{letter-spacing:.02em}
+body.clay{--panel:rgba(250,250,248,.9);--fg:#1d1f22;--mut:#6b7078}
+body.clay .panel{box-shadow:0 1px 6px rgba(0,0,0,.12)}
+.clayonly{display:none} body.clay .clayonly{display:block} body.clay .sononly{display:none}
+</style></head><body>
+<canvas id="c"></canvas>
+<div id="load">Loading point clouds…</div>
+<div id="info" class="panel"><a id="siteBack" href="/missions/namibia-2026" style="display:none;font-size:12px;color:var(--mut);text-decoration:none;margin-bottom:6px">&larr; Namibia 2026 mission</a><h1 id="ttl">ASKET sonar</h1>
+<div class="m" id="sub"></div>
+<div id="counts" style="margin-top:4px"></div>
+<div class="m">x east, y north, metres from the processing reference point</div></div>
+<div id="legend" class="panel">
+<div class="sononly" style="margin-bottom:8px"><div style="margin-bottom:4px">Seabed depth</div><div class="bar"></div>
+<div class="row"><span>0 m</span><span id="dmax"></span></div></div>
+<div style="margin-bottom:4px">Objects and structures by depth</div><div style="height:10px;border-radius:3px;background:linear-gradient(90deg,#d9c2ff,#8a4dff,#3d0f80)"></div>
+<div class="row"><span>0 m</span><span>4+ m</span></div>
+<div style="margin:8px 0 4px">Water column density</div><div style="height:10px;border-radius:3px;background:linear-gradient(90deg,rgb(26,89,38),rgb(89,172,51),rgb(153,255,64))"></div>
+<div class="row"><span>8%</span><span>sparse → dense</span><span>68%+</span></div>
+<div style="margin-top:8px;font-size:12px;line-height:1.7">
+<span class="sw" style="background:#e1ff4f"></span> route · hover or click it for speed<br>
+<span class="sw" style="background:#111;border:1.5px solid #fff;box-sizing:border-box;border-radius:50% 50% 50% 0;transform:rotate(-45deg)"></span> deploy point (pin tool)</div></div>
+<div id="compass" class="panel" style="top:auto;bottom:12px;right:12px;width:auto;padding:6px;text-align:center"><div id="needle" style="font-size:22px;line-height:1">⬆</div><div style="font-size:11px">N</div></div>
+<button id="hide" class="panel" style="position:fixed;bottom:12px;left:12px;display:none;color:var(--fg);border:0;cursor:pointer">☰ Controls</button>
+<div id="ctl" class="panel">
+<div style="display:flex;justify-content:space-between;align-items:center;gap:6px">
+<div style="display:flex;gap:4px"><button class="ico" data-p="top" title="Top view, north up"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M12 7v10M9 10l3-3 3 3"/></svg></button><button class="ico" data-p="sideS" title="Side view from the south"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 15h18"/><path d="M6 15l2-4h8l2 4"/><text x="12" y="8" font-size="7" text-anchor="middle" fill="currentColor" stroke="none" font-family="Inter">S</text></svg></button><button class="ico" data-p="sideE" title="Side view from the east"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 15h18"/><path d="M6 15l2-4h8l2 4"/><text x="12" y="8" font-size="7" text-anchor="middle" fill="currentColor" stroke="none" font-family="Inter">E</text></svg></button><button class="ico" data-p="persp" title="3D view"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M12 12l8-4.5M12 12v9M12 12L4 7.5"/></svg></button><button class="ico" id="reset" title="Reset to my baseline"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 1 0 2.5-5.8"/><path d="M4 4v4h4"/></svg></button></div>
+<button id="collapse" title="Hide controls">✕</button></div>
+<div class="h">Style</div>
+<div style="display:flex;gap:4px;margin:4px 0"><button id="stSonar" class="on">Sonar colours</button><button id="stClay">Clay model</button></div>
+<div class="clayonly" style="margin:2px 0 4px"><span class="m" style="font-size:12px">Clay surface:</span>
+<button data-s="smooth">Smooth</button><button data-s="grain">Grain</button><button data-s="mesh">Mesh</button></div>
+<div class="h">Layers</div>
+<label><input type="radio" name="base" value="seabed" checked> Seabed</label>
+<label><input type="radio" name="base" value="none"> No seabed</label>
+<label><input id="o" type="checkbox" checked> Candidate objects</label>
+<label><input id="hl" type="checkbox" checked> Structures above seabed <span class="m">(pillars, rocks)</span></label>
+<label><input id="k" type="checkbox"> 🌿 Water column: kelp, ropes, buoys… <span class="m" id="kn"></span></label>
+<label style="padding-left:22px">min density <input id="kmin" type="range" min="8" max="70" value="15"> <span id="kminv">15%</span></label>
+<label><input id="g" type="checkbox" checked> 10 m grid</label>
+<div id="satRow"><label><input id="sat" type="checkbox"> Satellite view <span class="m">(at the water surface)</span></label>
+<label style="padding-left:22px">opacity <input id="satOp" type="range" min="5" max="100" value="45"> <span id="satOpv">45%</span></label></div>
+<div class="h">Navigation track</div>
+<label><input id="t" type="checkbox" checked> Show track <span class="m">(route, START / FINISH, ASKET, beam)</span></label>
+<label><button id="play" style="width:30px">▶</button><input id="scrub" type="range" min="0" max="1000" value="0" style="flex:1"></label>
+<div id="scrubv" style="font-size:12px;min-height:16px"></div>
+<div style="display:flex;align-items:center;gap:4px;margin-top:8px"><div class="h" style="margin:0 6px 0 0">Tools</div><button class="ico" id="bSlice" title="Slice: click 2 points on the map"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M20 4L8.1 15.9M14.5 14.5L20 20M8.1 8.1L12 12"/></svg></button><button class="ico" id="bMeas" title="Measure: click 2 points on the seabed"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="8" width="20" height="8" rx="1" transform="rotate(-30 12 12)"/><path d="M7.5 13.3l-1-1.7M10.6 11.5l-1-1.7M13.6 9.8l-1-1.7M16.7 8l-1-1.7" /></svg></button><button class="ico" id="bDep" title="Deploy point: click where the vessel was launched, then drag to move"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s7-7.2 7-12a7 7 0 1 0-14 0c0 4.8 7 12 7 12z" fill="currentColor"/><circle cx="12" cy="10" r="2.5" fill="#fff" stroke="none"/></svg></button><button class="ico" id="bClr" title="Clear the tool"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+<div id="toolOpts" style="display:none;margin-top:4px">
+<label id="slwRow">Slice width ± <input id="slw" type="range" min="1" max="30" value="5"> <span id="slwv">0.5 m</span></label>
+<div id="toolMsg" class="m" style="font-size:12px"></div>
+<div id="depMsg" class="m" style="font-size:12px"></div>
+<button id="bDepX" style="display:none;margin-top:4px">Remove deploy point</button></div>
+<div class="h">Display</div>
+<label>Vertical exaggeration <input id="ex" type="range" min="0.1" max="3" step="0.1" value="2"> <span id="exv">2.0×</span></label>
+<label>Point size <input id="ps" type="range" min="0.5" max="3" step="0.25" value="0.75"></label>
+<div class="m" style="font-size:11px;margin-top:4px">Drag to rotate · right-drag to pan · scroll to zoom · hover the route, objects or seabed</div>
+</div>
+<div id="depthHud" class="panel" style="bottom:12px;right:64px;padding:6px 10px;font-size:12px;display:none"></div>
+<div id="tip"></div>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/lines/LineSegmentsGeometry.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/lines/LineGeometry.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/lines/LineMaterial.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/lines/LineSegments2.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/lines/Line2.js"></script>
+<script>
+const S=new URLSearchParams(location.search).get('run')||'2026-11-24-07-27', R='runs/'+S+'/';
+// NODE accent for the speed ramp: swap this one value for the brand hex
+const NODE_ACCENT='#e1ff4f', KN_MAX=3;
+// route speed ramp: dim accent (slow) -> full accent (fast)
+const hex=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)/255), ACC=hex(NODE_ACCENT), SLOW=hex('#4a5214');
+const VIR=[[253,231,37],[94,201,98],[33,145,140],[59,82,139],[68,1,84]];
+function vir(t){t=Math.min(1,Math.max(0,t))*(VIR.length-1);const i=Math.min(VIR.length-2,Math.floor(t)),f=t-i;return VIR[i].map((c,k)=>(c+(VIR[i+1][k]-c)*f)/255)}
+async function ply(url){const b=await (await fetch(url)).arrayBuffer();const u=new Uint8Array(b);
+ const hdr=new TextDecoder().decode(u.slice(0,1000));const n=+hdr.match(/element vertex (\d+)/)[1];const off=hdr.indexOf('end_header\n')+11;
+ const dv=new DataView(b,off),P=new Float32Array(n*3);for(let i=0;i<n;i++){const o=i*19;P[3*i]=dv.getFloat32(o,true);P[3*i+1]=dv.getFloat32(o+4,true);P[3*i+2]=dv.getFloat32(o+8,true)}return P}
+async function csv(url){const t=(await (await fetch(url)).text()).trim().split('\n');const h=t[0].split(',');return t.slice(1).map(l=>{const v=l.split(',');return Object.fromEntries(h.map((k,i)=>[k,v[i]]))})}
+
+const r=new THREE.WebGLRenderer({canvas:document.getElementById('c'),antialias:true});r.setPixelRatio(devicePixelRatio);
+const scene=new THREE.Scene();scene.background=new THREE.Color(0x0d1117);
+const cam=new THREE.PerspectiveCamera(50,1,0.1,5000);const ctr=new THREE.OrbitControls(cam,r.domElement);
+const world=new THREE.Group();scene.add(world);
+const DMAX=3.0;document.getElementById('dmax').textContent=DMAX+'+ m';
+let cx=30,cy=15;const mats=[];
+function layer(P,colour,size,cols){const n=P.length/3,pos=new Float32Array(n*3),col=cols||new Float32Array(n*3);
+ for(let i=0;i<n;i++){pos[3*i]=P[3*i]-cx;pos[3*i+1]=P[3*i+2];pos[3*i+2]=-(P[3*i+1]-cy);if(!cols)col.set(colour||vir(-P[3*i+2]/DMAX),3*i)}
+ const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('color',new THREE.BufferAttribute(col,3));
+ const m=new THREE.PointsMaterial({size,vertexColors:true,sizeAttenuation:false});m.userData.base=size;mats.push(m);
+ const D=P.dz||new Float32Array(n);g.setAttribute('dz',new THREE.BufferAttribute(D,1));
+ m.customProgramCacheKey=()=>P.dz?'with-dz':'plain';
+ m.onBeforeCompile=s=>{s.uniforms.zcut=zcut;s.uniforms.thr=thr;s.uniforms.side=side;Object.assign(s.uniforms,SL);
+  s.vertexShader='uniform float zcut;uniform float thr;uniform float side;uniform vec4 slAD;uniform float slW;uniform float slL;uniform float slOn;attribute float dz;\n'+s.vertexShader.replace('#include <begin_vertex>',
+  '#include <begin_vertex>\nbool hide=position.y< -zcut;'+
+  'if(slOn>0.5){vec2 v=position.xz-slAD.xy;float al=dot(v,slAD.zw);float pe=abs(v.x*slAD.w-v.y*slAD.z);if(pe>slW||al<0.0||al>slL)hide=true;}'+(P.dz?'if(side>0.5&&side<1.5&&dz<thr)hide=true;if(side>1.5&&side<2.5&&dz>-thr)hide=true;if(side>2.5&&abs(dz)<thr)hide=true;':'')+'if(hide)transformed.y=1e6;')};
+ const p=new THREE.Points(g,m);world.add(p);return p}
+const zcut={value:18},thr={value:.8},side={value:0};
+const SL={slAD:{value:new THREE.Vector4(0,0,1,0)},slW:{value:.5},slL:{value:0},slOn:{value:0}};
+function dzcol(d){if(d>0){const t=Math.min(1,d/2.5);return[.55+.45*t,.55-.35*t,.55-.45*t]}const t=Math.min(1,-d/4);return[.55-.45*t,.55-.25*t,.55+.45*t]}
+(async()=>{
+ const [REP,cloud,seabed,water,objp,track,objs,dzb]=await Promise.all([fetch(R+'report.json').then(r=>r.json()),ply(R+S+'_cloud.ply'),ply(R+S+'_seabed.ply'),ply(R+S+'_water.ply'),ply(R+S+'_objects.ply'),csv(R+S+'_track.csv'),csv(R+S+'_objects.csv'),fetch(R+S+'_cloud_dz.bin').then(r=>r.arrayBuffer())]);
+ cloud.dz=new Float32Array(dzb);
+ {const la=REP.home[0],lo=REP.home[1],m=111320*Math.cos(la*Math.PI/180);let se=0,sn=0;track.forEach(p=>{se+=(p.lon-lo)*m;sn+=(p.lat-la)*111320});cx=se/track.length;cy=sn/track.length}
+ const K=new Float32Array(await (await fetch(R+S+'_kelp.bin')).arrayBuffer()); // x,y,z,F,height above seabed
+ let kelpLayer=null;
+ function buildKelp(){if(kelpLayer){world.remove(kelpLayer);kelpLayer.geometry.dispose()}
+  const fmin=+document.getElementById('kmin').value/100,pts=[],cols=[];
+  for(let i=0;i<K.length;i+=5){const F=K[i+3];if(F<fmin)continue;pts.push(K[i],K[i+1],K[i+2]);const t=Math.min(1,(F-.08)/.6);cols.push(.1+.5*t,.35+.65*t,.15+.1*t)}
+  kelpLayer=layer(new Float32Array(pts),null,5,new Float32Array(cols));kelpLayer.material.userData.base=5;
+  kelpLayer.visible=document.getElementById('k').checked;
+  document.getElementById('kn').textContent=(pts.length/3)+' blocks'}
+ document.getElementById('kmin').oninput=e=>{document.getElementById('kminv').textContent=e.target.value+'%';buildKelp()};
+ document.getElementById('k').onchange=e=>{if(kelpLayer)kelpLayer.visible=e.target.checked;if(window._Lw)window._Lw.visible=e.target.checked};
+ buildKelp();
+ {const rc=(REP.recordings||[])[0]||{},n=(v,d)=>(v??d).toLocaleString(); // totals from report.json, so the slimmed web copy shows the real counts
+ document.getElementById('counts').innerHTML=`Everything: ${n(rc.points_strong_underwater,cloud.length/3)} pts<br>Seabed: ${n(rc.points_seabed,seabed.length/3)} pts<br>Water column: ${n(rc.points_water_column,water.length/3)} pts · ${objs.length} objects`}
+ const hex2=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)/255),lerp=(a,b,t)=>a.map((v,i)=>v+(b[i]-v)*t),PL=hex2('#d9c2ff'),PM=hex2('#8a4dff'),PD=hex2('#3d0f80');
+ const purple=d=>{const t=Math.min(1,Math.max(0,d/4));return t<.5?lerp(PL,PM,t*2):lerp(PM,PD,(t-.5)*2)};
+ // water column (Lakshmi's standout echoes) is folded into the kelp / water-column toggle, drawn light green
+ const L={cloud:layer(cloud,null,1),seabed:layer(seabed,null,1),water:layer(water,[.6,.95,.45],2),obj:layer(objp,[1,1,1],3)};
+ L.cloud.visible=false;L.water.visible=false;
+ // structures standing more than 0.8 m above the seabed (pillars, rocks): purple by depth
+ // keep only dense clusters (0.5 m blocks with >= 8 such points): pillars and rocks, not scattered noise
+ // 1) FIND structures from their high part (dense 0.5 m blocks > 1 m above the seabed)
+ // 2) SHOW their whole column: every return in that footprint from just above the seabed up to the surface
+ const k2=(x,y)=>Math.floor(x/.5)+','+Math.floor(y/.5);
+ const dilate=set=>{const out=new Set();for(const s of set){const [a,b]=s.split(',').map(Number);for(let i=-1;i<=1;i++)for(let j=-1;j<=1;j++)out.add((a+i)+','+(b+j))}return out};
+ const column=(foot,minDz)=>{const hp=[];for(let i=0;i<cloud.dz.length;i++)if(cloud.dz[i]>minDz&&foot.has(k2(cloud[3*i],cloud[3*i+1])))hp.push(cloud[3*i],cloud[3*i+1],cloud[3*i+2]);return hp};
+ {const cnt=new Map(),key=i=>Math.floor(cloud[3*i]/.5)+','+Math.floor(cloud[3*i+1]/.5)+','+Math.floor(cloud[3*i+2]/.5);
+  for(let i=0;i<cloud.dz.length;i++)if(cloud.dz[i]>1.0){const k=key(i);cnt.set(k,(cnt.get(k)||0)+1)}
+  const foot=new Set();for(const [k,c] of cnt)if(c>=8){const [a,b]=k.split(',');foot.add(a+','+b)}
+  const hp=column(dilate(foot),0.15),hc=[];for(let i=0;i<hp.length;i+=3)hc.push(...purple(-hp[i+2]));
+  L.hl=layer(new Float32Array(hp),null,2,new Float32Array(hc));window._hlN=hp.length/3}
+ // candidate objects: Lakshmi's object points + the rest of their column down to the seabed
+ {const foot=new Set();for(let i=0;i<objp.length;i+=3)foot.add(k2(objp[i],objp[i+1]));
+  const ext=column(dilate(foot),0.15);window._objExt=ext.length/3;
+  const all=new Float32Array(objp.length+ext.length);all.set(objp);all.set(ext,objp.length);
+  world.remove(L.obj);L.obj=layer(all,[1,1,1],2.5);window._objAll=all}
+ document.getElementById('hl').onchange=e=>L.hl.visible=e.target.checked;
+ // track (in world, flat at surface)
+ const lat0=REP.home[0],lon0=REP.home[1],ml=111320,mo=111320*Math.cos(lat0*Math.PI/180);
+ const tp=[],tc=[],TE=track.map(p=>(p.lon-lon0)*mo),TN=track.map(p=>(p.lat-lat0)*ml),TS=track.map(p=>+p.utc_s);
+ const spdAt=i=>{const a=Math.max(0,i-10),b=Math.min(track.length-1,i+10);return Math.hypot(TE[b]-TE[a],TN[b]-TN[a])/Math.max(TS[b]-TS[a],1e-3)};
+ // one ramp: dim grey (stopped) -> fluorescent accent (fast). Scale 0 to KN_MAX knots.
+ const spdCol=v=>{const t=Math.min(1,v*1.944/KN_MAX),g=Math.pow(t,0.8);return SLOW.map((c,k)=>c+(ACC[k]-c)*g)};
+ window._Lw=L.water;
+ track.forEach((p,i)=>{if(i%5)return;tp.push(TE[i]-cx,0.05,-(TN[i]-cy))});
+ // route: a little thicker (2.5 px), dashed, in the START / FINISH colour, on top of the points
+ const tgeo=new THREE.LineGeometry();tgeo.setPositions(tp);
+ const tmat=new THREE.LineMaterial({color:NODE_ACCENT,linewidth:2.4,dashSize:2.2,gapSize:0.9,transparent:true,opacity:1,depthTest:true,depthWrite:false});  // at the surface: above all sonar data, hidden only by ASKET
+ tmat.dashed=true;tmat.defines.USE_DASH='';tmat.needsUpdate=true;
+ const tl=new THREE.Line2(tgeo,tmat);tl.computeLineDistances();tl.renderOrder=30;scene.add(tl);window._tmat=tmat;tmat.resolution.set(innerWidth,innerHeight);
+ // scale grid (10 m) at the surface + north arrow
+ const grid=new THREE.GridHelper(200,20,0x3a4250,0x232a35);grid.position.set(0,0.02,0);scene.add(grid);
+ document.getElementById('g').onchange=e=>grid.visible=e.target.checked;
+ // satellite image (Esri World Imagery, saved per run by tools/sat_tiles.py), a see-through sheet at the water surface
+ const satMat=new THREE.MeshBasicMaterial({transparent:true,opacity:.45,depthWrite:false,side:THREE.DoubleSide});
+ const satPlane=new THREE.Mesh(new THREE.PlaneGeometry(1,1),satMat);satPlane.rotation.x=-Math.PI/2;satPlane.visible=false;satPlane.renderOrder=5;scene.add(satPlane);
+ const satCredit=document.createElement('div');satCredit.id='satCredit';satCredit.style.cssText='position:fixed;left:10px;bottom:6px;font-size:10px;opacity:.7;display:none;pointer-events:none';document.body.appendChild(satCredit);
+ fetch(R+S+'_sat.json').then(r=>{if(!r.ok)throw 0;return r.json()}).then(m=>{
+  new THREE.TextureLoader().load(R+S+'_sat.jpg',t=>{t.anisotropy=r.capabilities.getMaxAnisotropy();satMat.map=t;satMat.needsUpdate=true});
+  satPlane.scale.set(m.e-m.w,m.n-m.s,1);satPlane.position.set((m.w+m.e)/2-cx,0,-((m.s+m.n)/2-cy));
+  satCredit.textContent=m.credit+' · zoom '+m.zoom}).catch(()=>{document.getElementById('satRow').style.display='none'});
+ const satOn=()=>{const on=document.getElementById('sat').checked;satPlane.visible=on;satCredit.style.display=on?'block':'none'};
+ document.getElementById('sat').onchange=satOn;
+ document.getElementById('satOp').oninput=e=>{satMat.opacity=e.target.value/100;document.getElementById('satOpv').textContent=e.target.value+'%'};
+ const tgrp=new THREE.Group();tgrp.add(tl);scene.add(tgrp);
+ try{await document.fonts.load('600 52px Inter')}catch(_){}
+ // START / FINISH: labelled circles drawn to scale (3 m across), always facing the camera
+ const badge=(x,z,txt,fill)=>{const c=document.createElement('canvas');c.width=c.height=256;const g=c.getContext('2d');
+  g.beginPath();g.arc(128,128,120,0,7);g.fillStyle=fill;g.fill();g.lineWidth=8;g.strokeStyle='#fff';g.stroke();
+  g.fillStyle='#000';g.font='600 52px Inter,Helvetica,Arial';g.textAlign='center';g.textBaseline='middle';g.fillText(txt,128,132);
+  const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),depthTest:false}));sp.renderOrder=11;
+  sp.scale.set(3,3,1);sp.position.set(x,1.8,z);tgrp.add(sp)};
+ badge(tp[0],tp[2],'START',NODE_ACCENT);badge(tp[tp.length-3],tp[tp.length-1],'FINISH',NODE_ACCENT);
+ // ---- route readout: hover/click the route, or scrub along it
+ const RI=[];for(let i=0;i<track.length;i+=5)RI.push(i);
+ const utcStr=s=>new Date(s*1000).toISOString().slice(11,19);
+ const info=k=>{const i=RI[k],kn=spdAt(i)*1.944;return{kn,txt:`<b>${kn.toFixed(1)} kn</b> (${spdAt(i).toFixed(2)} m/s) · ${utcStr(TS[i])} UTC · ${Math.round(TS[i]-TS[0])} s into the run`+(kn>=1.2&&kn<=1.6?' · <span style="color:#3ddc84">in target</span>':'')}};
+ const mk=new THREE.Mesh(new THREE.SphereGeometry(.7,16,12),new THREE.MeshBasicMaterial({color:NODE_ACCENT,depthTest:false}));mk.renderOrder=12;mk.visible=false;tgrp.add(mk);
+ const scrub=document.getElementById('scrub'),scrubv=document.getElementById('scrubv');scrub.max=RI.length-1;
+ // ASKET hull (repo: src/description/meshes/hull_visual.obj, ROS axes x fwd, y left, z up, metres)
+ const boat=new THREE.Group();boat.visible=false;scene.add(boat);let boatScale=3;
+ new THREE.OBJLoader().load('asket_hull.obj',o=>{o.traverse(c=>{if(c.isMesh){c.material=new THREE.MeshStandardMaterial({color:0xf2f2ef,roughness:.6,metalness:.05,transparent:true,opacity:1});c.renderOrder=40}});
+  o.rotation.x=-Math.PI/2;o.position.set(.053,-.0135,0);boat.add(o);
+  const e=new THREE.LineSegments(new THREE.EdgesGeometry(o.children[0].geometry,30),new THREE.LineBasicMaterial({color:NODE_ACCENT,transparent:true}));e.renderOrder=41;e.rotation.x=-Math.PI/2;e.position.copy(o.position);boat.add(e)});
+ // heading of travel at each route point (keeps the last heading while nearly stopped)
+ const HD=[];{let last=0;RI.forEach(i=>{const a=Math.max(0,i-15),b=Math.min(track.length-1,i+15),de=TE[b]-TE[a],dn=TN[b]-TN[a];if(Math.hypot(de,dn)>.6)last=Math.atan2(de,dn);HD.push(last)})}
+ boat.scale.setScalar(3); // ASKET drawn 3x real size so it reads on the map
+ // ---- sonar beam: starboard fan, 6° to 56° below horizontal (24 Nov estimate), each ray stops at the seabed
+ const gbuf=await (await fetch(R+S+'_bedgrid.bin')).arrayBuffer(),[bx0,by0,bc,BW,BH]=new Float32Array(gbuf,0,5),BZ=new Float32Array(gbuf,20);
+ {const F=Float32Array.from(BZ),good=BZ.filter(v=>!isNaN(v)).sort((a,b)=>a-b),med=good[good.length>>1];
+  for(let pass=0;pass<60;pass++){let left=0;const src=Float32Array.from(F);
+   for(let j=0;j<BH;j++)for(let i=0;i<BW;i++){const k=j*BW+i;if(!isNaN(src[k]))continue;let sm=0,c=0;
+    for(let dj=-1;dj<=1;dj++)for(let di=-1;di<=1;di++){const a=i+di,b=j+dj;if(a<0||b<0||a>=BW||b>=BH)continue;const v=src[b*BW+a];if(!isNaN(v)){sm+=v;c++}}
+    if(c)F[k]=sm/c;else left++}if(!left)break}
+  for(let k=0;k<F.length;k++)if(isNaN(F[k]))F[k]=med;window._BF=F}
+ const BF=window._BF;
+ const bedAt=(e,n)=>{const i=Math.floor((e-bx0)/bc),j=Math.floor((n-by0)/bc);if(i<0||j<0||i>=BW||j>=BH)return NaN;return BF[j*BW+i]};
+ const NR=26,A0=6,A1=56,MAXR=17.4,MD=0.3;
+ const fanPos=new Float32Array((NR+1)*3),fanIdx=[];for(let i=1;i<NR;i++)fanIdx.push(0,i,i+1);
+ const fanG=new THREE.BufferGeometry();fanG.setAttribute('position',new THREE.BufferAttribute(fanPos,3));fanG.setIndex(fanIdx);
+ const fan=new THREE.Mesh(fanG,new THREE.MeshBasicMaterial({color:NODE_ACCENT,transparent:true,opacity:.16,side:THREE.DoubleSide,depthWrite:false}));
+ const footG=new THREE.BufferGeometry();footG.setAttribute('position',new THREE.BufferAttribute(new Float32Array(NR*3),3));
+ const foot=new THREE.Line(footG,new THREE.LineBasicMaterial({color:NODE_ACCENT}));
+ const edgeG=new THREE.BufferGeometry();edgeG.setAttribute('position',new THREE.BufferAttribute(new Float32Array(12),3));
+ const edges=new THREE.LineSegments(edgeG,new THREE.LineBasicMaterial({color:NODE_ACCENT,transparent:true,opacity:.6}));
+ [fan,foot,edges].forEach(o=>{o.visible=false;o.renderOrder=9;world.add(o)});
+ const footAt=(k,aDeg)=>{const i=RI[k],h=HD[k],re=Math.cos(h),rn=-Math.sin(h),E0=TE[i],N0=TN[i],a=aDeg*Math.PI/180,ch=Math.cos(a),sh=Math.sin(a);
+  for(let t=0.25;t<=MAXR;t+=0.25){const e=E0+re*t*ch,n=N0+rn*t*ch,z=-MD-t*sh,b=bedAt(e,n);if(!isNaN(b)&&z<=b)return[e,n,b]}
+  return[E0+re*MAXR*ch,N0+rn*MAXR*ch,-MD-MAXR*sh]};
+
+ function updateFan(k){const tOn=document.getElementById('t').checked;[fan,foot,edges].forEach(o=>o.visible=tOn);
+  const i=RI[k],h=HD[k],re=Math.cos(h),rn=-Math.sin(h),E0=TE[i],N0=TN[i];  // starboard = right of travel
+  const put=(arr,j,e,n,z)=>{arr[3*j]=e-cx;arr[3*j+1]=z;arr[3*j+2]=-(n-cy)};
+  put(fanPos,0,E0,N0,-MD);const fp=footG.attributes.position.array,ep=edgeG.attributes.position.array;
+  for(let r=0;r<NR;r++){const a=(A0+(A1-A0)*r/(NR-1))*Math.PI/180,ch=Math.cos(a),sh=Math.sin(a);let s=MAXR,hit=[E0+re*s*ch,N0+rn*s*ch,-MD-s*sh];
+   for(let t=0.05;t<=MAXR;t+=0.05){const e=E0+re*t*ch,n=N0+rn*t*ch,z=-MD-t*sh,b=bedAt(e,n);if(!isNaN(b)&&z<=b){hit=[e,n,b];break}}
+   put(fanPos,r+1,...hit);put(fp,r,...hit);
+   if(r==0){put(ep,0,E0,N0,-MD);put(ep,1,...hit)}if(r==NR-1){put(ep,2,E0,N0,-MD);put(ep,3,...hit)}}
+  fanG.attributes.position.needsUpdate=true;footG.attributes.position.needsUpdate=true;edgeG.attributes.position.needsUpdate=true;fanG.computeBoundingSphere()}
+ function goTo(k){k=Math.max(0,Math.min(RI.length-1,k|0));scrub.value=k;
+  boat.position.set(tp[3*k],0,tp[3*k+2]);boat.rotation.y=Math.PI/2-HD[k];boat.visible=document.getElementById('t').checked;updateFan(k);scrubv.innerHTML=info(k).txt+` · heading ${Math.round((HD[k]*180/Math.PI+360)%360)}°`}
+ scrub.oninput=()=>goTo(+scrub.value);
+ setTimeout(()=>goTo(+scrub.value||0),0);
+ let playing=null;document.getElementById('play').onclick=e=>{if(playing){clearInterval(playing);playing=null;e.target.textContent='▶';return}
+  e.target.textContent='❚❚';playing=setInterval(()=>{const k=+scrub.value+2;if(k>=RI.length){clearInterval(playing);playing=null;e.target.textContent='▶';return}goTo(k)},40)};
+ const sv=new THREE.Vector3();
+ function nearRoute(x,y){if(!tgrp.visible)return -1;let best=-1,bd=10;for(let k=0;k<RI.length;k++){sv.set(tp[3*k],tp[3*k+1],tp[3*k+2]).project(cam);
+  if(sv.z>1)continue;const d=Math.hypot((sv.x+1)/2*innerWidth-x,(1-sv.y)/2*innerHeight-y);if(d<bd){bd=d;best=k}}return best}
+ r.domElement.addEventListener('pointermove',e=>{window._rh=false;if(e.buttons)return;const k=nearRoute(e.clientX,e.clientY);if(k<0)return;window._rh=true;
+  tip.style.display='block';tip.style.left=e.clientX+12+'px';tip.style.top=e.clientY+12+'px';tip.innerHTML=info(k).txt});
+ r.domElement.addEventListener('click',e=>{if(mode||performance.now()-(window._justDragged||0)<300)return;const k=nearRoute(e.clientX,e.clientY);if(k>=0)goTo(k)});
+ const home={visible:true,material:{color:{set(){}}}}; // old 'home' marker removed; see deploy point
+ // object hover rings
+ const og=new THREE.Group();scene.add(og);
+ const rings=objs.map(o=>{const echo=o.note.includes('below');const m=new THREE.Mesh(new THREE.SphereGeometry(Math.max(.5,o.size_m/2),16,12),
+  new THREE.MeshBasicMaterial({color:echo?0x888888:0xffffff,wireframe:true,transparent:true,opacity:echo?.3:.6}));m.userData=o;og.add(m);return m});
+ const ex=document.getElementById('ex');
+ function applyEx(){const e=+ex.value;document.getElementById('exv').textContent=e.toFixed(1)+'×';world.scale.y=e;rings.forEach(m=>{const o=m.userData;m.position.set(+o.east_m-cx,-o.depth_m*e,-(+o.north_m-cy))})}
+ ex.oninput=applyEx;applyEx();
+ document.querySelectorAll('input[name=base]').forEach(el=>el.onchange=()=>{const v=document.querySelector('input[name=base]:checked').value;L.cloud.visible=v=='cloud';L.seabed.visible=v=='seabed'});
+ document.getElementById('o').onchange=e=>{L.obj.visible=og.visible=e.target.checked};
+ document.getElementById('t').onchange=e=>{const v=e.target.checked;tgrp.visible=v;boat.visible=v;[fan,foot,edges].forEach(o=>o.visible=v)};
+ document.getElementById('ps').oninput=e=>mats.forEach(m=>m.size=m.userData.base*+e.target.value);
+ const ray=new THREE.Raycaster(),mv=new THREE.Vector2(),tip=document.getElementById('tip');
+ addEventListener('pointermove',e=>{mv.set(e.clientX/innerWidth*2-1,-e.clientY/innerHeight*2+1);ray.setFromCamera(mv,cam);
+  const h=og.visible?ray.intersectObjects(rings):[];if(h.length){const o=h[0].object.userData;tip.style.display='block';tip.style.left=e.clientX+12+'px';tip.style.top=e.clientY+12+'px';
+  tip.innerHTML=`<b>Object ${o.id}</b><br>${o.depth_m} m deep · ${o.size_m} m · ${o.passes} pass(es)<br>${o.note}`}else if(!window._rh)tip.style.display='none'});
+ const set=(sel,v,ev)=>{const e=document.querySelector(sel);e.value=v;e.dispatchEvent(new Event(ev))};
+ // camera presets (work for any run: framed on the middle of the data)
+ const CAM={top:{t:[0,-2,0],c:[0,95,0.01]},sideS:{t:[0,-3,0],c:[0,1,95]},sideE:{t:[0,-3,0],c:[95,1,0]},persp:{t:[0,-4,0],c:[0,55,65]}};
+ const camTo=v=>{ctr.target.set(...v.t);cam.position.set(...v.c);ctr.update()};
+ document.querySelectorAll('button[data-p]').forEach(b=>b.onclick=()=>camTo(CAM[b.dataset.p]));
+ // ---- tools: slice + measure (two clicks on the map, picked on the water surface plane)
+ const msg=document.getElementById('toolMsg'),plane=new THREE.Plane(new THREE.Vector3(0,1,0),0),pick=new THREE.Vector3();
+ let mode=null,pts=[],down=null;const marks=new THREE.Group();scene.add(marks);
+ const mark=p=>{const m=new THREE.Mesh(new THREE.SphereGeometry(.5,12,8),new THREE.MeshBasicMaterial({color:0x00e5ff}));m.position.copy(p);marks.add(m)};
+ const line=(a,b,c)=>{const g=new THREE.BufferGeometry().setFromPoints([a,b]);marks.add(new THREE.Line(g,new THREE.LineBasicMaterial({color:c})))};
+ const toE=p=>(p.x+cx).toFixed(1),toN=p=>(-p.z+cy).toFixed(1);
+ const opts=document.getElementById('toolOpts'),showOpts=(on,slice,dep)=>{opts.style.display=on?'block':'none';document.getElementById('slwRow').style.display=slice?'flex':'none';document.getElementById('depMsg').style.display=dep?'block':'none';document.getElementById('bDepX').style.display=dep&&deploy?'inline-block':'none'};
+ function startTool(m){mode=m;pts=[];marks.clear();showOpts(true,m=='slice',false);msg.textContent=(m=='slice'?'Slice':'Measure')+': click the first point on the seabed'}
+ // pick a point ON the seabed surface (falls back to the water surface where there is no seabed data)
+ function pickBed(x,y){mv.set(x/innerWidth*2-1,-y/innerHeight*2+1);ray.setFromCamera(mv,cam);
+  if(window._bedPick){const h=ray.intersectObject(window._bedPick);if(h.length)return h[0].point.clone()}
+  return ray.ray.intersectPlane(plane,pick)?pick.clone():null}
+ // ---- deploy point: where the vessel was launched. Click the map to set it; remembered per run in this browser
+ let deploy=null;const depSprite=(()=>{const c=document.createElement('canvas');c.width=256;c.height=340;const g=c.getContext('2d');
+  g.beginPath();g.arc(128,120,112,Math.PI*0.82,Math.PI*0.18);g.lineTo(128,334);g.closePath();g.fillStyle='#111';g.fill();
+  g.lineWidth=6;g.strokeStyle='rgba(255,255,255,.85)';g.stroke();
+  g.fillStyle='#fff';g.font='600 46px Inter,Helvetica,Arial';g.textAlign='center';g.textBaseline='middle';g.fillText('DEPLOY',128,122);
+  const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),depthTest:false}));sp.center.set(.5,0);sp.renderOrder=31;sp.scale.set(2.6,2.6*340/256,1);sp.visible=false;scene.add(sp);return sp})();
+ function setDeploy(E,N,save){const dm=document.getElementById('depMsg');
+  if(E==null){deploy=null;depSprite.visible=false;dm.textContent='No deploy point set';try{localStorage.removeItem('deploy:'+S)}catch(_){};return}
+  deploy={e:+E.toFixed(2),n:+N.toFixed(2)};depSprite.position.set(E-cx,0,-(N-cy));depSprite.visible=true;
+  const la=lat0+N/ml,lo=lon0+E/mo;dm.innerHTML=`Deploy point: ${E.toFixed(1)} E, ${N.toFixed(1)} N · ${la.toFixed(6)}, ${lo.toFixed(6)}<br><span style="font-family:var(--font)">Drag the DEPLOY marker to move it</span>`;
+  if(save)try{localStorage.setItem('deploy:'+S,JSON.stringify(deploy))}catch(_){}}
+ document.getElementById('bDep').onclick=()=>{mode='deploy';pts=[];showOpts(true,false,true);msg.textContent=deploy?'Click the map to place it again, or drag the pin':'Click the map where the vessel was launched'};
+ document.getElementById('bDepX').onclick=()=>{setDeploy(null);mode=null;showOpts(false)};
+ try{const d=JSON.parse(localStorage.getItem('deploy:'+S)||'null');if(d)setDeploy(d.e,d.n,false);else setDeploy(null)}catch(_){setDeploy(null)}
+ window._getDeploy=()=>deploy;window._setDeploy=setDeploy;
+ // drag the DEPLOY marker to move it (saved when you let go)
+ let dragDep=false;const onDep=e=>{if(!depSprite.visible)return false;mv.set(e.clientX/innerWidth*2-1,-e.clientY/innerHeight*2+1);ray.setFromCamera(mv,cam);return ray.intersectObject(depSprite).length>0};
+ r.domElement.addEventListener('pointerdown',e=>{if(e.button===0&&onDep(e)){dragDep=true;ctr.enabled=false;r.domElement.style.cursor='grabbing'}},true);
+ addEventListener('pointermove',e=>{if(dragDep){const p=pickBed(e.clientX,e.clientY);if(p)setDeploy(p.x+cx,-p.z+cy,false)}else if(!e.buttons)r.domElement.style.cursor=onDep(e)?'grab':''});
+ addEventListener('pointerup',e=>{if(!dragDep)return;{const p=pickBed(e.clientX,e.clientY);if(p)setDeploy(p.x+cx,-p.z+cy,false)}dragDep=false;ctr.enabled=true;r.domElement.style.cursor='';window._justDragged=performance.now();if(deploy)setDeploy(deploy.e,deploy.n,true)});
+ document.getElementById('bSlice').onclick=()=>{SL.slOn.value=0;startTool('slice')};
+ document.getElementById('bMeas').onclick=()=>startTool('measure');
+ document.getElementById('bClr').onclick=()=>{mode=null;pts=[];marks.clear();SL.slOn.value=0;msg.textContent='';showOpts(false);
+  tgrp.visible=document.getElementById('t').checked;og.visible=document.getElementById('o').checked;home.visible=true};
+ const slw=document.getElementById('slw');slw.oninput=()=>{SL.slW.value=slw.value/10;document.getElementById('slwv').textContent=(slw.value/10).toFixed(1)+' m'};
+ r.domElement.addEventListener('pointerdown',e=>down=[e.clientX,e.clientY]);
+ r.domElement.addEventListener('pointerup',e=>{if(!mode||!down||Math.hypot(e.clientX-down[0],e.clientY-down[1])>4||e.button!==0)return;
+  const p=pickBed(e.clientX,e.clientY);if(!p)return;
+  if(mode=='deploy'){setDeploy(p.x+cx,-p.z+cy,true);mode=null;msg.textContent='';showOpts(true,false,true);return}
+  pts.push(p);mark(p);
+  if(pts.length==1){msg.textContent='Now click the second point';return}
+  const [a,b]=pts,d=Math.hypot(b.x-a.x,b.z-a.z),da=-a.y/world.scale.y,db=-b.y/world.scale.y;
+  if(mode=='measure'){line(a,b,0x00e5ff);msg.innerHTML=`Distance <b>${d.toFixed(1)} m</b> along the seabed map · depth ${da.toFixed(1)} m to ${db.toFixed(1)} m · from (${toE(a)} E, ${toN(a)} N) to (${toE(b)} E, ${toN(b)} N)`}
+  else{const ux=(b.x-a.x)/d,uz=(b.z-a.z)/d;SL.slAD.value.set(a.x,a.z,ux,uz);SL.slL.value=d;SL.slOn.value=1;line(a,b,0x00e5ff);
+   const mid=a.clone().add(b).multiplyScalar(.5);const dist=Math.max(d*1.1,15);
+   ctr.target.set(mid.x,-1.5*world.scale.y,mid.z);cam.position.set(mid.x-uz*dist,-1.5*world.scale.y,mid.z+ux*dist);ctr.update();
+   tgrp.visible=false;og.visible=false;home.visible=false;marks.children.filter(c=>c.isMesh).forEach(c=>c.visible=false);
+   msg.innerHTML=`Slice <b>${d.toFixed(1)} m</b> long, ±${SL.slW.value.toFixed(1)} m wide. Looking at it from the side. Rotate freely, or Clear to go back`}
+  mode=null});
+ // collapse controls
+ document.getElementById('collapse').onclick=()=>{document.getElementById('ctl').style.display='none';document.getElementById('hide').style.display='block'};
+ document.getElementById('hide').onclick=()=>{document.getElementById('ctl').style.display='block';document.getElementById('hide').style.display='none'};
+ // ---- clay model: shaded seabed surface + only kelp (green) and objects (purple by depth) in colour
+ async function bedGeom(url){const gb=await (await fetch(url)).arrayBuffer(),[gx0,gy0,gc,GW,GH]=new Float32Array(gb,0,5),GZ=new Float32Array(gb,20);
+  const vpos=new Float32Array(GW*GH*3),idx=[];
+  for(let j=0;j<GH;j++)for(let i=0;i<GW;i++){const k=j*GW+i,z=GZ[k];vpos[3*k]=gx0+(i+.5)*gc-cx;vpos[3*k+1]=isNaN(z)?0:z;vpos[3*k+2]=-(gy0+(j+.5)*gc-cy)}
+  const ok=k=>!isNaN(GZ[k]);
+  for(let j=0;j<GH-1;j++)for(let i=0;i<GW-1;i++){const a=j*GW+i,b=a+1,c=a+GW,d=c+1;
+   if(ok(a)&&ok(c)&&ok(b))idx.push(a,c,b);if(ok(b)&&ok(c)&&ok(d))idx.push(b,c,d)}
+  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(vpos,3));g.setIndex(idx);g.computeVertexNormals();return g}
+ const [gSmooth,gFine]=await Promise.all([bedGeom(R+S+'_bedgrid.bin'),bedGeom(R+S+'_bedgrid_fine.bin')]);
+ const clayMat=o=>new THREE.MeshStandardMaterial(Object.assign({color:0xf4f3f0,roughness:.95,metalness:0,side:THREE.DoubleSide},o));
+ const bedSmooth=new THREE.Mesh(gSmooth,clayMat({})),
+  bedGrain=new THREE.Mesh(gFine,clayMat({flatShading:true})),
+  bedMeshFill=new THREE.Mesh(gFine,clayMat({flatShading:true,transparent:true,opacity:.45,depthWrite:true})),
+  bedWire=new THREE.Mesh(gFine,new THREE.MeshBasicMaterial({color:0x6f737a,wireframe:true,transparent:true,opacity:.28}));
+ const bedMesh=new THREE.Group();bedMesh.add(bedSmooth,bedGrain,bedMeshFill,bedWire);bedMesh.visible=false;world.add(bedMesh);
+ function setSurf(v){bedSmooth.visible=v=='smooth';bedGrain.visible=v=='grain';bedMeshFill.visible=bedWire.visible=v=='mesh';
+  document.querySelectorAll('button[data-s]').forEach(b=>b.classList.toggle('on',b.dataset.s==v))}
+ document.querySelectorAll('button[data-s]').forEach(b=>b.onclick=()=>setSurf(b.dataset.s));setSurf('mesh');window._surf='mesh';
+ document.querySelectorAll('button[data-s]').forEach(b=>b.addEventListener('click',()=>window._surf=b.dataset.s));
+ window._bedPick=bedSmooth;
+ // depth under the mouse (from the seabed surface), throttled
+ const hud=document.getElementById('depthHud');let hudT=0;
+ r.domElement.addEventListener('pointermove',e=>{if(e.buttons)return;const now=performance.now();if(now-hudT<80)return;hudT=now;
+  mv.set(e.clientX/innerWidth*2-1,-e.clientY/innerHeight*2+1);ray.setFromCamera(mv,cam);const h=ray.intersectObject(bedSmooth);
+  if(h.length){const p=h[0].point;hud.style.display='block';hud.innerHTML=`Seabed here: <b>${(-p.y/world.scale.y).toFixed(2)} m</b> deep · (${(p.x+cx).toFixed(1)} E, ${(-p.z+cy).toFixed(1)} N)`}else hud.style.display='none'});
+ const hemi=new THREE.HemisphereLight(0xffffff,0x8a8d92,.62),sun=new THREE.DirectionalLight(0xffffff,.72);sun.position.set(-60,22,35);
+ scene.add(hemi,sun);
+ const grid2=new THREE.GridHelper(200,20,0xb9bbbe,0xd3d4d6);grid2.position.y=.02;grid2.visible=false;scene.add(grid2);
+ // alternative colours for clay mode
+ const objG=L.obj.geometry,objSon=objG.attributes.color.array.slice(),objClay=new Float32Array(objSon.length);
+ const OA=window._objAll;for(let i=0;i<objClay.length/3;i++)objClay.set(purple(-OA[3*i+2]),3*i);
+ let clay=false;
+ function setStyle(c){clay=c;document.body.classList.toggle('clay',c);
+  document.getElementById('stClay').classList.toggle('on',c);document.getElementById('stSonar').classList.toggle('on',!c);
+  scene.background=new THREE.Color(c?0xe9e8e4:0x0d1117);
+  const base=document.querySelector('input[name=base]:checked').value;bedMesh.visible=c&&base=='seabed';L.seabed.visible=!c&&base=='seabed';L.cloud.visible=!c&&base=='cloud';
+  const gOn=document.getElementById('g').checked;grid.visible=gOn&&!c;grid2.visible=gOn&&c;
+  objG.setAttribute('color',new THREE.BufferAttribute(objClay,3));
+  tmat.color.set(NODE_ACCENT);
+  rings.forEach(m=>{const o=m.userData;m.material.color.setRGB(...(o.note.includes('below')?[.53,.53,.53]:purple(+o.depth_m)))});
+  home.material.color.set(c?0x2b2e33:0xffffff)}
+ document.getElementById('stClay').onclick=()=>setStyle(true);document.getElementById('stSonar').onclick=()=>setStyle(false);
+ document.querySelectorAll('input[name=base]').forEach(el=>el.addEventListener('change',()=>{if(clay)setStyle(true)}));
+ document.getElementById('g').addEventListener('change',()=>setStyle(clay));
+ // ---- baseline: Reset applies BASE; "Copy my settings" captures the current state so it can become the new BASE
+ // Francisco's baseline (24 Nov 2026)
+ const BASE={style:'clay',surf:'mesh',base:'seabed',objects:false,structures:false,water:false,kmin:15,grid:true,sat:false,satOp:45,track:false,beam:false,boatTrueSize:false,ex:2,ps:0.75,slw:0.5,cam:{t:[-9.55,-0.78,1.61],c:[71.39,35.53,6.61]}};
+ const chk=(id,v)=>{const e=document.getElementById(id);if(e&&e.checked!==v)e.click()};
+ function applySettings(s){document.querySelector(`input[name=base][value=${s.base}]`).click();
+  chk('o',s.objects);chk('hl',s.structures);chk('k',s.water);set('#kmin',s.kmin,'input');chk('g',s.grid);chk('sat',!!s.sat);set('#satOp',s.satOp||45,'input');chk('t',s.track);chk('beam',s.beam);chk('bsize',s.boatTrueSize);
+  set('#ex',s.ex,'input');set('#ps',s.ps,'input');set('#slw',Math.round(s.slw*10),'input');
+  setSurf(s.surf);window._surf=s.surf;setStyle(s.style=='clay');camTo(s.cam);if(s.deploy)window._setDeploy(s.deploy.e,s.deploy.n,true)}
+ // run picker (runs.json lists the processed runs, newest first)
+ fetch('runs.json').then(r=>r.json()).then(list=>{if(!list.length)return;const sel=document.createElement('select');sel.style.marginTop='4px';
+  list.forEach(x=>{const o=document.createElement('option');o.value=x;o.textContent=x;if(x==S)o.selected=true;sel.appendChild(o)});
+  sel.onchange=()=>location.search='?run='+sel.value;document.getElementById('info').appendChild(sel)}).catch(()=>{});
+ // header from the run's report.json
+ fetch(R+'report.json').then(r=>r.json()).then(rep=>{const rc=rep.recordings[0],d=S.slice(0,10).split('-');
+  const mon=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][+d[1]-1];
+  document.getElementById('ttl').textContent=`ASKET sonar · ${+d[2]} ${mon} ${d[0]}`;document.title=`ASKET Sonar ${+d[2]} ${mon}`;
+  document.getElementById('sub').textContent=`${rc.utc[0].slice(0,5)} to ${rc.utc[1].slice(0,5)} UTC · ${Math.round(rc.track_m)} m track · ${rc.pings.toLocaleString()} pings`}).catch(()=>{});
+ function currentSettings(){const r2=v=>+v.toFixed(2),q=id=>{const e=document.getElementById(id);return e?e.checked:null};
+  return{style:clay?'clay':'sonar',surf:window._surf,base:document.querySelector('input[name=base]:checked').value,objects:q('o'),structures:q('hl'),water:q('k'),
+   kmin:+document.getElementById('kmin').value,grid:q('g'),sat:q('sat'),satOp:+document.getElementById('satOp').value,track:q('t'),beam:q('beam'),boatTrueSize:q('bsize'),ex:+document.getElementById('ex').value,
+   ps:+document.getElementById('ps').value,slw:+document.getElementById('slw').value/10,cam:{t:ctr.target.toArray().map(r2),c:cam.position.toArray().map(r2)},deploy:window._getDeploy()}}
+ document.getElementById('reset').onclick=()=>applySettings(BASE);
+ window._currentSettings=currentSettings; // console: copy(JSON.stringify(_currentSettings())) to update BASE
+ applySettings(BASE);
+ document.getElementById('load').remove();
+})().catch(e=>document.getElementById('load').textContent='Could not load: '+e);
+cam.position.set(0,60,70);ctr.target.set(0,-6,0);ctr.update();
+// zoom towards the point under the mouse (on the view plane through the orbit target)
+ctr.enableZoom=false;
+r.domElement.addEventListener('wheel',e=>{e.preventDefault();
+ const f=Math.pow(1.0015,e.deltaY);const m=new THREE.Vector2(e.clientX/innerWidth*2-1,-e.clientY/innerHeight*2+1);
+ const rc=new THREE.Raycaster();rc.setFromCamera(m,cam);const dir=new THREE.Vector3();cam.getWorldDirection(dir);
+ const pl=new THREE.Plane().setFromNormalAndCoplanarPoint(dir,ctr.target),p=new THREE.Vector3();
+ if(!rc.ray.intersectPlane(pl,p))return;
+ cam.position.sub(p).multiplyScalar(f).add(p);ctr.target.sub(p).multiplyScalar(f).add(p);ctr.update()},{passive:false});
+function rs(){r.setSize(innerWidth,innerHeight);cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix();if(window._tmat)window._tmat.resolution.set(innerWidth,innerHeight)}addEventListener('resize',rs);rs();
+const needle=document.getElementById('needle');
+function stack(){const i=document.getElementById('info').getBoundingClientRect(),c=document.getElementById('ctl'),t=Math.round(i.bottom+10);
+ c.style.top=t+'px';c.style.maxHeight=(innerHeight-t-12)+'px'}
+new ResizeObserver(stack).observe(document.getElementById('info'));addEventListener('resize',stack);stack();
+(function loop(){requestAnimationFrame(loop);needle.style.transform=`rotate(${ctr.getAzimuthalAngle()*180/Math.PI}deg)`;r.render(scene,cam)})();
+</script><script>if(location.pathname.startsWith('/missions/')){const b=document.getElementById('siteBack');b.style.display='block'}</script>
+</body></html>

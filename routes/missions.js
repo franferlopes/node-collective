@@ -1,3 +1,4 @@
+const path = require('path');
 const express = require('express');
 const router = express.Router();
 const { pool } = require('../lib/db');
@@ -32,6 +33,15 @@ router.get('/', async (req, res) => {
 // Static mission page; listed before /:slug so the database is not queried.
 router.get('/namibia-2026', (req, res) => {
   res.render('missions/namibia');
+});
+
+// 3D sonar viewer for the Namibia runs (static files in public/missions/namibia-2026/sonar,
+// updated from the Sonar Viewer folder with tools/publish_web.sh). Needs the trailing slash
+// so the viewer's relative paths (runs/, runs.json) resolve inside its folder.
+router.get('/namibia-2026/sonar', (req, res) => {
+  const [p, q] = req.originalUrl.split('?');
+  if (!p.endsWith('/')) return res.redirect(301, p + '/' + (q ? '?' + q : ''));
+  res.sendFile(path.join(__dirname, '..', 'public', 'missions', 'namibia-2026', 'sonar', 'index.html'));
 });
 
 router.get('/njord-2026', (req, res) => {

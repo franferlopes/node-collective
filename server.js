@@ -39,6 +39,9 @@ app.get('/health', (req, res) => {
 // an hour so design changes still show up quickly after a deploy.
 app.use(express.static(path.join(__dirname, 'public'), {
   index: false,
+  // no folder -> folder/ redirects: public/missions/namibia-2026/ (sonar viewer files) must not
+  // redirect the /missions/namibia-2026 page route
+  redirect: false,
   setHeaders: (res, filePath) => {
     if (/\.(jpe?g|png|webp|svg|gif)$/i.test(filePath)) {
       res.setHeader('Cache-Control', 'public, max-age=604800');
