@@ -53,7 +53,7 @@ body.clay .panel{box-shadow:0 1px 6px rgba(0,0,0,.12)}
 <div style="display:flex;gap:4px"><button class="ico" data-p="top" title="Top view, north up"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M12 7v10M9 10l3-3 3 3"/></svg></button><button class="ico" data-p="sideS" title="Side view from the south"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 15h18"/><path d="M6 15l2-4h8l2 4"/><text x="12" y="8" font-size="7" text-anchor="middle" fill="currentColor" stroke="none" font-family="Inter">S</text></svg></button><button class="ico" data-p="sideE" title="Side view from the east"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 15h18"/><path d="M6 15l2-4h8l2 4"/><text x="12" y="8" font-size="7" text-anchor="middle" fill="currentColor" stroke="none" font-family="Inter">E</text></svg></button><button class="ico" data-p="persp" title="3D view"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M12 12l8-4.5M12 12v9M12 12L4 7.5"/></svg></button><button class="ico" id="reset" title="Reset to my baseline"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 1 0 2.5-5.8"/><path d="M4 4v4h4"/></svg></button></div>
 <button id="collapse" title="Hide controls">✕</button></div>
 <div class="h">Style</div>
-<div style="display:flex;gap:4px;margin:4px 0"><button id="stSonar" class="on">Sonar colours</button><button id="stClay">Clay model</button></div>
+<div id="styleRow" style="display:flex;gap:4px;margin:4px 0"><button id="stSonar" class="on">Sonar colours</button><button id="stClay">Clay model</button></div>
 <div class="clayonly" style="margin:2px 0 4px"><span class="m" style="font-size:12px">Clay surface:</span>
 <button data-s="smooth">Smooth</button><button data-s="grain">Grain</button><button data-s="mesh">Mesh</button></div>
 <div class="h">Layers</div>
@@ -418,5 +418,6 @@ function stack(){const i=document.getElementById('info').getBoundingClientRect()
  c.style.top=t+'px';c.style.maxHeight=(innerHeight-t-12)+'px'}
 new ResizeObserver(stack).observe(document.getElementById('info'));addEventListener('resize',stack);stack();
 (function loop(){requestAnimationFrame(loop);needle.style.transform=`rotate(${ctr.getAzimuthalAngle()*180/Math.PI}deg)`;r.render(scene,cam)})();
-</script><script>if(location.pathname.startsWith('/missions/')){const b=document.getElementById('siteBack');b.style.display='block'}</script>
+</script><script>// on the NODE website: back link, clay model only (no sonar-colours option)
+if(location.pathname.startsWith('/missions/')){document.getElementById('siteBack').style.display='block';document.getElementById('styleRow').style.display='none'}</script>
 </body></html>
