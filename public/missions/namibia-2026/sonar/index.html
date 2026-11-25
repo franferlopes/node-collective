@@ -80,8 +80,6 @@ body.clay .panel{box-shadow:0 1px 6px rgba(0,0,0,.12)}
 <div class="h">Display</div>
 <label>Vertical exaggeration <input id="ex" type="range" min="0.1" max="3" step="0.1" value="2"> <span id="exv">2.0×</span></label>
 <label>Point size <input id="ps" type="range" min="0.5" max="3" step="0.25" value="0.75"></label>
-<div style="display:flex;align-items:center;gap:4px;margin-top:6px">Mouse <button id="mMap">Map style</button><button id="mOrb">Orbit style</button></div>
-<div style="margin-top:4px"><button id="bUnder">Look underwater</button></div>
 <div class="m" id="help" style="font-size:11px;margin-top:4px"></div>
 </div>
 <div id="depthHud" class="panel" style="bottom:12px;right:64px;padding:6px 10px;font-size:12px;display:none"></div>
@@ -484,13 +482,13 @@ r.domElement.addEventListener('dblclick',e=>{const p=spotAt(e.clientX,e.clientY)
  const off=cam.position.clone().sub(ctr.target),d=off.length(),nd=Math.max(6,d*0.45);off.multiplyScalar(nd/d);
  const c=p.clone().add(off);glide(p.clone(),c)});
 // above water / underwater
-const bU=document.getElementById('bUnder');
+const bU=document.getElementById('bUnder')||{}; // button removed 25 Nov (zoom/rotate under freely)
 window._setUnder=(v,quiet)=>{under=v;bU.textContent=v?'Back above water':'Look underwater';
  if(!quiet){const t=ctr.target.clone(),h=new THREE.Vector3(cam.position.x-t.x,0,cam.position.z-t.z),hd=Math.max(12,Math.min(80,h.length()));
   if(h.length()<1e-3)h.set(0,0,1);h.normalize();
   if(v){const ud=Math.max(10,Math.min(30,hd));t.y=Math.min(t.y,-5);glide(t,new THREE.Vector3(t.x+h.x*ud,-0.8,t.z+h.z*ud),1100)}
   else glide(t,new THREE.Vector3(t.x+h.x*hd,Math.max(18,hd*0.8),t.z+h.z*hd),1100)}};
-bU.onclick=()=>window._setUnder(!under);window._setUnder(false,true);
+window._setUnder(false,true);
 // height-aware controls: the pivot is always the spot in the middle of the screen; high up (satellite scale)
 // orbit style slides the map on drag, tilt is limited so the ground stays in view, rotation slows a little
 let style='orbit',high=false,dragging=false;
@@ -513,10 +511,8 @@ function mouseStyle(m){
   help.textContent='Drag to move · right-drag (or Shift+drag) to rotate · scroll or pinch to zoom where the mouse is (zoom into the seabed to go underwater) · double-click to fly there'}
  else{
   help.textContent='Drag or two-finger press-and-swipe to rotate (high up, drag slides the map) · two-finger swipe sideways or Shift+drag to move · swipe forward/back, scroll or pinch to zoom where the mouse is (zoom into the seabed to go underwater) · double-click to fly there'}
- document.getElementById('mMap').classList.toggle('on',m==='map');document.getElementById('mOrb').classList.toggle('on',m!=='map');
- try{localStorage.setItem('mouseStyle',m)}catch(_){}}
-document.getElementById('mMap').onclick=()=>mouseStyle('map');document.getElementById('mOrb').onclick=()=>mouseStyle('orbit');
-{let m='orbit';try{m=localStorage.getItem('mouseStyle')||'orbit'}catch(_){}mouseStyle(m)}
+}
+mouseStyle('orbit'); // the curated controls (25 Nov); Map style kept in code only
 function rs(){r.setSize(innerWidth,innerHeight);cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix();if(window._tmat)window._tmat.resolution.set(innerWidth,innerHeight)}addEventListener('resize',rs);rs();
 const needle=document.getElementById('needle');
 function stack(){const i=document.getElementById('info').getBoundingClientRect(),c=document.getElementById('ctl'),t=Math.round(i.bottom+10);
