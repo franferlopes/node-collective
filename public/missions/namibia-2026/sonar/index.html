@@ -65,7 +65,8 @@ body.clay .panel{box-shadow:0 1px 6px rgba(0,0,0,.12)}
 <label style="padding-left:22px">min density <input id="kmin" type="range" min="8" max="70" value="15"> <span id="kminv">15%</span></label>
 <label><input id="g" type="checkbox" checked> 10 m grid</label>
 <div id="satRow"><label><input id="sat" type="checkbox"> Satellite view <span class="m">(at the water surface)</span></label>
-<label style="padding-left:22px">opacity <input id="satOp" type="range" min="5" max="100" value="45"> <span id="satOpv">45%</span></label></div>
+<label style="padding-left:22px">opacity <input id="satOp" type="range" min="5" max="100" value="45"> <span id="satOpv">45%</span></label>
+<div style="padding-left:22px;margin-top:4px"><button id="bBay" style="display:none">Fly to Shearwater Bay</button></div></div>
 <div class="h">Navigation track</div>
 <label><input id="t" type="checkbox" checked> Show track <span class="m">(route, START / FINISH, ASKET, beam)</span></label>
 <label><button id="play" style="width:30px">▶</button><input id="scrub" type="range" min="0" max="1000" value="0" style="flex:1"></label>
@@ -187,10 +188,36 @@ function dzcol(d){if(d>0){const t=Math.min(1,d/2.5);return[.55+.45*t,.55-.35*t,.
  fetch(R+S+'_sat.json').then(r=>{if(!r.ok)throw 0;return r.json()}).then(m=>{
   new THREE.TextureLoader().load(R+S+'_sat.jpg',t=>{t.anisotropy=r.capabilities.getMaxAnisotropy();satMat.map=t;satMat.needsUpdate=true});
   satPlane.scale.set(m.e-m.w,m.n-m.s,1);satPlane.position.set((m.w+m.e)/2-cx,0,-((m.s+m.n)/2-cy));
-  satCredit.textContent=m.credit+' · zoom '+m.zoom}).catch(()=>{document.getElementById('satRow').style.display='none'});
- const satOn=()=>{const on=document.getElementById('sat').checked;satPlane.visible=on;satCredit.style.display=on?'block':'none'};
+  satCredit.textContent=m.credit+' · zoom '+m.zoom}).catch(()=>{});
+ // wider area (jetty to Shearwater Bay, tools/area_sat.py), a sheet just under the run's own image
+ const areaMat=new THREE.MeshBasicMaterial({transparent:true,opacity:.45,depthWrite:false,side:THREE.DoubleSide});
+ const areaPlane=new THREE.Mesh(new THREE.PlaneGeometry(1,1),areaMat);areaPlane.rotation.x=-Math.PI/2;areaPlane.visible=false;areaPlane.renderOrder=4;scene.add(areaPlane);
+ const places=new THREE.Group();places.visible=false;scene.add(places);let bay=null;
+ {const la0=REP.home[0],lo0=REP.home[1],mlat=111320,mlon=111320*Math.cos(la0*Math.PI/180);
+  const P=(lat,lon)=>[(lon-lo0)*mlon-cx,-((lat-la0)*mlat-cy)];
+  fetch('area_sat.json').then(r=>{if(!r.ok)throw 0;return r.json()}).then(m=>{
+   new THREE.TextureLoader().load('area_sat.jpg',t=>{t.anisotropy=r.capabilities.getMaxAnisotropy();areaMat.map=t;areaMat.needsUpdate=true});
+   const [x0,z0]=P(m.n,m.w),[x1,z1]=P(m.s,m.e);areaPlane.scale.set(x1-x0,z1-z0,1);areaPlane.position.set((x0+x1)/2,-0.05,(z0+z1)/2);
+   m.places.forEach(p=>{const c=document.createElement('canvas');c.width=512;c.height=200;const g=c.getContext('2d');
+    g.beginPath();g.arc(40,100,22,0,7);g.fillStyle=NODE_ACCENT;g.fill();g.lineWidth=5;g.strokeStyle='#151515';g.stroke();
+    g.font='600 46px Inter,Helvetica,Arial';g.lineWidth=8;g.strokeStyle='rgba(0,0,0,.6)';g.strokeText(p.name,80,92);g.fillStyle='#fff';g.fillText(p.name,80,92);
+    g.font='500 30px Inter,Helvetica,Arial';g.strokeText(p.sub,80,134);g.fillStyle='#e1ff4f';g.fillText(p.sub,80,134);
+    const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),depthTest:false,sizeAttenuation:false}));
+    sp.center.set(40/512,.5);sp.scale.set(.32,.125,1);sp.renderOrder=12;const [x,z]=P(p.lat,p.lon);sp.position.set(x,0.5,z);places.add(sp);
+    if(/shearwater/i.test(p.name))bay=[x,z]});
+   document.getElementById('bBay').style.display='inline-block'}).catch(()=>{});}
+ // keep near/far in proportion to the view, so the run (metres) and the bay (kilometres) both draw cleanly
+ const clip=()=>{const d=cam.position.distanceTo(ctr.target);cam.near=Math.max(.1,d/3000);cam.far=Math.max(5000,d*8+9000);cam.updateProjectionMatrix()};ctr.addEventListener('change',clip);
+ let atBay=false,runView=null;
+ const fly=(t1,c1,ms=2600)=>{const t0=ctr.target.clone(),c0=cam.position.clone(),T=new THREE.Vector3(...t1),C=new THREE.Vector3(...c1),st=performance.now();
+  const step=now=>{let u=Math.min(1,(now-st)/ms);u=u<.5?4*u*u*u:1-Math.pow(-2*u+2,3)/2;ctr.target.lerpVectors(t0,T,u);cam.position.lerpVectors(c0,C,u);ctr.update();if(u<1)requestAnimationFrame(step)};requestAnimationFrame(step)};
+ document.getElementById('bBay').onclick=()=>{const b=document.getElementById('bBay');
+  if(!atBay&&bay){runView={t:ctr.target.toArray(),c:cam.position.toArray()};if(!document.getElementById('sat').checked){document.getElementById('sat').checked=true;satOn()}
+   fly([bay[0],0,bay[1]+250],[bay[0]+150,1500,bay[1]+1650]);b.textContent='Back to the run';atBay=true}
+  else if(runView){fly(runView.t,runView.c);b.textContent='Fly to Shearwater Bay';atBay=false}};
+ const satOn=()=>{const on=document.getElementById('sat').checked;satPlane.visible=on;areaPlane.visible=on;places.visible=on;satCredit.style.display=on?'block':'none'};
  document.getElementById('sat').onchange=satOn;
- document.getElementById('satOp').oninput=e=>{satMat.opacity=e.target.value/100;document.getElementById('satOpv').textContent=e.target.value+'%'};
+ document.getElementById('satOp').oninput=e=>{satMat.opacity=areaMat.opacity=e.target.value/100;document.getElementById('satOpv').textContent=e.target.value+'%'};
  const tgrp=new THREE.Group();tgrp.add(tl);scene.add(tgrp);
  try{await document.fonts.load('600 52px Inter')}catch(_){}
  // START / FINISH: labelled circles drawn to scale (3 m across), always facing the camera
