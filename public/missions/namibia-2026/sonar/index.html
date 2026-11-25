@@ -80,7 +80,8 @@ body.clay .panel{box-shadow:0 1px 6px rgba(0,0,0,.12)}
 <div class="h">Display</div>
 <label>Vertical exaggeration <input id="ex" type="range" min="0.1" max="3" step="0.1" value="2"> <span id="exv">2.0×</span></label>
 <label>Point size <input id="ps" type="range" min="0.5" max="3" step="0.25" value="0.75"></label>
-<div class="m" style="font-size:11px;margin-top:4px">Drag to rotate · right-drag to pan · scroll to zoom · hover the route, objects or seabed</div>
+<div style="margin-top:4px"><button id="bUnder">Look underwater</button></div>
+<div class="m" id="help" style="font-size:11px;margin-top:4px"></div>
 </div>
 <div id="depthHud" class="panel" style="bottom:12px;right:64px;padding:6px 10px;font-size:12px;display:none"></div>
 <div id="tip"></div>
@@ -192,7 +193,7 @@ function dzcol(d){if(d>0){const t=Math.min(1,d/2.5);return[.55+.45*t,.55-.35*t,.
  // wider area (jetty to Shearwater Bay, tools/area_sat.py), a sheet just under the run's own image
  const areaMat=new THREE.MeshBasicMaterial({transparent:true,opacity:.45,depthWrite:false,side:THREE.DoubleSide});
  const areaPlane=new THREE.Mesh(new THREE.PlaneGeometry(1,1),areaMat);areaPlane.rotation.x=-Math.PI/2;areaPlane.visible=false;areaPlane.renderOrder=4;scene.add(areaPlane);
- const places=new THREE.Group();places.visible=false;scene.add(places);let bay=null;
+ const places=new THREE.Group();places.visible=false;scene.add(places);let bay=null;window._satPlanes=[satPlane,areaPlane];
  {const la0=REP.home[0],lo0=REP.home[1],mlat=111320,mlon=111320*Math.cos(la0*Math.PI/180);
   const P=(lat,lon)=>[(lon-lo0)*mlon-cx,-((lat-la0)*mlat-cy)];
   fetch('area_sat.json').then(r=>{if(!r.ok)throw 0;return r.json()}).then(m=>{
@@ -212,7 +213,7 @@ function dzcol(d){if(d>0){const t=Math.min(1,d/2.5);return[.55+.45*t,.55-.35*t,.
  const fly=(t1,c1,ms=2600)=>{const t0=ctr.target.clone(),c0=cam.position.clone(),T=new THREE.Vector3(...t1),C=new THREE.Vector3(...c1),st=performance.now();
   const step=now=>{let u=Math.min(1,(now-st)/ms);u=u<.5?4*u*u*u:1-Math.pow(-2*u+2,3)/2;ctr.target.lerpVectors(t0,T,u);cam.position.lerpVectors(c0,C,u);ctr.update();if(u<1)requestAnimationFrame(step)};requestAnimationFrame(step)};
  document.getElementById('bBay').onclick=()=>{const b=document.getElementById('bBay');
-  if(!atBay&&bay){runView={t:ctr.target.toArray(),c:cam.position.toArray()};if(!document.getElementById('sat').checked){document.getElementById('sat').checked=true;satOn()}
+  if(!atBay&&bay){window._setUnder(false,true);runView={t:ctr.target.toArray(),c:cam.position.toArray()};if(!document.getElementById('sat').checked){document.getElementById('sat').checked=true;satOn()}
    fly([bay[0],0,bay[1]+250],[bay[0]+150,1500,bay[1]+1650]);b.textContent='Back to the run';atBay=true}
   else if(runView){fly(runView.t,runView.c);b.textContent='Fly to Shearwater Bay';atBay=false}};
  const satOn=()=>{const on=document.getElementById('sat').checked;satPlane.visible=on;areaPlane.visible=on;places.visible=on;satCredit.style.display=on?'block':'none'};
@@ -305,7 +306,7 @@ function dzcol(d){if(d>0){const t=Math.min(1,d/2.5);return[.55+.45*t,.55-.35*t,.
  // camera presets (work for any run: framed on the middle of the data)
  const CAM={top:{t:[0,-2,0],c:[0,95,0.01]},sideS:{t:[0,-3,0],c:[0,1,95]},sideE:{t:[0,-3,0],c:[95,1,0]},persp:{t:[0,-4,0],c:[0,55,65]}};
  const camTo=v=>{ctr.target.set(...v.t);cam.position.set(...v.c);ctr.update()};
- document.querySelectorAll('button[data-p]').forEach(b=>b.onclick=()=>camTo(CAM[b.dataset.p]));
+ document.querySelectorAll('button[data-p]').forEach(b=>b.onclick=()=>{window._setUnder(/^side/.test(b.dataset.p),true);camTo(CAM[b.dataset.p])});
  // ---- tools: slice + measure (two clicks on the map, picked on the water surface plane)
  const msg=document.getElementById('toolMsg'),plane=new THREE.Plane(new THREE.Vector3(0,1,0),0),pick=new THREE.Vector3();
  let mode=null,pts=[],down=null;const marks=new THREE.Group();scene.add(marks);
@@ -356,7 +357,7 @@ function dzcol(d){if(d>0){const t=Math.min(1,d/2.5);return[.55+.45*t,.55-.35*t,.
   if(mode=='measure'){line(a,b,0x00e5ff);msg.innerHTML=`Distance <b>${d.toFixed(1)} m</b> along the seabed map · depth ${da.toFixed(1)} m to ${db.toFixed(1)} m · from (${toE(a)} E, ${toN(a)} N) to (${toE(b)} E, ${toN(b)} N)`}
   else{const ux=(b.x-a.x)/d,uz=(b.z-a.z)/d;SL.slAD.value.set(a.x,a.z,ux,uz);SL.slL.value=d;SL.slOn.value=1;line(a,b,0x00e5ff);
    const mid=a.clone().add(b).multiplyScalar(.5);const dist=Math.max(d*1.1,15);
-   ctr.target.set(mid.x,-1.5*world.scale.y,mid.z);cam.position.set(mid.x-uz*dist,-1.5*world.scale.y,mid.z+ux*dist);ctr.update();
+   window._setUnder(true,true);ctr.target.set(mid.x,-1.5*world.scale.y,mid.z);cam.position.set(mid.x-uz*dist,-1.5*world.scale.y,mid.z+ux*dist);ctr.update();
    tgrp.visible=false;og.visible=false;home.visible=false;marks.children.filter(c=>c.isMesh).forEach(c=>c.visible=false);
    msg.innerHTML=`Slice <b>${d.toFixed(1)} m</b> long, ±${SL.slW.value.toFixed(1)} m wide. Looking at it from the side. Rotate freely, or Clear to go back`}
   mode=null});
@@ -434,20 +435,52 @@ function dzcol(d){if(d>0){const t=Math.min(1,d/2.5);return[.55+.45*t,.55-.35*t,.
  document.getElementById('load').remove();
 })().catch(e=>document.getElementById('load').textContent='Could not load: '+e);
 cam.position.set(0,60,70);ctr.target.set(0,-6,0);ctr.update();
-// zoom towards the point under the mouse (on the view plane through the orbit target)
-ctr.enableZoom=false;
-r.domElement.addEventListener('wheel',e=>{e.preventDefault();
- const f=Math.pow(1.0015,e.deltaY);const m=new THREE.Vector2(e.clientX/innerWidth*2-1,-e.clientY/innerHeight*2+1);
- const rc=new THREE.Raycaster();rc.setFromCamera(m,cam);const dir=new THREE.Vector3();cam.getWorldDirection(dir);
- const pl=new THREE.Plane().setFromNormalAndCoplanarPoint(dir,ctr.target),p=new THREE.Vector3();
- if(!rc.ray.intersectPlane(pl,p))return;
- cam.position.sub(p).multiplyScalar(f).add(p);ctr.target.sub(p).multiplyScalar(f).add(p);ctr.update()},{passive:false});
+// ---- navigation: zoom to the spot under the mouse, double-click to fly there, stay above water unless asked
+ctr.enableDamping=true; // OrbitControls zoom stays on for touch pinch; the wheel is handled below
+ctr.dampingFactor=0.12;ctr.screenSpacePanning=false;
+const SURF_Y=1.2;let under=false;
+// what is under the mouse: seabed, then satellite sheets, then the water surface, then the plane through the orbit target
+function spotAt(x,y){const m=new THREE.Vector2(x/innerWidth*2-1,-y/innerHeight*2+1),rc=new THREE.Raycaster();rc.setFromCamera(m,cam);
+ if(window._bedPick){const h=rc.intersectObject(window._bedPick);if(h.length)return h[0].point}
+ const sp=(window._satPlanes||[]).filter(o=>o.visible);if(sp.length){const h=rc.intersectObjects(sp);if(h.length)return h[0].point}
+ const p=new THREE.Vector3();if(rc.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0,1,0),0),p)&&p.distanceTo(cam.position)<cam.far)return p;
+ const dir=new THREE.Vector3();cam.getWorldDirection(dir);return rc.ray.intersectPlane(new THREE.Plane().setFromNormalAndCoplanarPoint(dir,ctr.target),p)?p:null}
+const keepAbove=()=>{if(!under&&cam.position.y<SURF_Y)cam.position.y=SURF_Y};
+ctr.addEventListener('change',keepAbove);
+// smooth wheel / trackpad zoom: queue the amount, ease it in over a few frames
+let zq=0,zp=null;
+addEventListener('wheel',e=>{if(e.target!==r.domElement)return;e.preventDefault();e.stopPropagation();
+ let d=e.deltaY*(e.deltaMode===1?16:e.deltaMode===2?400:1);d=Math.max(-120,Math.min(120,d));
+ const k=e.ctrlKey?0.012:0.0022; // ctrlKey = trackpad pinch
+ const p=spotAt(e.clientX,e.clientY);if(!p)return;zp=p.clone();zq+=d*k},{passive:false,capture:true}); // window capture runs before OrbitControls' own wheel zoom
+function zoomStep(){if(!zp||Math.abs(zq)<1e-4){zq=0;return}
+ const step=zq*0.28;zq-=step;let f=Math.exp(step);
+ if(f<1&&cam.position.distanceTo(zp)*f<0.6)f=Math.min(1,0.6/cam.position.distanceTo(zp)); // never fly through the spot
+ if(f>1&&cam.position.distanceTo(ctr.target)*f>40000)f=1;
+ cam.position.sub(zp).multiplyScalar(f).add(zp);ctr.target.sub(zp).multiplyScalar(f).add(zp);keepAbove();ctr.update()}
+// glide the camera somewhere (used by double-click and the underwater button)
+function glide(t1,c1,ms=900){const t0=ctr.target.clone(),c0=cam.position.clone(),st=performance.now();
+ const step=now=>{let u=Math.min(1,(now-st)/ms);u=1-Math.pow(1-u,3);ctr.target.lerpVectors(t0,t1,u);cam.position.lerpVectors(c0,c1,u);ctr.update();if(u<1)requestAnimationFrame(step)};requestAnimationFrame(step)}
+r.domElement.addEventListener('dblclick',e=>{const p=spotAt(e.clientX,e.clientY);if(!p)return;
+ const off=cam.position.clone().sub(ctr.target),d=off.length(),nd=Math.max(6,d*0.45);off.multiplyScalar(nd/d);
+ const c=p.clone().add(off);if(!under&&c.y<SURF_Y)c.y=SURF_Y;glide(p.clone(),c)});
+// above water / underwater
+const bU=document.getElementById('bUnder');
+window._setUnder=(v,quiet)=>{under=v;bU.textContent=v?'Back above water':'Look underwater';ctr.maxPolarAngle=v?Math.PI:Math.PI*0.495;
+ if(!quiet){const t=ctr.target.clone(),h=new THREE.Vector3(cam.position.x-t.x,0,cam.position.z-t.z),hd=Math.max(12,Math.min(80,h.length()));
+  if(h.length()<1e-3)h.set(0,0,1);h.normalize();
+  if(v){const ud=Math.max(10,Math.min(30,hd));t.y=Math.min(t.y,-5);glide(t,new THREE.Vector3(t.x+h.x*ud,-0.8,t.z+h.z*ud),1100)}
+  else glide(t,new THREE.Vector3(t.x+h.x*hd,Math.max(18,hd*0.8),t.z+h.z*hd),1100)}};
+bU.onclick=()=>window._setUnder(!under);window._setUnder(false,true);
+// orbit style (chosen 25 Nov): drag rotates, right-drag / Shift+drag moves the map along the ground
+ctr.mouseButtons={LEFT:THREE.MOUSE.ROTATE,MIDDLE:THREE.MOUSE.DOLLY,RIGHT:THREE.MOUSE.PAN};ctr.touches={ONE:THREE.TOUCH.ROTATE,TWO:THREE.TOUCH.DOLLY_PAN};
+document.getElementById('help').textContent='Drag to rotate · right-drag (or Shift+drag) to move · scroll to zoom where the mouse is · double-click to fly there · hover the route, objects or seabed';
 function rs(){r.setSize(innerWidth,innerHeight);cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix();if(window._tmat)window._tmat.resolution.set(innerWidth,innerHeight)}addEventListener('resize',rs);rs();
 const needle=document.getElementById('needle');
 function stack(){const i=document.getElementById('info').getBoundingClientRect(),c=document.getElementById('ctl'),t=Math.round(i.bottom+10);
  c.style.top=t+'px';c.style.maxHeight=(innerHeight-t-12)+'px'}
 new ResizeObserver(stack).observe(document.getElementById('info'));addEventListener('resize',stack);stack();
-(function loop(){requestAnimationFrame(loop);needle.style.transform=`rotate(${ctr.getAzimuthalAngle()*180/Math.PI}deg)`;r.render(scene,cam)})();
+(function loop(){requestAnimationFrame(loop);zoomStep();ctr.update();needle.style.transform=`rotate(${ctr.getAzimuthalAngle()*180/Math.PI}deg)`;r.render(scene,cam)})();
 </script><script>// on the NODE website: back link, clay model only (no sonar-colours option)
 if(location.pathname.startsWith('/missions/')){document.getElementById('siteBack').style.display='block';document.getElementById('styleRow').style.display='none'}</script>
 </body></html>
