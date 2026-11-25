@@ -701,6 +701,7 @@ nav li.has-sub:hover .sub, nav li.has-sub:focus-within .sub { display: flex; }
 .member-initials { display: flex; align-items: center; justify-content: center; font-size: 2.5rem; font-weight: 700; letter-spacing: -0.02em; color: var(--gray-light); border: 1px solid var(--gray-light); }
 .member strong { display: block; font-size: 1.0625rem; }
 .member .crew-link strong { display: inline; }
+.member-grid-founder { margin-bottom: 48px; }
 .member span { display: block; font-size: 0.875rem; color: var(--gray-mid); }
 @media (max-width: 1024px) { .member-grid { grid-template-columns: repeat(3, 1fr); } }
 @media (max-width: 640px) { .member-grid { grid-template-columns: 1fr 1fr; gap: 32px 16px; } .member-initials { font-size: 1.75rem; } }

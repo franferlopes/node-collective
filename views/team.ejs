@@ -39,12 +39,12 @@
         { name: 'Belén Comotto', photo: '/images/team/belen-comotto.jpg', title: 'Communications & Strategy Lead', linkedin: 'https://www.linkedin.com/in/belen-comotto-53aaaa197/' },
         { name: 'Salvador Cantuarias', photo: '/images/team/salvador-cantuarias.jpg', title: 'Head of Staff', linkedin: 'https://www.linkedin.com/in/salvador-cantuarias' },
         { name: 'Auxence Daillen', photo: '/images/team/auxence-daillen.jpg', title: 'Hardware Co-Lead', linkedin: 'https://www.linkedin.com/in/auxence-d-32aab7226/' },
+        { name: 'Pit Siebenaler', photo: '/images/team/pit-siebenaler.jpg', title: 'Head of Design', linkedin: 'https://www.linkedin.com/in/pit-siebenaler-a45a15218/' },
         { name: 'Saad Khan', title: 'Fabrication', linkedin: 'https://www.linkedin.com/in/saad-khan-7babb7191/' },
-        { name: 'Marita Georganta', title: 'Founder', linkedin: 'https://www.linkedin.com/in/marita-georganta/' },
       ];
+      const founder = { name: 'Marita Georganta', title: 'Founding Mother', linkedin: 'https://www.linkedin.com/in/marita-georganta/' };
     %>
-    <ul class="member-grid">
-      <% members.forEach(function(m) { %>
+    <% function card(m) { %>
         <li class="member">
           <% if (m.photo) { %>
             <img class="member-photo" src="<%= m.photo %>" alt="<%= m.name %>" loading="lazy">
@@ -58,7 +58,12 @@
           <% } %>
           <% if (m.title) { %><span><%= m.title %></span><% } %>
         </li>
-      <% }); %>
+    <% } %>
+    <ul class="member-grid member-grid-founder">
+      <% card(founder); %>
+    </ul>
+    <ul class="member-grid">
+      <% members.forEach(card); %>
     </ul>
   </section>
 
