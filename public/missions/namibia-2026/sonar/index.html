@@ -446,7 +446,7 @@ function spotAt(x,y){const m=new THREE.Vector2(x/innerWidth*2-1,-y/innerHeight*2
  const sp=(window._satPlanes||[]).filter(o=>o.visible);if(sp.length){const h=rc.intersectObjects(sp);if(h.length)return h[0].point}
  const p=new THREE.Vector3();if(rc.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0,1,0),0),p)&&p.distanceTo(cam.position)<cam.far)return p;
  const dir=new THREE.Vector3();cam.getWorldDirection(dir);return rc.ray.intersectPlane(new THREE.Plane().setFromNormalAndCoplanarPoint(dir,ctr.target),p)?p:null}
-const keepAbove=()=>{if(!under&&cam.position.y<SURF_Y)cam.position.y=SURF_Y};
+const keepAbove=()=>{}; // no blocker: rotate or zoom under the surface freely (25 Nov)
 ctr.addEventListener('change',keepAbove);
 // smooth wheel / trackpad zoom: queue the amount, ease it in over a few frames
 let zq=0,zp=null;
@@ -459,13 +459,13 @@ function zoomStep(){if(!zp)return;if(Math.abs(zq)<1e-4){zq=0;zp=null;recenter();
  if(f<1&&cam.position.distanceTo(zp)*f<0.6)f=Math.min(1,0.6/cam.position.distanceTo(zp)); // never fly through the spot
  if(f>1&&cam.position.distanceTo(ctr.target)*f>9000)f=1;
  cam.position.sub(zp).multiplyScalar(f).add(zp);ctr.target.sub(zp).multiplyScalar(f).add(zp);
- const y=cam.position.y,u=under?y<SURF_Y:(y<SURF_Y&&f<1&&zp.y<0);if(u!==under)window._setUnder(u,true);if(!under&&y<SURF_Y)cam.position.y=SURF_Y;ctr.update()}
+ ctr.update()}
 // glide the camera somewhere (used by double-click and the underwater button)
 function glide(t1,c1,ms=900){const t0=ctr.target.clone(),c0=cam.position.clone(),st=performance.now();
  const step=now=>{let u=Math.min(1,(now-st)/ms);u=1-Math.pow(1-u,3);ctr.target.lerpVectors(t0,t1,u);cam.position.lerpVectors(c0,c1,u);ctr.update();if(u<1)requestAnimationFrame(step)};requestAnimationFrame(step)}
 r.domElement.addEventListener('dblclick',e=>{const p=spotAt(e.clientX,e.clientY);if(!p)return;
  const off=cam.position.clone().sub(ctr.target),d=off.length(),nd=Math.max(6,d*0.45);off.multiplyScalar(nd/d);
- const c=p.clone().add(off);if(!under&&c.y<SURF_Y)c.y=SURF_Y;glide(p.clone(),c)});
+ const c=p.clone().add(off);glide(p.clone(),c)});
 // above water / underwater
 const bU=document.getElementById('bUnder');
 window._setUnder=(v,quiet)=>{under=v;bU.textContent=v?'Back above water':'Look underwater';
@@ -483,7 +483,8 @@ function applyButtons(){const pan=style==='map'||high;
 function adapt(){const d=cam.position.distanceTo(ctr.target);
  const h=high?d>220:d>320;if(h!==high&&!dragging){high=h;applyButtons()}
  const k=Math.min(1,Math.max(0,Math.log(d/120)/Math.log(1500/120)));
- ctr.maxPolarAngle=under?Math.PI:Math.PI*(0.495-0.14*k);ctr.rotateSpeed=1-0.35*k}
+ ctr.maxPolarAngle=Math.PI*(1-0.645*k);ctr.rotateSpeed=1-0.35*k; // free close in, limited tilt only at satellite height
+ const u=cam.position.y<0;if(u!==under){under=u;bU.textContent=u?'Back above water':'Look underwater'}}
 function recenter(){if(dragging)return;const p=spotAt(innerWidth/2,innerHeight/2);if(!p)return;const d=p.distanceTo(cam.position);if(d<0.5||d>20000)return;ctr.target.copy(p);ctr.update()}
 ctr.addEventListener('start',()=>{dragging=true});
 ctr.addEventListener('end',()=>{dragging=false;setTimeout(recenter,450)}); // after the glide of the drag settles
