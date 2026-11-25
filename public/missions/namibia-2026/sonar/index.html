@@ -454,7 +454,7 @@ let pivot=null,pivotT=0;
 addEventListener('wheel',e=>{if(e.target!==r.domElement)return;e.preventDefault();e.stopPropagation();
  // trackpad two-finger swipe (not pinch, not a mouse wheel) close in: rotate around the spot under the fingers
  const pad=!e.ctrlKey&&((e.wheelDeltaY?e.wheelDeltaY===-3*e.deltaY:e.deltaMode===0&&!Number.isInteger(e.deltaY))||e.deltaX!==0);
- if(pad&&!high){const now=performance.now();if(!pivot||now-pivotT>250)pivot=spotAt(e.clientX,e.clientY);pivotT=now;if(pivot){orbitAround(pivot,-e.deltaX*0.005,-e.deltaY*0.004);return}}
+ if(pad){const k=2*Math.PI/innerHeight*ctr.rotateSpeed;orbitAround(ctr.target.clone(),-e.deltaX*k,-e.deltaY*k);adapt();return} // same rotation as a two-finger press-and-swipe
  let d=e.deltaY*(e.deltaMode===1?16:e.deltaMode===2?400:1);d=Math.max(-120,Math.min(120,d));
  const k=e.ctrlKey?0.012:0.0022; // ctrlKey = trackpad pinch
  const p=spotAt(e.clientX,e.clientY);if(!p)return;zp=p.clone();zq+=d*k},{passive:false,capture:true}); // window capture runs before OrbitControls' own wheel zoom
@@ -465,7 +465,7 @@ function orbitAround(p,yaw,pitch){
  _q.setFromAxisAngle(_up,yaw);c.applyQuaternion(_q);t.applyQuaternion(_q);
  _ax.subVectors(t,c).cross(_up).normalize();
  if(_ax.lengthSq()>0){const c2=c.clone().applyQuaternion(_q.setFromAxisAngle(_ax,pitch)),t2=t.clone().applyQuaternion(_q);
-  const v=t2.clone().sub(c2).normalize(),polar=Math.acos(Math.max(-1,Math.min(1,-v.y)));if(polar>0.02&&polar<Math.PI-0.02){c.copy(c2);t.copy(t2)}}
+  const v=t2.clone().sub(c2).normalize(),polar=Math.acos(Math.max(-1,Math.min(1,-v.y)));if(polar>0.02&&polar<Math.min(Math.PI-0.02,ctr.maxPolarAngle)){c.copy(c2);t.copy(t2)}}
  cam.position.copy(c.add(p));ctr.target.copy(t.add(p));ctr.update()}
 function zoomStep(){if(!zp)return;if(Math.abs(zq)<1e-4){zq=0;zp=null;recenter();return}
  const step=zq*0.28;zq-=step;let f=Math.exp(step);
@@ -491,7 +491,7 @@ bU.onclick=()=>window._setUnder(!under);window._setUnder(false,true);
 // orbit style slides the map on drag, tilt is limited so the ground stays in view, rotation slows a little
 let style='orbit',high=false,dragging=false;
 function applyButtons(){const pan=style==='map'||high;
- ctr.mouseButtons=pan?{LEFT:THREE.MOUSE.PAN,MIDDLE:THREE.MOUSE.DOLLY,RIGHT:THREE.MOUSE.ROTATE}:{LEFT:THREE.MOUSE.ROTATE,MIDDLE:THREE.MOUSE.DOLLY,RIGHT:THREE.MOUSE.PAN};
+ ctr.mouseButtons=pan?{LEFT:THREE.MOUSE.PAN,MIDDLE:THREE.MOUSE.DOLLY,RIGHT:THREE.MOUSE.ROTATE}:{LEFT:THREE.MOUSE.ROTATE,MIDDLE:THREE.MOUSE.DOLLY,RIGHT:THREE.MOUSE.ROTATE}; // two-finger press rotates, Shift+drag moves
  ctr.touches=pan?{ONE:THREE.TOUCH.PAN,TWO:THREE.TOUCH.DOLLY_ROTATE}:{ONE:THREE.TOUCH.ROTATE,TWO:THREE.TOUCH.DOLLY_PAN}}
 function adapt(){const d=cam.position.distanceTo(ctr.target);
  const h=high?d>220:d>320;if(h!==high&&!dragging){high=h;applyButtons()}
@@ -508,7 +508,7 @@ function mouseStyle(m){
  if(m==='map'){
   help.textContent='Drag to move · right-drag (or Shift+drag) to rotate · scroll or pinch to zoom where the mouse is (zoom into the seabed to go underwater) · double-click to fly there'}
  else{
-  help.textContent='Drag, or two-finger swipe close in, to rotate around a spot (high up, drag slides the map and right-drag rotates) · right-drag (or Shift+drag) to move · scroll or pinch to zoom where the mouse is (zoom into the seabed to go underwater) · double-click to fly there'}
+  help.textContent='Drag or two-finger swipe to rotate (high up, drag slides the map) · Shift+drag to move · scroll or pinch to zoom where the mouse is (zoom into the seabed to go underwater) · double-click to fly there'}
  document.getElementById('mMap').classList.toggle('on',m==='map');document.getElementById('mOrb').classList.toggle('on',m!=='map');
  try{localStorage.setItem('mouseStyle',m)}catch(_){}}
 document.getElementById('mMap').onclick=()=>mouseStyle('map');document.getElementById('mOrb').onclick=()=>mouseStyle('orbit');
