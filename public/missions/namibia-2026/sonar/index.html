@@ -454,10 +454,10 @@ addEventListener('wheel',e=>{if(e.target!==r.domElement)return;e.preventDefault(
  let d=e.deltaY*(e.deltaMode===1?16:e.deltaMode===2?400:1);d=Math.max(-120,Math.min(120,d));
  const k=e.ctrlKey?0.012:0.0022; // ctrlKey = trackpad pinch
  const p=spotAt(e.clientX,e.clientY);if(!p)return;zp=p.clone();zq+=d*k},{passive:false,capture:true}); // window capture runs before OrbitControls' own wheel zoom
-function zoomStep(){if(!zp||Math.abs(zq)<1e-4){zq=0;return}
+function zoomStep(){if(!zp)return;if(Math.abs(zq)<1e-4){zq=0;zp=null;recenter();return}
  const step=zq*0.28;zq-=step;let f=Math.exp(step);
  if(f<1&&cam.position.distanceTo(zp)*f<0.6)f=Math.min(1,0.6/cam.position.distanceTo(zp)); // never fly through the spot
- if(f>1&&cam.position.distanceTo(ctr.target)*f>40000)f=1;
+ if(f>1&&cam.position.distanceTo(ctr.target)*f>9000)f=1;
  cam.position.sub(zp).multiplyScalar(f).add(zp);ctr.target.sub(zp).multiplyScalar(f).add(zp);
  const y=cam.position.y,u=under?y<SURF_Y:(y<SURF_Y&&f<1&&zp.y<0);if(u!==under)window._setUnder(u,true);if(!under&&y<SURF_Y)cam.position.y=SURF_Y;ctr.update()}
 // glide the camera somewhere (used by double-click and the underwater button)
@@ -468,19 +468,33 @@ r.domElement.addEventListener('dblclick',e=>{const p=spotAt(e.clientX,e.clientY)
  const c=p.clone().add(off);if(!under&&c.y<SURF_Y)c.y=SURF_Y;glide(p.clone(),c)});
 // above water / underwater
 const bU=document.getElementById('bUnder');
-window._setUnder=(v,quiet)=>{under=v;bU.textContent=v?'Back above water':'Look underwater';ctr.maxPolarAngle=v?Math.PI:Math.PI*0.495;
+window._setUnder=(v,quiet)=>{under=v;bU.textContent=v?'Back above water':'Look underwater';
  if(!quiet){const t=ctr.target.clone(),h=new THREE.Vector3(cam.position.x-t.x,0,cam.position.z-t.z),hd=Math.max(12,Math.min(80,h.length()));
   if(h.length()<1e-3)h.set(0,0,1);h.normalize();
   if(v){const ud=Math.max(10,Math.min(30,hd));t.y=Math.min(t.y,-5);glide(t,new THREE.Vector3(t.x+h.x*ud,-0.8,t.z+h.z*ud),1100)}
   else glide(t,new THREE.Vector3(t.x+h.x*hd,Math.max(18,hd*0.8),t.z+h.z*hd),1100)}};
 bU.onclick=()=>window._setUnder(!under);window._setUnder(false,true);
+// height-aware controls: the pivot is always the spot in the middle of the screen; high up (satellite scale)
+// orbit style slides the map on drag, tilt is limited so the ground stays in view, rotation slows a little
+let style='orbit',high=false,dragging=false;
+function applyButtons(){const pan=style==='map'||high;
+ ctr.mouseButtons=pan?{LEFT:THREE.MOUSE.PAN,MIDDLE:THREE.MOUSE.DOLLY,RIGHT:THREE.MOUSE.ROTATE}:{LEFT:THREE.MOUSE.ROTATE,MIDDLE:THREE.MOUSE.DOLLY,RIGHT:THREE.MOUSE.PAN};
+ ctr.touches=pan?{ONE:THREE.TOUCH.PAN,TWO:THREE.TOUCH.DOLLY_ROTATE}:{ONE:THREE.TOUCH.ROTATE,TWO:THREE.TOUCH.DOLLY_PAN}}
+function adapt(){const d=cam.position.distanceTo(ctr.target);
+ const h=high?d>220:d>320;if(h!==high&&!dragging){high=h;applyButtons()}
+ const k=Math.min(1,Math.max(0,Math.log(d/120)/Math.log(1500/120)));
+ ctr.maxPolarAngle=under?Math.PI:Math.PI*(0.495-0.14*k);ctr.rotateSpeed=1-0.35*k}
+function recenter(){if(dragging)return;const p=spotAt(innerWidth/2,innerHeight/2);if(!p)return;const d=p.distanceTo(cam.position);if(d<0.5||d>20000)return;ctr.target.copy(p);ctr.update()}
+ctr.addEventListener('start',()=>{dragging=true});
+ctr.addEventListener('end',()=>{dragging=false;setTimeout(recenter,450)}); // after the glide of the drag settles
 // mouse styles: Map (drag moves the map, right-drag rotates) or Orbit (drag rotates, right-drag moves the map)
 const help=document.getElementById('help');
 function mouseStyle(m){
- if(m==='map'){ctr.mouseButtons={LEFT:THREE.MOUSE.PAN,MIDDLE:THREE.MOUSE.DOLLY,RIGHT:THREE.MOUSE.ROTATE};ctr.touches={ONE:THREE.TOUCH.PAN,TWO:THREE.TOUCH.DOLLY_ROTATE};
+ style=m;applyButtons();
+ if(m==='map'){
   help.textContent='Drag to move · right-drag (or Shift+drag) to rotate · scroll or pinch to zoom where the mouse is (zoom into the seabed to go underwater) · double-click to fly there'}
- else{ctr.mouseButtons={LEFT:THREE.MOUSE.ROTATE,MIDDLE:THREE.MOUSE.DOLLY,RIGHT:THREE.MOUSE.PAN};ctr.touches={ONE:THREE.TOUCH.ROTATE,TWO:THREE.TOUCH.DOLLY_PAN};
-  help.textContent='Drag to rotate · right-drag (or Shift+drag) to move · scroll or pinch to zoom where the mouse is (zoom into the seabed to go underwater) · double-click to fly there'}
+ else{
+  help.textContent='Drag to rotate (high up, drag slides the map and right-drag rotates) · right-drag (or Shift+drag) to move · scroll or pinch to zoom where the mouse is (zoom into the seabed to go underwater) · double-click to fly there'}
  document.getElementById('mMap').classList.toggle('on',m==='map');document.getElementById('mOrb').classList.toggle('on',m!=='map');
  try{localStorage.setItem('mouseStyle',m)}catch(_){}}
 document.getElementById('mMap').onclick=()=>mouseStyle('map');document.getElementById('mOrb').onclick=()=>mouseStyle('orbit');
@@ -490,7 +504,7 @@ const needle=document.getElementById('needle');
 function stack(){const i=document.getElementById('info').getBoundingClientRect(),c=document.getElementById('ctl'),t=Math.round(i.bottom+10);
  c.style.top=t+'px';c.style.maxHeight=(innerHeight-t-12)+'px'}
 new ResizeObserver(stack).observe(document.getElementById('info'));addEventListener('resize',stack);stack();
-(function loop(){requestAnimationFrame(loop);zoomStep();ctr.update();needle.style.transform=`rotate(${ctr.getAzimuthalAngle()*180/Math.PI}deg)`;r.render(scene,cam)})();
+(function loop(){requestAnimationFrame(loop);zoomStep();adapt();ctr.update();needle.style.transform=`rotate(${ctr.getAzimuthalAngle()*180/Math.PI}deg)`;r.render(scene,cam)})();
 </script><script>// on the NODE website: back link, clay model only (no sonar-colours option)
 if(location.pathname.startsWith('/missions/')){document.getElementById('siteBack').style.display='block';document.getElementById('styleRow').style.display='none'}</script>
 </body></html>
