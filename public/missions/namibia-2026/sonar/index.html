@@ -449,15 +449,31 @@ const keepAbove=()=>{if(!under&&cam.position.y<SURF_Y)cam.position.y=SURF_Y};
 ctr.addEventListener('change',keepAbove);
 // smooth wheel / trackpad zoom: queue the amount, ease it in over a few frames
 let zq=0,zp=null;
+// wheel input: mouse wheel and trackpad pinch zoom to the spot under the mouse; trackpad two-finger drag rotates around that spot
+let pivot=null,pivotT=0;
 addEventListener('wheel',e=>{if(e.target!==r.domElement)return;e.preventDefault();e.stopPropagation();
+ const pad=e.ctrlKey?false:(e.wheelDeltaY?e.wheelDeltaY===-3*e.deltaY:e.deltaMode===0&&!Number.isInteger(e.deltaY))||e.deltaX!==0; // Chrome/Safari trackpad heuristic
+ if(pad){const now=performance.now();if(!pivot||now-pivotT>250)pivot=spotAt(e.clientX,e.clientY);pivotT=now;if(pivot)orbitAround(pivot,-e.deltaX*0.005,-e.deltaY*0.004);return}
  let d=e.deltaY*(e.deltaMode===1?16:e.deltaMode===2?400:1);d=Math.max(-120,Math.min(120,d));
  const k=e.ctrlKey?0.012:0.0022; // ctrlKey = trackpad pinch
  const p=spotAt(e.clientX,e.clientY);if(!p)return;zp=p.clone();zq+=d*k},{passive:false,capture:true}); // window capture runs before OrbitControls' own wheel zoom
+// rotate camera and orbit target together around a point (yaw about the vertical, pitch about the camera's right axis)
+const _q=new THREE.Quaternion(),_ax=new THREE.Vector3(),_up=new THREE.Vector3(0,1,0);
+function orbitAround(p,yaw,pitch){
+ const c=cam.position.clone().sub(p),t=ctr.target.clone().sub(p);
+ _q.setFromAxisAngle(_up,yaw);c.applyQuaternion(_q);t.applyQuaternion(_q);
+ _ax.subVectors(t,c).cross(_up).normalize();
+ if(_ax.lengthSq()>0){const c2=c.clone().applyQuaternion(_q.setFromAxisAngle(_ax,pitch)),t2=t.clone().applyQuaternion(_q);
+  const v=t2.clone().sub(c2).normalize(),polar=Math.acos(Math.max(-1,Math.min(1,-v.y))); // angle of the view from straight down
+  const ok=polar>0.02&&polar<Math.PI-0.02&&(under||c2.y+p.y>=SURF_Y);if(ok){c.copy(c2);t.copy(t2)}}
+ cam.position.copy(c.add(p));ctr.target.copy(t.add(p));ctr.update()}
 function zoomStep(){if(!zp||Math.abs(zq)<1e-4){zq=0;return}
  const step=zq*0.28;zq-=step;let f=Math.exp(step);
  if(f<1&&cam.position.distanceTo(zp)*f<0.6)f=Math.min(1,0.6/cam.position.distanceTo(zp)); // never fly through the spot
  if(f>1&&cam.position.distanceTo(ctr.target)*f>40000)f=1;
- cam.position.sub(zp).multiplyScalar(f).add(zp);ctr.target.sub(zp).multiplyScalar(f).add(zp);keepAbove();ctr.update()}
+ cam.position.sub(zp).multiplyScalar(f).add(zp);ctr.target.sub(zp).multiplyScalar(f).add(zp);
+ // zooming in towards the seabed takes you under the surface, zooming back out brings you up
+ const y=cam.position.y,u=under?y<SURF_Y:(y<SURF_Y&&f<1&&zp.y<0);if(u!==under)window._setUnder(u,true);if(!under&&y<SURF_Y)cam.position.y=SURF_Y;ctr.update()}
 // glide the camera somewhere (used by double-click and the underwater button)
 function glide(t1,c1,ms=900){const t0=ctr.target.clone(),c0=cam.position.clone(),st=performance.now();
  const step=now=>{let u=Math.min(1,(now-st)/ms);u=1-Math.pow(1-u,3);ctr.target.lerpVectors(t0,t1,u);cam.position.lerpVectors(c0,c1,u);ctr.update();if(u<1)requestAnimationFrame(step)};requestAnimationFrame(step)}
@@ -474,7 +490,7 @@ window._setUnder=(v,quiet)=>{under=v;bU.textContent=v?'Back above water':'Look u
 bU.onclick=()=>window._setUnder(!under);window._setUnder(false,true);
 // orbit style (chosen 25 Nov): drag rotates, right-drag / Shift+drag moves the map along the ground
 ctr.mouseButtons={LEFT:THREE.MOUSE.ROTATE,MIDDLE:THREE.MOUSE.DOLLY,RIGHT:THREE.MOUSE.PAN};ctr.touches={ONE:THREE.TOUCH.ROTATE,TWO:THREE.TOUCH.DOLLY_PAN};
-document.getElementById('help').textContent='Drag to rotate · right-drag (or Shift+drag) to move · scroll to zoom where the mouse is · double-click to fly there · hover the route, objects or seabed';
+document.getElementById('help').textContent='Drag or two-finger swipe to rotate around a spot · pinch or scroll to zoom (zoom into the seabed to go underwater) · right-drag to move · double-click to fly there';
 function rs(){r.setSize(innerWidth,innerHeight);cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix();if(window._tmat)window._tmat.resolution.set(innerWidth,innerHeight)}addEventListener('resize',rs);rs();
 const needle=document.getElementById('needle');
 function stack(){const i=document.getElementById('info').getBoundingClientRect(),c=document.getElementById('ctl'),t=Math.round(i.bottom+10);
