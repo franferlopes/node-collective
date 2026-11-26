@@ -389,6 +389,11 @@ function dzcol(d){if(d>0){const t=Math.min(1,d/2.5);return[.55+.45*t,.55-.35*t,.
  ex.oninput=applyEx;applyEx();
  document.querySelectorAll('input[name=base]').forEach(el=>el.onchange=()=>{const v=document.querySelector('input[name=base]:checked').value;L.cloud.visible=v=='cloud';L.seabed.visible=v=='seabed'});
  document.getElementById('o').onchange=e=>{og.visible=e.target.checked;window._showAs()};
+ // reveal: the pier, rocks and objects fade in as you come down (the satellite fades out): hidden above ~400 m, full below ~80 m
+ rings.forEach(m=>m.userData.op=m.material.opacity);
+ window._revealTick=()=>{const h=Math.max(cam.position.y,1),r=Math.min(1,Math.max(0,(Math.log10(400)-Math.log10(h))/(Math.log10(400)-Math.log10(80))));
+  [L.hl,L.obj].forEach(l=>{if(!l)return;l.material.transparent=r<1;l.material.opacity=r;l.material.depthWrite=r>=1});
+  rings.forEach(m=>m.material.opacity=m.userData.op*r)};
  document.getElementById('t').onchange=e=>{const v=e.target.checked;tgrp.visible=v;boat.visible=v;[fan,foot,edges].forEach(o=>o.visible=v)};
  document.getElementById('ps').oninput=e=>mats.forEach(m=>m.size=m.userData.base*+e.target.value);
  const ray=new THREE.Raycaster(),mv=new THREE.Vector2(),tip=document.getElementById('tip');
@@ -556,7 +561,7 @@ function dzcol(d){if(d>0){const t=Math.min(1,d/2.5);return[.55+.45*t,.55-.35*t,.
  document.getElementById('g').addEventListener('change',()=>setStyle(clay));
  // ---- baseline: Reset applies BASE; "Copy my settings" captures the current state so it can become the new BASE
  // Francisco's baseline (24 Nov 2026)
- const BASE={style:'clay',surf:'mesh',base:'seabed',objects:false,structures:false,water:false,kmin:15,grid:true,sat:true,satOp:45,track:false,beam:false,boatTrueSize:false,ex:2,ps:0.75,slw:0.5,cam:{t:[-9.55,-0.78,1.61],c:[71.39,35.53,6.61]}};
+ const BASE={style:'clay',surf:'mesh',base:'seabed',objects:true,structures:true,water:false,kmin:15,grid:true,sat:true,satOp:45,track:false,beam:false,boatTrueSize:false,ex:2,ps:0.75,slw:0.5,cam:{t:[-9.55,-0.78,1.61],c:[71.39,35.53,6.61]}};
  // start (and reset) on an overview of Luderitz: the Kelp Blue pin in front, Shearwater Bay behind
  BASE.cam=(()=>{const P2=(e,n)=>[e-cx,-(n-cy)],[tx,tz]=P2(-1700,250),[qx,qz]=P2(2500,-1000);return{t:[tx,0,tz],c:[qx,1250,qz]}})();
  const chk=(id,v)=>{const e=document.getElementById(id);if(e&&e.checked!==v)e.click()};
@@ -667,7 +672,7 @@ const needle=document.getElementById('needle');
 function stack(){const i=document.getElementById('info').getBoundingClientRect(),c=document.getElementById('ctl'),t=Math.round(i.bottom+10);
  c.style.top=t+'px';c.style.maxHeight=(innerHeight-t-12)+'px'}
 new ResizeObserver(stack).observe(document.getElementById('info'));addEventListener('resize',stack);stack();
-(function loop(){requestAnimationFrame(loop);zoomStep();adapt();ctr.update();if(window._placesTick)window._placesTick();if(window._satTick)window._satTick();if(window._ctxTick)window._ctxTick();needle.style.transform=`rotate(${ctr.getAzimuthalAngle()*180/Math.PI}deg)`;r.render(scene,cam)})();
+(function loop(){requestAnimationFrame(loop);zoomStep();adapt();ctr.update();if(window._placesTick)window._placesTick();if(window._satTick)window._satTick();if(window._ctxTick)window._ctxTick();if(window._revealTick)window._revealTick();needle.style.transform=`rotate(${ctr.getAzimuthalAngle()*180/Math.PI}deg)`;r.render(scene,cam)})();
 </script><script>// on the NODE website: back link, clay model only (no sonar-colours option)
 if(location.pathname.startsWith('/missions/')){document.getElementById('siteBack').style.display='block';document.getElementById('styleRow').style.display='none'}</script>
 </body></html>
