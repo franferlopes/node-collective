@@ -49,6 +49,21 @@ body.clay .panel{box-shadow:0 1px 6px rgba(0,0,0,.12)}
 #helpBtn{position:fixed;left:12px;bottom:12px;width:34px;height:34px;border-radius:50%;border:0;background:rgba(250,250,248,.92);box-shadow:0 2px 10px rgba(0,0,0,.12);font:600 15px 'Inter Tight',Inter,sans-serif;color:#151515;cursor:pointer;z-index:15}
 body:not(.ready) #bar,body:not(.ready) #helpBtn{opacity:0;pointer-events:none}
 @media (max-width:700px){#legend,#info{display:none}}
+#bar .sm{display:none}
+@media (max-width:700px){
+ #bar{left:8px;right:8px;transform:none;bottom:14px;flex-wrap:nowrap;gap:2px;padding:4px;max-width:none}
+ #bar button{flex:1 1 0;flex-direction:column;gap:4px;padding:8px 2px;font-size:11px;white-space:normal;line-height:1.15;text-align:center}
+ #bar .lg{display:none} #bar .sm{display:inline}
+ #routeHud{bottom:80px;font-size:10.5px}
+ #ctx{left:8px;right:8px;width:auto;top:auto;bottom:80px;max-height:34vh;padding:12px 14px 10px}
+ body.routeOn #ctx{bottom:110px}
+ #ctx h3{font-size:16px;margin:2px 0 6px} #ctx p{font-size:12.5px;margin-bottom:6px}
+ #ctx .ci{top:13px;right:44px}
+ #compass{top:12px!important;bottom:auto!important}
+ #helpBtn{left:auto;right:62px;top:14px;bottom:auto}
+ #satCredit{font-size:8px!important;bottom:1px!important}
+ .tcard{padding:18px 18px 14px} .trow{padding:7px 0}
+}
 #tut{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;background:rgba(21,21,21,.28);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);padding:16px}
 #tut.off{display:none}
 .tcard{position:relative;width:340px;max-width:100%;box-sizing:border-box;background:#fafaf8;color:#151515;border-radius:14px;padding:22px 22px 18px;box-shadow:0 10px 40px rgba(0,0,0,.18);font-family:'Inter Tight',Inter,system-ui,sans-serif}
@@ -119,10 +134,10 @@ body:not(.ready) #bar,body:not(.ready) #helpBtn{opacity:0;pointer-events:none}
 </div>
 <div id="depthHud" class="panel" style="bottom:12px;right:64px;padding:6px 10px;font-size:12px;display:none"></div>
 <div id="bar">
-<button data-b="route"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="18" r="2"/><circle cx="19" cy="6" r="2"/><path d="M7 18h6a3 3 0 0 0 0-6H11a3 3 0 0 1 0-6h6"/></svg>Route</button>
-<button data-b="dense"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="7" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="17" cy="9" r="1"/><circle cx="8" cy="13" r="1"/><circle cx="15" cy="15" r="1"/><circle cx="10" cy="19" r="1"/><circle cx="19" cy="18" r="1"/></svg>Less dense points</button>
-<button data-b="objects"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><path d="M4 12h16M12 4c2.5 2.2 2.5 13.8 0 16M12 4c-2.5 2.2-2.5 13.8 0 16"/></svg>Objects</button>
-<button data-b="bay"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s6-6.2 6-11a6 6 0 1 0-12 0c0 4.8 6 11 6 11z"/><circle cx="12" cy="10" r="2"/></svg><span>Fly to Shearwater Bay</span></button>
+<button data-b="route"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="18" r="2"/><circle cx="19" cy="6" r="2"/><path d="M7 18h6a3 3 0 0 0 0-6H11a3 3 0 0 1 0-6h6"/></svg><span class="lg">Route</span><span class="sm">Route</span></button>
+<button data-b="dense"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="7" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="17" cy="9" r="1"/><circle cx="8" cy="13" r="1"/><circle cx="15" cy="15" r="1"/><circle cx="10" cy="19" r="1"/><circle cx="19" cy="18" r="1"/></svg><span class="lg">Less dense points</span><span class="sm">Less dense</span></button>
+<button data-b="objects"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><path d="M4 12h16M12 4c2.5 2.2 2.5 13.8 0 16M12 4c-2.5 2.2-2.5 13.8 0 16"/></svg><span class="lg">Objects</span><span class="sm">Objects</span></button>
+<button data-b="bay"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s6-6.2 6-11a6 6 0 1 0-12 0c0 4.8 6 11 6 11z"/><circle cx="12" cy="10" r="2"/></svg><span class="lg">Fly to Shearwater Bay</span><span class="sm">Shearwater</span></button>
 </div>
 <div id="routeHud"></div>
 <button id="helpBtn" title="How to explore">?</button>
@@ -132,16 +147,18 @@ body:not(.ready) #bar,body:not(.ready) #helpBtn{opacity:0;pointer-events:none}
 <button class="tx" id="tutX" title="Close">✕</button>
 <div class="tk">ASKET SONAR</div>
 <h2 id="tutT">How to explore</h2>
-<div class="trow"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-2.3-5.6"/><path d="M20 4v4h-4"/></svg><div><b>Rotate</b><span>Drag, or press and swipe with two fingers</span></div></div>
-<div class="trow"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M3 12h18"/><path d="M9 6l3-3 3 3M9 18l3 3 3-3M6 9l-3 3 3 3M18 9l3 3-3 3"/></svg><div><b>Move</b><span>Swipe sideways with two fingers, or Shift + drag</span></div></div>
-<div class="trow"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21M10.5 7.5v6M7.5 10.5h6"/></svg><div><b>Zoom</b><span>Pinch, scroll, or swipe forward and back</span></div></div>
+<div class="trow"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-2.3-5.6"/><path d="M20 4v4h-4"/></svg><div><b>Rotate</b><span id="tRot">Drag, or press and swipe with two fingers</span></div></div>
+<div class="trow"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M3 12h18"/><path d="M9 6l3-3 3 3M9 18l3 3 3-3M6 9l-3 3 3 3M18 9l3 3-3 3"/></svg><div><b>Move</b><span id="tMove">Swipe sideways with two fingers, or Shift + drag</span></div></div>
+<div class="trow"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21M10.5 7.5v6M7.5 10.5h6"/></svg><div><b>Zoom</b><span id="tZoom">Pinch, scroll, or swipe forward and back</span></div></div>
 <div class="trow"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7c2-1.5 4-1.5 6 0s4 1.5 6 0 4-1.5 6 0"/><path d="M12 11v9M8.5 16.5L12 20l3.5-3.5"/></svg><div><b>Go underwater</b><span>Keep zooming into the seabed</span></div></div>
-<div class="trow"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg><div><b>Fly to a spot</b><span>Double-click anywhere</span></div></div>
+<div class="trow"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg><div><b>Fly to a spot</b><span id="tFly">Double-click anywhere, or click a pin</span></div></div>
 <button class="tgo" id="tutGo">Start exploring</button>
 </div></div>
 <div id="tip"></div>
 <script>
 // welcome tutorial: shown every time the viewer opens; ? in the panel opens it again
+(()=>{if(matchMedia('(pointer:coarse)').matches){const T=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
+  T('tRot','Drag with one finger');T('tMove','Drag with two fingers');T('tZoom','Pinch with two fingers');T('tFly','Double-tap anywhere, or tap a pin')}})();
 (()=>{const t=document.getElementById('tut'),close=()=>t.classList.add('off');
  document.getElementById('tutGo').onclick=close;document.getElementById('tutX').onclick=close;
  t.addEventListener('click',e=>{if(e.target===t)close()});addEventListener('keydown',e=>{if(e.key==='Escape')close()});
@@ -159,6 +176,11 @@ body:not(.ready) #bar,body:not(.ready) #helpBtn{opacity:0;pointer-events:none}
 const S=new URLSearchParams(location.search).get('run')||'2026-11-24-07-27', R='runs/'+S+'/';
 // NODE accent for the speed ramp: swap this one value for the brand hex
 const NODE_ACCENT='#e1ff4f', KN_MAX=3;
+// on a tall (phone) screen the same view is framed from further back so it fits the narrow width
+function fitView(t,c){const a=innerWidth/innerHeight;if(a>=1)return [t,c];const f=Math.min(2,.95/a),c2=c.map((v,i)=>t[i]+(v-t[i])*f);
+ // and slide the view toward the camera so the subject sits in the open space above the card and the buttons
+ const dx=t[0]-c2[0],dz=t[2]-c2[2],L=Math.hypot(dx,dz)||1,d=Math.hypot(dx,c2[1]-t[1],dz)*.16;
+ return [[t[0]-dx/L*d,t[1],t[2]-dz/L*d],[c2[0]-dx/L*d,c2[1],c2[2]-dz/L*d]]}
 // route speed ramp: dim accent (slow) -> full accent (fast)
 const hex=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)/255), ACC=hex(NODE_ACCENT), SLOW=hex('#4a5214');
 const VIR=[[253,231,37],[94,201,98],[33,145,140],[59,82,139],[68,1,84]];
@@ -270,7 +292,7 @@ function dzcol(d){if(d>0){const t=Math.min(1,d/2.5);return[.55+.45*t,.55-.35*t,.
  // wider area (jetty to Shearwater Bay, tools/area_sat.py), a sheet just under the run's own image
  const areaMat=new THREE.MeshBasicMaterial({transparent:true,opacity:.45,depthWrite:false,side:THREE.DoubleSide,stencilWrite:true,stencilRef:1,stencilFunc:THREE.NotEqualStencilFunc,stencilZPass:THREE.KeepStencilOp});
  const areaPlane=new THREE.Mesh(new THREE.PlaneGeometry(1,1),areaMat);areaPlane.rotation.x=-Math.PI/2;areaPlane.visible=false;areaPlane.renderOrder=4;scene.add(areaPlane);
- const places=new THREE.Group();places.visible=false;scene.add(places);let bay=null,kelpXZ=null;window._satPlanes=[satPlane,areaPlane];
+ const places=new THREE.Group();places.visible=false;scene.add(places);let bay=null,kelpXZ=null;window._places=places;window._satPlanes=[satPlane,areaPlane];
  {const la0=REP.home[0],lo0=REP.home[1],mlat=111320,mlon=111320*Math.cos(la0*Math.PI/180);
   const P=(lat,lon)=>[(lon-lo0)*mlon-cx,-((lat-la0)*mlat-cy)];
   fetch('area_sat.json').then(r=>{if(!r.ok)throw 0;return r.json()}).then(m=>{
@@ -282,15 +304,15 @@ function dzcol(d){if(d>0){const t=Math.min(1,d/2.5);return[.55+.45*t,.55-.35*t,.
      if(p.caps===false){g.font='600 60px "Inter Tight",Inter,Helvetica,Arial';g.fillStyle='#fff';const lf=p.side==='left';g.textAlign=lf?'right':'center';g.fillText(p.name,lf?930:512,148)} // landmark: plain name, no pin; side 'left' = ends at the spot
      else{g.font='500 54px "Inter Tight",Inter,Helvetica,Arial';if('letterSpacing' in g)g.letterSpacing='14px';g.fillStyle='rgba(255,255,255,.92)';g.textAlign='center';g.fillText(p.name.toUpperCase(),512,148)}
      const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),depthTest:false,transparent:true,sizeAttenuation:false}));
-     const h=.1*(+p.size||1);sp.scale.set(h*4,h,1);sp.center.set(p.side==='left'?1:.5,.5);sp.renderOrder=12;const [x,z]=P(p.lat,p.lon);sp.position.set(x,0.3,z);sp.userData={near:+p.near||0};places.add(sp);return [x,z]}
+     const h=.1*(+p.size||1)*(innerWidth<innerHeight?.72:1);sp.scale.set(h*4,h,1);sp.center.set(p.side==='left'?1:.5,.5);sp.renderOrder=12;const [x,z]=P(p.lat,p.lon);sp.position.set(x,0.3,z);sp.userData={near:+p.near||0,name:p.name};places.add(sp);return [x,z]}
     const L=p.side==='left',px=L?994:30; // side 'left': text to the left of the pin (when two places line up)
     g.strokeStyle='#111';g.lineWidth=5;g.lineCap='round';g.beginPath();g.moveTo(px,56);g.lineTo(px,250);g.stroke();
     g.beginPath();g.arc(px,40,15,0,7);g.fillStyle='#111';g.fill();g.textAlign=L?'right':'left';
     g.font='600 64px "Inter Tight",Inter,Helvetica,Arial';g.fillStyle='#fff';g.fillText(p.name,L?958:66,96);
     g.font='700 34px "JetBrains Mono",ui-monospace,monospace';if('letterSpacing' in g)g.letterSpacing='4px';g.fillStyle=NODE_ACCENT;if(p.sub)g.fillText(p.sub.toUpperCase(),L?956:68,146);
     const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),depthTest:false,transparent:true,sizeAttenuation:false}));
-    const h=.1*(+p.size||1);sp.scale.set(h*4,h,1);
-    sp.center.set(px/1024,6/256);sp.renderOrder=12;const [x,z]=P(p.lat,p.lon);sp.position.set(x,0.3,z);sp.userData={near:+p.near||0};places.add(sp);return [x,z]};
+    const h=.1*(+p.size||1)*(innerWidth<innerHeight?.72:1);sp.scale.set(h*4,h,1);
+    sp.center.set(px/1024,6/256);sp.renderOrder=12;const [x,z]=P(p.lat,p.lon);sp.position.set(x,0.3,z);sp.userData={near:+p.near||0,name:p.name};places.add(sp);return [x,z]};
    Promise.all([document.fonts.load('600 64px "Inter Tight"'),document.fonts.load('700 34px "JetBrains Mono"')]).catch(()=>{})
     .then(()=>m.places.forEach(p=>{const xz=drawPlace(p);if(/shearwater/i.test(p.name)){bay=xz;window._bayXZ=xz}if(/kelp blue/i.test(p.name))kelpXZ=xz}));
    // fixed size on screen, set per place ("size" in area_sat.json); "near" fades a label out when zoomed in closer than that
@@ -309,7 +331,7 @@ function dzcol(d){if(d>0){const t=Math.min(1,d/2.5);return[.55+.45*t,.55-.35*t,.
      'Here they are probably algae growing on the rocks, but they could also be kelp, ropes, fish, bubbles or loose sediment. On the kelp farm, this layer is how we hope to see the kelp itself.']},
     objects:{ic3d:'globe',k:'Objects',t:'What stands out',b:['The sonar sends pulses of sound and listens for the echoes. Where echoes bunch into a compact shape that stands out from the seabed, the software marks it as a candidate object: the wireframe spheres. Everything else stays as points, like the seabed, the long rocky edges and the pier.',
      'This sonar\'s sound bounces off the seabed surface and does not go into the sand, so it cannot see buried things. The grey spheres below the seabed are most likely echoes of echoes, sound that bounced twice, not real buried objects.']},
-    over:{k:'Namibia 2026',t:'ASKET in Lüderitz',b:['Zoom into a pin to explore: our first sonar test at Kelp Blue, or their kelp farm in Shearwater Bay.']},
+    over:{k:'Namibia 2026',t:'ASKET in Lüderitz',b:['Click or tap a pin to fly there: our first sonar test at Kelp Blue, or their kelp farm in Shearwater Bay.']},
     kelp:{k:'First test · 24 Nov 2026',t:'Kelp Blue Trading',b:['ASKET\'s first time in the water with its sonar. We launched from the slipway next to the Kelp Blue office and drove loops around this small bay for 10 minutes, until a propeller stopped and we brought the boat back in.',
      'In those 10 minutes the sonar logged over 2 million points: a seabed 1 to 2.5 m deep, the columns of the pier, the rocks around the bay and softer clusters on them that are probably algae.',
      'We were going about 1.5 knots, too fast for a sharp image. Next time we survey below 1 knot.']},
@@ -334,8 +356,11 @@ function dzcol(d){if(d>0){const t=Math.min(1,d/2.5);return[.55+.45*t,.55-.35*t,.
   const step=now=>{let u=Math.min(1,(now-st)/ms);u=u<.5?4*u*u*u:1-Math.pow(-2*u+2,3)/2;ctr.target.lerpVectors(t0,T,u);cam.position.lerpVectors(c0,C,u);ctr.update();if(u<1)requestAnimationFrame(step)};requestAnimationFrame(step)};
  document.getElementById('bBay').onclick=()=>{const b=document.getElementById('bBay');
   if(!atBay&&bay){window._setUnder(false,true);runView={t:ctr.target.toArray(),c:cam.position.toArray()};if(!document.getElementById('sat').checked){document.getElementById('sat').checked=true;satOn()}
-   fly([bay[0],0,bay[1]+250],[bay[0]+150,1500,bay[1]+1650]);b.textContent='Back to the run';atBay=true}
-  else if(runView){fly(runView.t,runView.c);b.textContent='Fly to Shearwater Bay';atBay=false}};
+   window._ctxOverride=null;fly(...fitView([bay[0],0,bay[1]+250],[bay[0]+150,1500,bay[1]+1650]));b.textContent='Back to the run';atBay=true;window._syncBayBtn&&window._syncBayBtn()}
+  else if(runView){fly(runView.t,runView.c);b.textContent='Fly to Shearwater Bay';atBay=false;window._syncBayBtn&&window._syncBayBtn()}};
+ // tap or click a pin: fly there (also the easy way back from the bay)
+ window._bayGo=()=>{if(!atBay)document.getElementById('bBay').click()};
+ window._kelpGo=()=>{atBay=false;document.getElementById('bBay').textContent='Fly to Shearwater Bay';window._syncBayBtn&&window._syncBayBtn();window._toRun&&window._toRun(true)};
  const satOn=()=>{const on=document.getElementById('sat').checked;satPlane.visible=on;areaPlane.visible=on;places.visible=on;satCredit.style.display=on?'block':'none'};
  document.getElementById('sat').onchange=satOn;
  document.getElementById('satOp').oninput=e=>{satMat.opacity=areaMat.opacity=e.target.value/100;document.getElementById('satOpv').textContent=e.target.value+'%'};
@@ -592,12 +617,12 @@ function dzcol(d){if(d>0){const t=Math.min(1,d/2.5);return[.55+.45*t,.55-.35*t,.
  // Francisco's baseline (24 Nov 2026)
  const BASE={style:'clay',surf:'mesh',base:'seabed',objects:false,structures:true,water:false,kmin:15,grid:true,sat:true,satOp:45,track:false,beam:false,boatTrueSize:false,ex:2,ps:0.75,slw:0.5,cam:{t:[-9.55,-0.78,1.61],c:[71.39,35.53,6.61]}};
  // start (and reset) on an overview of Luderitz: the Kelp Blue pin in front, Shearwater Bay behind
- BASE.cam=(()=>{const P2=(e,n)=>[e-cx,-(n-cy)],[tx,tz]=P2(-1700,250),[qx,qz]=P2(2500,-1000);return{t:[tx,0,tz],c:[qx,1250,qz]}})();
+ window._overT=null;BASE.cam=(()=>{const P2=(e,n)=>[e-cx,-(n-cy)],[tx,tz]=P2(-1700,250),[qx,qz]=P2(2500,-1000);return{t:[tx,0,tz],c:[qx,1250,qz]}})();window._overT=BASE.cam.t;
  const chk=(id,v)=>{const e=document.getElementById(id);if(e&&e.checked!==v)e.click()};
  function applySettings(s){document.querySelector(`input[name=base][value=${s.base}]`).click();
   chk('o',s.objects);chk('hl',s.structures);chk('k',s.water);set('#kmin',s.kmin,'input');chk('g',s.grid);chk('sat',!!s.sat);set('#satOp',s.satOp||45,'input');chk('t',s.track);chk('beam',s.beam);chk('bsize',s.boatTrueSize);
   set('#ex',s.ex,'input');set('#ps',s.ps,'input');set('#slw',Math.round(s.slw*10),'input');
-  setSurf('mesh');window._surf='mesh';setStyle(s.style=='clay');camTo(s.cam);if(s.deploy)window._setDeploy(s.deploy.e,s.deploy.n,true);window._showAs()}
+  setSurf('mesh');window._surf='mesh';setStyle(s.style=='clay');{const [ft,fc]=fitView(s.cam.t,s.cam.c);camTo({t:ft,c:fc})}if(s.deploy)window._setDeploy(s.deploy.e,s.deploy.n,true);window._showAs()}
  // run picker (runs.json lists the processed runs, newest first)
  fetch('runs.json').then(r=>r.json()).then(list=>{if(!list.length)return;const sel=document.createElement('select');sel.style.marginTop='4px';
   list.forEach(x=>{const o=document.createElement('option');o.value=x;o.textContent=x;if(x==S)o.selected=true;sel.appendChild(o)});
@@ -655,7 +680,8 @@ function orbitAround(p,yaw,pitch){
 function zoomStep(){if(!zp)return;if(Math.abs(zq)<1e-4){zq=0;zp=null;recenter();return}
  const step=zq*0.28;zq-=step;let f=Math.exp(step);
  if(f<1&&cam.position.distanceTo(zp)*f<0.6)f=Math.min(1,0.6/cam.position.distanceTo(zp)); // never fly through the spot
- if(f>1&&cam.position.distanceTo(ctr.target)*f>9000)f=1;
+ if(f>1&&window._overT&&cam.position.distanceTo(ctr.target)>1500){const k=Math.min(.15,(f-1)*2.5),dx=(window._overT[0]-ctr.target.x)*k,dz=(window._overT[2]-ctr.target.z)*k;cam.position.x+=dx;cam.position.z+=dz;ctr.target.x+=dx;ctr.target.z+=dz}
+ if(f>1&&cam.position.distanceTo(ctr.target)*f>9000)f=1; // drift keeps working at the zoom-out limit
  cam.position.sub(zp).multiplyScalar(f).add(zp);ctr.target.sub(zp).multiplyScalar(f).add(zp);
  ctr.update()}
 // glide the camera somewhere (used by double-click and the underwater button)
@@ -678,22 +704,33 @@ function glide(t1,c1,ms=900){const t0=ctr.target.clone(),c0=cam.position.clone()
  window._icon3d=k=>{S2.remove(globe,hull);S2.add(k==='globe'?globe:hull);if(!raf)requestAnimationFrame(()=>{if(!raf)loop()});return cv}}
 // bottom bar: three views of the run plus the flight to Shearwater Bay; each opens its explanation in the card
 {const RUN_VIEW={t:[-9.55,-0.78,1.61],c:[71.39,35.53,6.61]},V=(a)=>new THREE.Vector3(...a);
- const toRun=()=>{if(cam.position.y>250){window._setUnder&&window._setUnder(false,true);glide(V(RUN_VIEW.t),V(RUN_VIEW.c),1800);return true}return false};
+ const toRun=(force)=>{if(force||cam.position.y>250){window._setUnder&&window._setUnder(false,true);const [t,c]=fitView(RUN_VIEW.t,RUN_VIEW.c);glide(V(t),V(c),1800);return true}return false};window._toRun=toRun;
  const btn=k=>document.querySelector(`#bar [data-b="${k}"]`),chk=(id,v)=>{const e=document.getElementById(id);if(e.checked!==v)e.click()};
  const hud=document.getElementById('routeHud'),play=document.getElementById('play'),scrub=document.getElementById('scrub'),sv=document.getElementById('scrubv');
  const isPlaying=()=>play.textContent!=='▶';
  const set=(k,on)=>{btn(k).classList.toggle('on',on);if(on)window._ctxOverride=k;else if(window._ctxOverride===k)window._ctxOverride=null};
- btn('route').onclick=()=>{const on=!btn('route').classList.contains('on');set('route',on);chk('t',on);hud.style.display=on?'block':'none';
+ btn('route').onclick=()=>{const on=!btn('route').classList.contains('on');set('route',on);chk('t',on);hud.style.display=on?'block':'none';document.body.classList.toggle('routeOn',on);
   if(on){const flew=toRun();scrub.value=0;scrub.dispatchEvent(new Event('input'));setTimeout(()=>{if(!isPlaying()&&btn('route').classList.contains('on'))play.click()},flew?1900:100)}else if(isPlaying())play.click()};
  btn('dense').onclick=()=>{const on=!btn('dense').classList.contains('on');set('dense',on);chk('k',on);if(on)toRun()};
  btn('objects').onclick=()=>{const on=!btn('objects').classList.contains('on');set('objects',on);chk('o',on);if(on)toRun()};
- btn('bay').onclick=()=>{const b=document.getElementById('bBay');b.click();const back=/back/i.test(b.textContent);btn('bay').querySelector('span').textContent=back?'Back to the run':'Fly to Shearwater Bay'};
+ window._syncBayBtn=()=>{const back=/back/i.test(document.getElementById('bBay').textContent);btn('bay').querySelector('.lg').textContent=back?'Back to the run':'Fly to Shearwater Bay';btn('bay').querySelector('.sm').textContent=back?'Back':'Shearwater'};
+ btn('bay').onclick=()=>document.getElementById('bBay').click();
  document.getElementById('helpBtn').onclick=()=>document.getElementById('bHelp').click();
- setInterval(()=>{if(hud.style.display==='block')hud.textContent='ASKET · '+sv.textContent},150)}
-r.domElement.addEventListener('dblclick',e=>{const p=spotAt(e.clientX,e.clientY);if(!p)return;
+ setInterval(()=>{if(hud.style.display!=='block')return;const t=sv.textContent;hud.textContent='ASKET · '+(innerWidth<700?t.split(' · ').slice(0,2).join(' · ').replace(/ \(.*?\)/,''):t)},150)}
+function dblFly(X,Y){const p=spotAt(X,Y);if(!p)return;
  const B=window._bayXZ;if(B&&Math.hypot(p.x-B[0],p.z-B[1])<1500)p.set(B[0],0,B[1]); // near Shearwater Bay: go to the farm itself, the only spot with data there
  const off=cam.position.clone().sub(ctr.target),d=off.length(),nd=Math.max(6,d*0.45);off.multiplyScalar(nd/d);
- const c=p.clone().add(off);glide(p.clone(),c)});
+ const c=p.clone().add(off);glide(p.clone(),c)}
+r.domElement.addEventListener('dblclick',e=>dblFly(e.clientX,e.clientY));
+{let down=null,lastTap=null;const rc=new THREE.Raycaster(),m2=new THREE.Vector2();
+ r.domElement.addEventListener('pointerdown',e=>{down={x:e.clientX,y:e.clientY,t:performance.now()}});
+ r.domElement.addEventListener('pointerup',e=>{if(!down)return;const moved=Math.hypot(e.clientX-down.x,e.clientY-down.y),quick=performance.now()-down.t<350;down=null;if(moved>8||!quick)return;
+  // a tap or click on a pin flies there
+  const pl=window._places;if(pl&&pl.visible){m2.set(e.clientX/innerWidth*2-1,-e.clientY/innerHeight*2+1);rc.setFromCamera(m2,cam);
+   const h=rc.intersectObjects(pl.children.filter(o=>/Shearwater|Kelp Blue/.test(o.userData.name||'')&&o.material.opacity>.3));
+   if(h.length){lastTap=null;/Shearwater/.test(h[0].object.userData.name)?window._bayGo():window._kelpGo();return}}
+  // double-tap on a touch screen = double-click
+  if(e.pointerType==='touch'){const now=performance.now();if(lastTap&&now-lastTap.t<330&&Math.hypot(e.clientX-lastTap.x,e.clientY-lastTap.y)<30){lastTap=null;dblFly(e.clientX,e.clientY)}else lastTap={x:e.clientX,y:e.clientY,t:now}}})}
 // above water / underwater
 const bU=document.getElementById('bUnder')||{}; // button removed 25 Nov (zoom/rotate under freely)
 window._setUnder=(v,quiet)=>{under=v;bU.textContent=v?'Back above water':'Look underwater';
