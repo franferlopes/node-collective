@@ -1,7 +1,7 @@
 <!doctype html>
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@500;600&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
 <title>ASKET Sonar Layers</title>
 <style>
 :root{--font:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;--mono:'JetBrains Mono',ui-monospace,'SFMono-Regular',Menlo,Consolas,monospace;--bg:#0d1117;--panel:rgba(20,24,32,.9);--fg:#e6e6e6;--mut:#9aa4b2}
@@ -214,20 +214,20 @@ function dzcol(d){if(d>0){const t=Math.min(1,d/2.5);return[.55+.45*t,.55-.35*t,.
   fetch('area_sat.json').then(r=>{if(!r.ok)throw 0;return r.json()}).then(m=>{
    new THREE.TextureLoader().load('area_sat.jpg',t=>{t.anisotropy=r.capabilities.getMaxAnisotropy();areaMat.map=t;areaMat.needsUpdate=true});
    const [x0,z0]=P(m.n,m.w),[x1,z1]=P(m.s,m.e);areaPlane.scale.set(x1-x0,z1-z0,1);areaPlane.position.set((x0+x1)/2,-0.05,(z0+z1)/2);
-   // place labels: black pin, name in Inter Tight (NODE brand), small lime caption in JetBrains Mono
+   // place labels: minimal pin (thin black stick, small ball on top), white name in Inter Tight (NODE brand), lime caption in JetBrains Mono, no outlines
    const drawPlace=p=>{const c=document.createElement('canvas');c.width=1024;c.height=256;const g=c.getContext('2d');
-    g.beginPath();g.arc(70,92,56,Math.PI*0.8,Math.PI*0.2);g.lineTo(70,244);g.closePath();g.fillStyle='#111';g.fill();g.lineWidth=5;g.strokeStyle='rgba(255,255,255,.9)';g.stroke();
-    g.beginPath();g.arc(70,92,18,0,7);g.fillStyle='#fff';g.fill();g.lineJoin='round';
-    g.font='600 76px "Inter Tight",Inter,Helvetica,Arial';g.lineWidth=10;g.strokeStyle='rgba(0,0,0,.55)';g.strokeText(p.name,150,112);g.fillStyle='#fff';g.fillText(p.name,150,112);
-    g.font='500 40px "JetBrains Mono",ui-monospace,monospace';if('letterSpacing' in g)g.letterSpacing='4px';const sub=(p.sub||'').toUpperCase();
-    g.lineWidth=8;g.strokeText(sub,153,172);g.fillStyle=NODE_ACCENT;g.fillText(sub,153,172);
-    const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),depthTest:false,transparent:true}));
-    sp.center.set(70/1024,12/256);sp.renderOrder=12;const [x,z]=P(p.lat,p.lon);sp.position.set(x,0.3,z);sp.userData={near:+p.near||0};places.add(sp);return [x,z]};
-   Promise.all([document.fonts.load('600 76px "Inter Tight"'),document.fonts.load('500 40px "JetBrains Mono"')]).catch(()=>{})
+    g.strokeStyle='#111';g.lineWidth=5;g.lineCap='round';g.beginPath();g.moveTo(30,56);g.lineTo(30,250);g.stroke();
+    g.beginPath();g.arc(30,40,15,0,7);g.fillStyle='#111';g.fill();
+    g.font='600 64px "Inter Tight",Inter,Helvetica,Arial';g.fillStyle='#fff';g.fillText(p.name,66,96);
+    g.font='700 34px "JetBrains Mono",ui-monospace,monospace';if('letterSpacing' in g)g.letterSpacing='4px';g.fillStyle=NODE_ACCENT;g.fillText((p.sub||'').toUpperCase(),68,146);
+    const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),depthTest:false,transparent:true,sizeAttenuation:false}));
+    const h=.1*(+p.size||1);sp.scale.set(h*4,h,1);
+    sp.center.set(30/1024,6/256);sp.renderOrder=12;const [x,z]=P(p.lat,p.lon);sp.position.set(x,0.3,z);sp.userData={near:+p.near||0};places.add(sp);return [x,z]};
+   Promise.all([document.fonts.load('600 64px "Inter Tight"'),document.fonts.load('700 34px "JetBrains Mono"')]).catch(()=>{})
     .then(()=>m.places.forEach(p=>{const xz=drawPlace(p);if(/shearwater/i.test(p.name))bay=xz}));
-   // sized in the scene (nearer labels look bigger, farther ones smaller), scaled with the zoom so they stay readable
-   window._placesTick=()=>{if(!places.visible)return;const D=cam.position.distanceTo(ctr.target),w=Math.min(Math.max(D*.38,12),2400);
-    places.children.forEach(sp=>{sp.scale.set(w,w/4,1);const n=sp.userData.near;sp.material.opacity=n&&D<n?Math.max(0,(D-n*.5)/(n*.5)):1})};
+   // fixed size on screen, set per place ("size" in area_sat.json: the farm reads bigger than Kelp Blue); "near" fades a label out when zoomed in closer than that
+   window._placesTick=()=>{if(!places.visible)return;const D=cam.position.distanceTo(ctr.target);
+    places.children.forEach(sp=>{const n=sp.userData.near;sp.material.opacity=n&&D<n?Math.max(0,(D-n*.5)/(n*.5)):1})};
    document.getElementById('bBay').style.display='inline-block'}).catch(()=>{});}
  // keep near/far in proportion to the view, so the run (metres) and the bay (kilometres) both draw cleanly
  const clip=()=>{const d=cam.position.distanceTo(ctr.target);cam.near=Math.max(.1,d/3000);cam.far=Math.max(5000,d*8+9000);cam.updateProjectionMatrix()};ctr.addEventListener('change',clip);
