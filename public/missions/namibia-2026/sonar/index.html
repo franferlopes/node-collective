@@ -39,6 +39,7 @@ body.clay .panel{box-shadow:0 1px 6px rgba(0,0,0,.12)}
 #ctx .ck{font:500 10.5px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:#4d4d4d}
 #ctx h3{font-weight:600;font-size:18px;margin:3px 0 8px;letter-spacing:-.01em}
 #ctx p{margin:0 0 8px;font-size:13px;line-height:1.45;color:#2b2b2b}
+#ctx .clive{font:500 12px var(--mono);color:#151515;background:rgba(225,255,79,.35);border-radius:6px;padding:5px 8px;display:inline-block;margin-top:2px}
 #ctx a{font-weight:600;font-size:13px;color:#151515;text-decoration:none;border-bottom:2px solid #e1ff4f}
 #ctl,#hide{display:none!important}
 #bar{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);display:flex;gap:6px;padding:6px;border-radius:14px;background:rgba(250,250,248,.92);box-shadow:0 4px 22px rgba(0,0,0,.14);z-index:15;max-width:calc(100% - 24px);flex-wrap:wrap;justify-content:center;font-family:'Inter Tight',Inter,system-ui,sans-serif}
@@ -57,7 +58,6 @@ body:not(.ready) #bar,body:not(.ready) #helpBtn{opacity:0;pointer-events:none}
  #bar .lg{display:none} #bar .sm{display:inline}
  #routeHud{bottom:80px;font-size:10.5px}
  #ctx{left:8px;right:8px;width:auto;top:auto;bottom:80px;max-height:34vh;padding:12px 14px 10px}
- body.routeOn #ctx{bottom:110px}
  #ctx h3{font-size:16px;margin:2px 0 6px} #ctx p{font-size:12.5px;margin-bottom:6px}
  #ctx .ci{top:13px;right:44px}
  #compass{top:12px!important;bottom:auto!important}
@@ -327,7 +327,7 @@ function dzcol(d){if(d>0){const t=Math.min(1,d/2.5);return[.55+.45*t,.55-.35*t,.
     satMat.opacity=areaMat.opacity=o};
    // context cards: which place the view is on decides the text
    const CTX={
-    route:{ic3d:'boat',k:'First test · 24 Nov 2026',t:'The route',b:['ASKET launched from the slipway by the Kelp Blue office and drove loops around this bay for 10 minutes, mapping the seabed as it went. The line is its path, coloured by speed.']},
+    route:{ic3d:'boat',k:'First test · 24 Nov 2026',t:'The route',b:['ASKET launched from the slipway by the Kelp Blue office and drove loops around this bay for 10 minutes, mapping the seabed as it went. The line is its path.'],live:1},
     dense:{ic:'<svg viewBox="0 0 32 32" width="26" height="26"><rect x="9" y="9" width="14" height="14" rx="2" fill="#59ac33"/></svg>',k:'Less dense points',t:'Soft echoes',b:['Hard things like rocks and the pier send back strong, dense echoes. These green clusters are weaker and more spread out: something that only partly reflects sound.',
      'Here they are probably algae growing on the rocks, but they could also be kelp, ropes, fish, bubbles or loose sediment. On the kelp farm, this layer is how we hope to see the kelp itself.']},
     objects:{ic3d:'globe',k:'Objects',t:'What stands out',b:['The sonar sends pulses of sound and listens for the echoes. Where echoes bunch into a compact shape that stands out from the seabed, the software marks it as a candidate object: the wireframe spheres. Everything else stays as points, like the seabed, the long rocky edges and the pier.',
@@ -336,13 +336,13 @@ function dzcol(d){if(d>0){const t=Math.min(1,d/2.5);return[.55+.45*t,.55-.35*t,.
     kelp:{k:'First test · 24 Nov 2026',t:'Kelp Blue Trading',b:['ASKET\'s first time in the water with its sonar. We launched from the slipway next to the Kelp Blue office and drove loops around this small bay for 10 minutes, until a propeller stopped and we brought the boat back in.',
      'In those 10 minutes the sonar logged over 2 million points: a seabed 1 to 2.5 m deep, the columns of the pier, the rocks around the bay and softer clusters on them that are probably algae.',
      'We were going about 1.5 knots, too fast for a sharp image. Next time we survey below 1 knot.']},
-    bay:{k:'Kelp farm',t:'Shearwater Bay',b:['Home of Kelp Blue\'s kelp farm, about 6 km west of Lüderitz. Kelp Blue grows giant kelp offshore to bring back kelp forests, which store carbon and are home to marine life.',
+    bay:{k:'Kelp farm',t:'Shearwater Bay',b:['Home of Kelp Blue\'s kelp farm, about 6 km west of Lüderitz. Kelp Blue grows giant kelp offshore, a home for marine life.',
      'For now you only see satellite imagery. Tomorrow, 27 November, we take ASKET out to survey the farm with sonar and map the kelp and the structures that hold it.'],link:['kelp.blue','https://kelp.blue']}};
    const cEl=document.getElementById('ctx'),closed={};let cur;
    document.getElementById('ctxX').onclick=()=>{if(cur===window._ctxOverride){window._ctxOverride=null;cur=undefined}else{closed[cur]=true;cEl.classList.remove('on')}};
    const showCtx=k=>{if(k===cur)return;cur=k;if(!k||closed[k]){cEl.classList.remove('on');return}const c=CTX[k];
     {const ci=cEl.querySelector('.ci');ci.innerHTML=c.ic||'';if(c.ic3d&&window._icon3d)ci.appendChild(window._icon3d(c.ic3d))}cEl.querySelector('.ck').textContent=c.k;cEl.querySelector('h3').textContent=c.t;
-    cEl.querySelector('.cb').innerHTML=c.b.map(x=>'<p>'+x+'</p>').join('')+(c.link?`<a href="${c.link[1]}" target="_blank" rel="noopener">${c.link[0]} ↗</a>`:'');
+    cEl.querySelector('.cb').innerHTML=c.b.map(x=>'<p>'+x+'</p>').join('')+(c.live?'<div class="clive" id="ctxLive"></div>':'')+(c.link?`<a href="${c.link[1]}" target="_blank" rel="noopener">${c.link[0]} ↗</a>`:'');
     cEl.classList.add('on')};
    window._ctxTick=()=>{if(!document.getElementById('tut').classList.contains('off'))return showCtx(null);if(window._ctxOverride){closed[window._ctxOverride]=false;return showCtx(window._ctxOverride)}// the card follows where the buttons take you (shown as soon as the flight starts): the Lüderitz card only at the start view
     const F=window._focus;showCtx(F==='bay'?'bay':F==='run'?'kelp':F==='over'?'over':null)};
@@ -682,7 +682,7 @@ function zoomStep(){if(!zp)return;if(Math.abs(zq)<1e-4){zq=0;zp=null;recenter();
  if(f<1&&cam.position.distanceTo(zp)*f<0.6)f=Math.min(1,0.6/cam.position.distanceTo(zp)); // never fly through the spot
  if(f>1&&window._overT&&cam.position.distanceTo(ctr.target)>1500){const k=Math.min(.15,(f-1)*2.5),dx=(window._overT[0]-ctr.target.x)*k,dz=(window._overT[2]-ctr.target.z)*k;cam.position.x+=dx;cam.position.z+=dz;ctr.target.x+=dx;ctr.target.z+=dz}
  if(f>1&&cam.position.distanceTo(ctr.target)*f>9000)f=1; // drift keeps working at the zoom-out limit
- {const F=window._focusInfo&&window._focusInfo();if(F&&F.k!=='over'&&f>1&&cam.position.distanceTo(ctr.target)*f>F.max){window._pushOut=(window._pushOut||0)+(f-1);f=1;if(window._pushOut>.3){window._pushOut=0;zq=0;window._goOverview()}}else if(f<1)window._pushOut=0}
+ {const F=window._focusInfo&&window._focusInfo();if(F&&F.k!=='over'&&f>1&&cam.position.distanceTo(ctr.target)*f>F.max)f=Math.max(1,F.max/cam.position.distanceTo(ctr.target))} // never further out than the view the button took you to
  cam.position.sub(zp).multiplyScalar(f).add(zp);ctr.target.sub(zp).multiplyScalar(f).add(zp);
  ctr.update()}
 // glide the camera somewhere (used by double-click and the underwater button)
@@ -706,8 +706,10 @@ function glide(t1,c1,ms=900){const t0=ctr.target.clone(),c0=cam.position.clone()
 // guided areas: each button or pin sets an area; you can orbit and zoom there, panning stays inside it,
 // and zooming out past its limit glides back to the overview
 {const FOCUS={over:{r:4500,max:9000},run:{r:70,max:260},bay:{r:900,max:3600}};
+ const far=(t,c)=>{const [a,b]=fitView(t,c);return Math.hypot(b[0]-a[0],b[1]-a[1],b[2]-a[2])*1.02};
+ const maxFor=k=>k==='run'?far([-9.55,-0.78,1.61],[71.39,35.53,6.61]):k==='bay'&&window._bayXZ?far([window._bayXZ[0],0,window._bayXZ[1]+250],[window._bayXZ[0]+150,1500,window._bayXZ[1]+1650]):FOCUS[k].max;
  const centre=k=>k==='run'?[-9.55,1.61]:k==='bay'?window._bayXZ:window._overT&&[window._overT[0],window._overT[2]];
- window._focusInfo=()=>{const k=window._focus;return k&&FOCUS[k]?{k,c:centre(k),...FOCUS[k]}:null};
+ window._focusInfo=()=>{const k=window._focus;return k&&FOCUS[k]?{k,c:centre(k),...FOCUS[k],max:maxFor(k)}:null};
  window._focusTick=()=>{const ov=window._focus==='over';ctr.enableZoom=!ov;ctr.enablePan=!ov;
   if(ov){ctr.mouseButtons={LEFT:THREE.MOUSE.ROTATE,MIDDLE:THREE.MOUSE.ROTATE,RIGHT:THREE.MOUSE.ROTATE};ctr.touches={ONE:THREE.TOUCH.ROTATE,TWO:THREE.TOUCH.ROTATE};window._wasOver=true}
   else if(window._wasOver){window._wasOver=false;applyButtons()} // back to the normal orbit / zoom gestures in an area
@@ -715,7 +717,6 @@ function glide(t1,c1,ms=900){const t0=ctr.target.clone(),c0=cam.position.clone()
   const dx=ctr.target.x-f.c[0],dz=ctr.target.z-f.c[1],d=Math.hypot(dx,dz);if(d>f.r){const k=(d-f.r)/d;ctr.target.x-=dx*k;ctr.target.z-=dz*k;cam.position.x-=dx*k;cam.position.z-=dz*k}
   const v=cam.position.clone().sub(ctr.target),L=v.length();
   if(L>f.max*1.001){ // pinching or dragging out past the limit (touch goes through the controls, not the wheel)
-   if(f.k!=='over'){window._pushOut=(window._pushOut||0)+(L/f.max-1)*1.5;if(window._pushOut>.3){window._pushOut=0;window._goOverview();return}}
    cam.position.copy(ctr.target).add(v.multiplyScalar(f.max/L))}};
  window._goOverview=()=>{const o=window._overCam;if(!o)return;window._resetBay&&window._resetBay();window._ctxOverride=null;window._focus='over';window._focusHold=performance.now()+2000;
   const [t,c]=fitView(o.t,o.c);glide(new THREE.Vector3(...t),new THREE.Vector3(...c),1900)}}
@@ -727,7 +728,7 @@ function glide(t1,c1,ms=900){const t0=ctr.target.clone(),c0=cam.position.clone()
  const isPlaying=()=>play.textContent!=='▶';
  const TOG=['route','dense','objects'],offOthers=k=>TOG.forEach(o=>{if(o!==k&&btn(o).classList.contains('on'))btn(o).click()}); // one button at a time
  const set=(k,on)=>{if(on)offOthers(k);btn(k).classList.toggle('on',on);if(on)window._ctxOverride=k;else if(window._ctxOverride===k)window._ctxOverride=null};
- btn('route').onclick=()=>{const on=!btn('route').classList.contains('on');set('route',on);chk('t',on);hud.style.display=on?'block':'none';document.body.classList.toggle('routeOn',on);
+ btn('route').onclick=()=>{const on=!btn('route').classList.contains('on');set('route',on);chk('t',on);hud.style.display='none';document.body.classList.toggle('routeOn',on);
   if(on){const flew=toRun();scrub.value=0;scrub.dispatchEvent(new Event('input'));setTimeout(()=>{if(!isPlaying()&&btn('route').classList.contains('on'))play.click()},flew?1900:100)}else if(isPlaying())play.click()};
  btn('dense').onclick=()=>{const on=!btn('dense').classList.contains('on');set('dense',on);chk('k',on);if(on)toRun()};
  btn('objects').onclick=()=>{const on=!btn('objects').classList.contains('on');set('objects',on);chk('o',on);if(on)toRun()};
@@ -737,7 +738,7 @@ function glide(t1,c1,ms=900){const t0=ctr.target.clone(),c0=cam.position.clone()
  btn('home').onclick=()=>{offOthers(null);window._goOverview&&window._goOverview()};
  setInterval(()=>btn('home').classList.toggle('here',window._focus==='over'),300);
  document.getElementById('helpBtn').onclick=()=>document.getElementById('bHelp').click();
- setInterval(()=>{if(hud.style.display!=='block')return;const t=sv.textContent;hud.textContent='ASKET · '+(innerWidth<700?t.split(' · ').slice(0,2).join(' · ').replace(/ \(.*?\)/,''):t)},150)}
+ setInterval(()=>{const el=document.getElementById('ctxLive');if(!el||!btn('route').classList.contains('on'))return;const t=sv.textContent.split(' · ');el.textContent=(t[0]||'').replace(/ \(.*?\)/,'')+' · '+(t[1]||'')},150) /* live speed and time in the route card */}
 function dblFly(X,Y){if(window._focus==='over')return;const p=spotAt(X,Y);if(!p)return;
  {const F=window._focusInfo&&window._focusInfo();if(F&&F.c&&F.k!=='over'){const dx=p.x-F.c[0],dz=p.z-F.c[1],d=Math.hypot(dx,dz);if(d>F.r){p.x=F.c[0]+dx/d*F.r;p.z=F.c[1]+dz/d*F.r}}}
  const B=window._bayXZ;if(B&&Math.hypot(p.x-B[0],p.z-B[1])<1500)p.set(B[0],0,B[1]); // near Shearwater Bay: go to the farm itself, the only spot with data there
