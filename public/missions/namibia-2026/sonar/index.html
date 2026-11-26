@@ -225,7 +225,7 @@ function dzcol(d){if(d>0){const t=Math.min(1,d/2.5);return[.55+.45*t,.55-.35*t,.
     sp.center.set(30/1024,6/256);sp.renderOrder=12;const [x,z]=P(p.lat,p.lon);sp.position.set(x,0.3,z);sp.userData={near:+p.near||0};places.add(sp);return [x,z]};
    Promise.all([document.fonts.load('600 64px "Inter Tight"'),document.fonts.load('700 34px "JetBrains Mono"')]).catch(()=>{})
     .then(()=>m.places.forEach(p=>{const xz=drawPlace(p);if(/shearwater/i.test(p.name))bay=xz}));
-   // fixed size on screen, set per place ("size" in area_sat.json: the farm reads bigger than Kelp Blue); "near" fades a label out when zoomed in closer than that
+   // fixed size on screen, set per place ("size" in area_sat.json); "near" fades a label out when zoomed in closer than that
    window._placesTick=()=>{if(!places.visible)return;const D=cam.position.distanceTo(ctr.target);
     places.children.forEach(sp=>{const n=sp.userData.near;sp.material.opacity=n&&D<n?Math.max(0,(D-n*.5)/(n*.5)):1})};
    document.getElementById('bBay').style.display='inline-block'}).catch(()=>{});}
