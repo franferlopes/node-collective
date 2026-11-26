@@ -728,15 +728,16 @@ function glide(t1,c1,ms=900){const t0=ctr.target.clone(),c0=cam.position.clone()
  const btn=k=>document.querySelector(`#bar [data-b="${k}"]`),chk=(id,v)=>{const e=document.getElementById(id);if(e.checked!==v)e.click()};
  const hud=document.getElementById('routeHud'),play=document.getElementById('play'),scrub=document.getElementById('scrub'),sv=document.getElementById('scrubv');
  const isPlaying=()=>play.textContent!=='▶';
- const set=(k,on)=>{btn(k).classList.toggle('on',on);if(on)window._ctxOverride=k;else if(window._ctxOverride===k)window._ctxOverride=null};
+ const TOG=['route','dense','objects'],offOthers=k=>TOG.forEach(o=>{if(o!==k&&btn(o).classList.contains('on'))btn(o).click()}); // one button at a time
+ const set=(k,on)=>{if(on)offOthers(k);btn(k).classList.toggle('on',on);if(on)window._ctxOverride=k;else if(window._ctxOverride===k)window._ctxOverride=null};
  btn('route').onclick=()=>{const on=!btn('route').classList.contains('on');set('route',on);chk('t',on);hud.style.display=on?'block':'none';document.body.classList.toggle('routeOn',on);
   if(on){const flew=toRun();scrub.value=0;scrub.dispatchEvent(new Event('input'));setTimeout(()=>{if(!isPlaying()&&btn('route').classList.contains('on'))play.click()},flew?1900:100)}else if(isPlaying())play.click()};
  btn('dense').onclick=()=>{const on=!btn('dense').classList.contains('on');set('dense',on);chk('k',on);if(on)toRun()};
  btn('objects').onclick=()=>{const on=!btn('objects').classList.contains('on');set('objects',on);chk('o',on);if(on)toRun()};
  window._syncBayBtn=()=>{const back=/back/i.test(document.getElementById('bBay').textContent);btn('bay').querySelector('.lg').textContent=back?'Back to the run':'Fly to Shearwater Bay';btn('bay').querySelector('.sm').textContent=back?'Back':'Shearwater'};
- btn('bay').onclick=()=>{const b=document.getElementById('bBay');if(!/back/i.test(b.textContent)&&btn('route').classList.contains('on'))btn('route').click();b.click()}; // the route replay belongs to the run, not the bay
+ btn('bay').onclick=()=>{offOthers(null);document.getElementById('bBay').click()}; // the route replay belongs to the run, not the bay
  // Overview: back to the start view from anywhere (stops the route, clears the explanation)
- btn('home').onclick=()=>{if(btn('route').classList.contains('on'))btn('route').click();window._goOverview&&window._goOverview()};
+ btn('home').onclick=()=>{offOthers(null);window._goOverview&&window._goOverview()};
  setInterval(()=>btn('home').classList.toggle('here',window._focus==='over'),300);
  document.getElementById('helpBtn').onclick=()=>document.getElementById('bHelp').click();
  setInterval(()=>{if(hud.style.display!=='block')return;const t=sv.textContent;hud.textContent='ASKET · '+(innerWidth<700?t.split(' · ').slice(0,2).join(' · ').replace(/ \(.*?\)/,''):t)},150)}
