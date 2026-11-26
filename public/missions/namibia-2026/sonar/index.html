@@ -258,9 +258,10 @@ function dzcol(d){if(d>0){const t=Math.min(1,d/2.5);return[.55+.45*t,.55-.35*t,.
    // place labels: minimal pin (thin black stick, small ball on top), white name in Inter Tight (NODE brand), lime caption in JetBrains Mono, no outlines
    const drawPlace=p=>{const c=document.createElement('canvas');c.width=1024;c.height=256;const g=c.getContext('2d');
     if(p.pin===false){ // area name (a desert, a region): spaced capitals, no pin, centred on the spot
-     g.font='500 54px "Inter Tight",Inter,Helvetica,Arial';if('letterSpacing' in g)g.letterSpacing='14px';g.fillStyle='rgba(255,255,255,.92)';g.textAlign='center';g.fillText(p.name.toUpperCase(),512,148);
+     if(p.caps===false){g.font='600 60px "Inter Tight",Inter,Helvetica,Arial';g.fillStyle='#fff';const lf=p.side==='left';g.textAlign=lf?'right':'center';g.fillText(p.name,lf?930:512,148)} // landmark: plain name, no pin; side 'left' = ends at the spot
+     else{g.font='500 54px "Inter Tight",Inter,Helvetica,Arial';if('letterSpacing' in g)g.letterSpacing='14px';g.fillStyle='rgba(255,255,255,.92)';g.textAlign='center';g.fillText(p.name.toUpperCase(),512,148)}
      const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),depthTest:false,transparent:true,sizeAttenuation:false}));
-     const h=.1*(+p.size||1);sp.scale.set(h*4,h,1);sp.center.set(.5,.5);sp.renderOrder=12;const [x,z]=P(p.lat,p.lon);sp.position.set(x,0.3,z);sp.userData={near:+p.near||0};places.add(sp);return [x,z]}
+     const h=.1*(+p.size||1);sp.scale.set(h*4,h,1);sp.center.set(p.side==='left'?1:.5,.5);sp.renderOrder=12;const [x,z]=P(p.lat,p.lon);sp.position.set(x,0.3,z);sp.userData={near:+p.near||0};places.add(sp);return [x,z]}
     const L=p.side==='left',px=L?994:30; // side 'left': text to the left of the pin (when two places line up)
     g.strokeStyle='#111';g.lineWidth=5;g.lineCap='round';g.beginPath();g.moveTo(px,56);g.lineTo(px,250);g.stroke();
     g.beginPath();g.arc(px,40,15,0,7);g.fillStyle='#111';g.fill();g.textAlign=L?'right':'left';
