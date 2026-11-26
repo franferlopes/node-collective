@@ -29,6 +29,18 @@ button,select,input,textarea{font-family:var(--font)}
 body.clay{--bg:#e9e8e4;--panel:rgba(250,250,248,.9);--fg:#1d1f22;--mut:#6b7078}
 body.clay .panel{box-shadow:0 1px 6px rgba(0,0,0,.12)}
 .clayonly{display:none} body.clay .clayonly{display:block} body.clay .sononly{display:none}
+#tut{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;background:rgba(21,21,21,.28);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);padding:16px}
+#tut.off{display:none}
+.tcard{position:relative;width:340px;max-width:100%;box-sizing:border-box;background:#fafaf8;color:#151515;border-radius:14px;padding:22px 22px 18px;box-shadow:0 10px 40px rgba(0,0,0,.18);font-family:'Inter Tight',Inter,system-ui,sans-serif}
+.tk{font:500 10.5px var(--mono);letter-spacing:.14em;color:#4d4d4d}
+.tcard h2{font-weight:600;font-size:21px;margin:4px 0 14px;letter-spacing:-.01em}
+.trow{display:flex;gap:14px;align-items:center;padding:9px 0;border-top:1px solid #e6e5e1}
+.trow svg{flex:none;color:#151515}
+.trow b{display:block;font-weight:600;font-size:14px}
+.trow span{display:block;font-size:13px;color:#4d4d4d;line-height:1.35}
+.tgo{margin-top:14px;width:100%;padding:11px;border:0;border-radius:9px;background:#151515;color:#e1ff4f;font:600 14px 'Inter Tight',Inter,sans-serif;cursor:pointer}
+.tgo:hover{background:#2a2a2a}
+.tx{position:absolute;top:12px;right:12px;border:0;background:none;color:#4d4d4d;font-size:15px;cursor:pointer;padding:4px}
 </style></head><body class="clay">
 <canvas id="c"></canvas>
 <div id="load">Loading point clouds…</div>
@@ -51,19 +63,19 @@ body.clay .panel{box-shadow:0 1px 6px rgba(0,0,0,.12)}
 <div id="ctl" class="panel">
 <div style="display:flex;justify-content:space-between;align-items:center;gap:6px">
 <div style="display:flex;gap:4px"><button class="ico" data-p="top" title="Top view, north up"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M12 7v10M9 10l3-3 3 3"/></svg></button><button class="ico" data-p="sideS" title="Side view from the south"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 15h18"/><path d="M6 15l2-4h8l2 4"/><text x="12" y="8" font-size="7" text-anchor="middle" fill="currentColor" stroke="none" font-family="Inter">S</text></svg></button><button class="ico" data-p="sideE" title="Side view from the east"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 15h18"/><path d="M6 15l2-4h8l2 4"/><text x="12" y="8" font-size="7" text-anchor="middle" fill="currentColor" stroke="none" font-family="Inter">E</text></svg></button><button class="ico" data-p="persp" title="3D view"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M12 12l8-4.5M12 12v9M12 12L4 7.5"/></svg></button><button class="ico" id="reset" title="Reset to my baseline"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 1 0 2.5-5.8"/><path d="M4 4v4h4"/></svg></button></div>
-<button id="collapse" title="Hide controls">✕</button></div>
+<div style="display:flex;gap:4px;align-items:center"><button class="ico" id="bHelp" title="How to explore" style="font:600 15px 'Inter Tight',Inter,sans-serif">?</button><button id="collapse" title="Hide controls">✕</button></div></div>
 <div class="h">Style</div>
 <div id="styleRow" style="display:flex;gap:4px;margin:4px 0"><button id="stSonar" class="on">Sonar colours</button><button id="stClay">Clay model</button></div>
-<div class="clayonly" style="margin:2px 0 4px"><span class="m" style="font-size:12px">Clay surface:</span>
+<div style="display:none"><span class="m" style="font-size:12px">Clay surface:</span>
 <button data-s="smooth">Smooth</button><button data-s="grain">Grain</button><button data-s="mesh">Mesh</button></div>
 <div class="h">Layers</div>
 <label><input type="radio" name="base" value="seabed" checked> Seabed</label>
 <label><input type="radio" name="base" value="none"> No seabed</label>
 <label><input id="o" type="checkbox" checked> Candidate objects</label>
 <label><input id="hl" type="checkbox" checked> Structures above seabed <span class="m">(pillars, rocks)</span></label>
-<div style="padding-left:22px;display:flex;align-items:center;gap:4px">show as <button id="sh3d" style="display:none">3D</button><button id="shSolid" class="on">Mesh</button><button id="shDots">Dots</button></div>
+<div style="padding-left:22px;display:flex;align-items:center;gap:4px">show as <button id="sh3d" style="display:none">3D</button><button id="shSolid" style="display:none">Mesh</button><button id="shDots" class="on">Dots</button></div>
 <div id="certRow" style="padding-left:22px;display:none;align-items:center;gap:4px;margin-top:3px" title="Confirmed: only what the sonar heard on 2 or more separate visits (more than 20 s apart). All: everything, hidden sides filled in see-through.">certainty <button id="cConf" class="on">Confirmed</button><button id="cAll">All</button></div>
-<label><input id="k" type="checkbox"> 🌿 Water column: kelp, ropes, buoys… <span class="m" id="kn"></span></label>
+<label><input id="k" type="checkbox"> Less dense point cloud <span class="m" id="kn"></span></label>
 <label style="padding-left:22px">min density <input id="kmin" type="range" min="8" max="70" value="15"> <span id="kminv">15%</span></label>
 <label><input id="g" type="checkbox" checked> 10 m grid</label>
 <div id="satRow"><label><input id="sat" type="checkbox"> Satellite view <span class="m">(at the water surface)</span></label>
@@ -82,10 +94,29 @@ body.clay .panel{box-shadow:0 1px 6px rgba(0,0,0,.12)}
 <div class="h">Display</div>
 <label>Vertical exaggeration <input id="ex" type="range" min="0.1" max="3" step="0.1" value="2"> <span id="exv">2.0×</span></label>
 <label>Point size <input id="ps" type="range" min="0.5" max="3" step="0.25" value="0.75"></label>
-<div class="m" id="help" style="font-size:11px;margin-top:4px"></div>
+<div class="m" id="help" style="display:none"></div>
 </div>
 <div id="depthHud" class="panel" style="bottom:12px;right:64px;padding:6px 10px;font-size:12px;display:none"></div>
+<div id="tut" role="dialog" aria-modal="true" aria-labelledby="tutT">
+<div class="tcard">
+<button class="tx" id="tutX" title="Close">✕</button>
+<div class="tk">ASKET SONAR</div>
+<h2 id="tutT">How to explore</h2>
+<div class="trow"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-2.3-5.6"/><path d="M20 4v4h-4"/></svg><div><b>Rotate</b><span>Drag, or press and swipe with two fingers</span></div></div>
+<div class="trow"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M3 12h18"/><path d="M9 6l3-3 3 3M9 18l3 3 3-3M6 9l-3 3 3 3M18 9l3 3-3 3"/></svg><div><b>Move</b><span>Swipe sideways with two fingers, or Shift + drag</span></div></div>
+<div class="trow"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21M10.5 7.5v6M7.5 10.5h6"/></svg><div><b>Zoom</b><span>Pinch, scroll, or swipe forward and back</span></div></div>
+<div class="trow"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7c2-1.5 4-1.5 6 0s4 1.5 6 0 4-1.5 6 0"/><path d="M12 11v9M8.5 16.5L12 20l3.5-3.5"/></svg><div><b>Go underwater</b><span>Keep zooming into the seabed</span></div></div>
+<div class="trow"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg><div><b>Fly to a spot</b><span>Double-click anywhere</span></div></div>
+<button class="tgo" id="tutGo">Start exploring</button>
+</div></div>
 <div id="tip"></div>
+<script>
+// welcome tutorial: shown every time the viewer opens; ? in the panel opens it again
+(()=>{const t=document.getElementById('tut'),close=()=>t.classList.add('off');
+ document.getElementById('tutGo').onclick=close;document.getElementById('tutX').onclick=close;
+ t.addEventListener('click',e=>{if(e.target===t)close()});addEventListener('keydown',e=>{if(e.key==='Escape')close()});
+ document.getElementById('bHelp').onclick=()=>t.classList.remove('off')})();
+</script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
@@ -169,10 +200,10 @@ function dzcol(d){if(d>0){const t=Math.min(1,d/2.5);return[.55+.45*t,.55-.35*t,.
   const m=new THREE.Mesh(new THREE.SphereGeometry(1,24,16),new THREE.MeshStandardMaterial({color:echo?0x9a9a9a:new THREE.Color(...purple(+o.depth_m)),roughness:.8,transparent:echo,opacity:echo?.35:1}));
   m.scale.set(rr,h,rr);m.position.set(+o.east_m-cx,-+o.depth_m,-(+o.north_m-cy));objLumps.add(m)});
  const struct3d=new THREE.Group();struct3d.visible=false;world.add(struct3d); // carved 3D mesh from tools/struct3d.py, if the run has one
- let shMode='mesh';
+ let shMode='dots'; // 3D takes over once its file loads; the old height-grid mesh is no longer offered
  function showAs(md){shMode=md;[['sh3d','3d'],['shSolid','mesh'],['shDots','dots']].forEach(([id,v])=>document.getElementById(id).classList.toggle('on',md==v));
   const hl=document.getElementById('hl').checked,ob=document.getElementById('o').checked;
-  structMesh.visible=hl&&md=='mesh';struct3d.visible=hl&&md=='3d';if(window._has3dConf)document.getElementById('certRow').style.display=md=='3d'?'flex':'none';L.hl.visible=hl&&md=='dots';objLumps.visible=ob&&md!='dots';if(L.obj)L.obj.visible=ob&&md=='dots'}
+  structMesh.visible=hl&&md=='mesh';struct3d.visible=hl&&md=='3d';if(window._has3dConf)document.getElementById('certRow').style.display=md=='3d'?'flex':'none';L.hl.visible=hl&&md=='dots';objLumps.visible=false;if(L.obj)L.obj.visible=ob&&md=='dots'}
  window._showAs=()=>showAs(shMode);
  document.getElementById('sh3d').onclick=()=>showAs('3d');document.getElementById('shSolid').onclick=()=>showAs('mesh');document.getElementById('shDots').onclick=()=>showAs('dots');
  // candidate objects: Lakshmi's object points + the rest of their column down to the seabed
@@ -403,7 +434,8 @@ function dzcol(d){if(d>0){const t=Math.min(1,d/2.5);return[.55+.45*t,.55-.35*t,.
   bedMeshFill=new THREE.Mesh(gFine,clayMat({flatShading:true,transparent:true,opacity:.45,depthWrite:true})),
   bedWire=new THREE.Mesh(gFine,new THREE.MeshBasicMaterial({color:0x6f737a,wireframe:true,transparent:true,opacity:.28}));
  const bedMesh=new THREE.Group();bedMesh.add(bedSmooth,bedGrain,bedMeshFill,bedWire);bedMesh.visible=false;world.add(bedMesh);
- function setSurf(v){bedSmooth.visible=v=='smooth';bedGrain.visible=v=='grain';bedMeshFill.visible=bedWire.visible=v=='mesh';
+ function setSurf(v){v='mesh'; // one curated look (26 Nov): mesh only
+ bedSmooth.visible=v=='smooth';bedGrain.visible=v=='grain';bedMeshFill.visible=bedWire.visible=v=='mesh';
   document.querySelectorAll('button[data-s]').forEach(b=>b.classList.toggle('on',b.dataset.s==v))}
  document.querySelectorAll('button[data-s]').forEach(b=>b.onclick=()=>setSurf(b.dataset.s));setSurf('mesh');window._surf='mesh';
  document.querySelectorAll('button[data-s]').forEach(b=>b.addEventListener('click',()=>window._surf=b.dataset.s));
@@ -488,7 +520,7 @@ function dzcol(d){if(d>0){const t=Math.min(1,d/2.5);return[.55+.45*t,.55-.35*t,.
  function applySettings(s){document.querySelector(`input[name=base][value=${s.base}]`).click();
   chk('o',s.objects);chk('hl',s.structures);chk('k',s.water);set('#kmin',s.kmin,'input');chk('g',s.grid);chk('sat',!!s.sat);set('#satOp',s.satOp||45,'input');chk('t',s.track);chk('beam',s.beam);chk('bsize',s.boatTrueSize);
   set('#ex',s.ex,'input');set('#ps',s.ps,'input');set('#slw',Math.round(s.slw*10),'input');
-  setSurf(s.surf);window._surf=s.surf;setStyle(s.style=='clay');camTo(s.cam);if(s.deploy)window._setDeploy(s.deploy.e,s.deploy.n,true);window._showAs()}
+  setSurf('mesh');window._surf='mesh';setStyle(s.style=='clay');camTo(s.cam);if(s.deploy)window._setDeploy(s.deploy.e,s.deploy.n,true);window._showAs()}
  // run picker (runs.json lists the processed runs, newest first)
  fetch('runs.json').then(r=>r.json()).then(list=>{if(!list.length)return;const sel=document.createElement('select');sel.style.marginTop='4px';
   list.forEach(x=>{const o=document.createElement('option');o.value=x;o.textContent=x;if(x==S)o.selected=true;sel.appendChild(o)});
