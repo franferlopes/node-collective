@@ -33,6 +33,7 @@ body.clay .panel{box-shadow:0 1px 6px rgba(0,0,0,.12)}
 .clayonly{display:none} body.clay .clayonly{display:block} body.clay .sononly{display:none}
 #ctx{position:fixed;right:12px;bottom:64px;width:320px;max-width:calc(100% - 24px);box-sizing:border-box;z-index:20;background:rgba(250,250,248,.94);color:#151515;border-radius:12px;padding:16px 18px 14px;box-shadow:0 6px 28px rgba(0,0,0,.14);font-family:'Inter Tight',Inter,system-ui,sans-serif;opacity:0;transform:translateY(8px);pointer-events:none;transition:opacity .35s,transform .35s}
 #ctx.on{opacity:1;transform:none;pointer-events:auto}
+#ctx .ci{position:absolute;top:12px;right:42px;line-height:0}
 #ctx .ck{font:500 10.5px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:#4d4d4d}
 #ctx h3{font-weight:600;font-size:18px;margin:3px 0 8px;letter-spacing:-.01em}
 #ctx p{margin:0 0 8px;font-size:13px;line-height:1.45;color:#2b2b2b}
@@ -122,7 +123,7 @@ body:not(.ready) #bar,body:not(.ready) #helpBtn{opacity:0;pointer-events:none}
 </div>
 <div id="routeHud"></div>
 <button id="helpBtn" title="How to explore">?</button>
-<div id="ctx" aria-live="polite"><button class="tx" id="ctxX" title="Close">✕</button><div class="ck"></div><h3></h3><div class="cb"></div></div>
+<div id="ctx" aria-live="polite"><button class="tx" id="ctxX" title="Close">✕</button><div class="ci" aria-hidden="true"></div><div class="ck"></div><h3></h3><div class="cb"></div></div>
 <div id="tut" role="dialog" aria-modal="true" aria-labelledby="tutT">
 <div class="tcard">
 <button class="tx" id="tutX" title="Close">✕</button>
@@ -299,11 +300,11 @@ function dzcol(d){if(d>0){const t=Math.min(1,d/2.5);return[.55+.45*t,.55-.35*t,.
     satMat.opacity=areaMat.opacity=o};
    // context cards: which place the view is on decides the text
    const CTX={
-    route:{k:'The route',t:'10 minutes on the water',b:['The line is the path ASKET drove, and the boat replays it at about 6 times real speed. The colour of the line shows how fast it went: hover or click it for the speed at that point.',
+    route:{ic:'<svg viewBox="0 0 48 32" width="44" height="30"><path d="M30 13 L46 27 L36 30 Z" fill="#e1ff4f" opacity=".55"/><path d="M4 12 h30 l-3 6 h-24 z" fill="#151515"/><rect x="14" y="6" width="8" height="6" rx="1" fill="#151515"/><path d="M18 6 v-4" stroke="#151515" stroke-width="1.6"/><circle cx="30" cy="16" r="2" fill="#e1ff4f" stroke="#151515" stroke-width="1"/></svg>',k:'The route',t:'10 minutes on the water',b:['The line is the path ASKET drove, and the boat replays it at about 6 times real speed. The colour of the line shows how fast it went: hover or click it for the speed at that point.',
      'The fan on the boat\'s right side is the sonar beam. Everything it touches becomes a point. For a sharp seabed the boat should stay under 1 knot; on this first test it mostly went faster.']},
-    dense:{k:'Less dense points',t:'Soft echoes',b:['Hard things like rocks and the pier send back strong, dense echoes. These green clusters are weaker and more spread out: something that only partly reflects sound.',
+    dense:{ic:'<svg viewBox="0 0 48 32" width="44" height="30"><circle cx="8.3" cy="20.0" r="1.6" fill="#8a4dff"/><circle cx="5.0" cy="19.2" r="1.6" fill="#8a4dff"/><circle cx="7.2" cy="15.2" r="1.6" fill="#8a4dff"/><circle cx="14.1" cy="16.5" r="1.6" fill="#8a4dff"/><circle cx="7.9" cy="18.3" r="1.6" fill="#8a4dff"/><circle cx="11.6" cy="15.9" r="1.6" fill="#8a4dff"/><circle cx="9.9" cy="12.9" r="1.6" fill="#8a4dff"/><circle cx="6.8" cy="14.6" r="1.6" fill="#8a4dff"/><circle cx="3.7" cy="11.2" r="1.6" fill="#8a4dff"/><circle cx="2.8" cy="15.2" r="1.6" fill="#8a4dff"/><circle cx="7.4" cy="15.0" r="1.6" fill="#8a4dff"/><circle cx="8.2" cy="11.7" r="1.6" fill="#8a4dff"/><circle cx="7.7" cy="16.8" r="1.6" fill="#8a4dff"/><circle cx="10.4" cy="13.3" r="1.6" fill="#8a4dff"/><circle cx="6.7" cy="9.6" r="1.6" fill="#8a4dff"/><circle cx="6.4" cy="9.0" r="1.6" fill="#8a4dff"/><circle cx="3.5" cy="19.5" r="1.6" fill="#8a4dff"/><circle cx="1.0" cy="18.6" r="1.6" fill="#8a4dff"/><circle cx="9.0" cy="15.0" r="1.6" fill="#8a4dff"/><circle cx="9.5" cy="17.7" r="1.6" fill="#8a4dff"/><circle cx="11.3" cy="15.3" r="1.6" fill="#8a4dff"/><circle cx="6.1" cy="14.1" r="1.6" fill="#8a4dff"/><circle cx="4.8" cy="15.9" r="1.6" fill="#8a4dff"/><circle cx="5.5" cy="19.4" r="1.6" fill="#8a4dff"/><circle cx="2.0" cy="12.5" r="1.6" fill="#8a4dff"/><circle cx="4.9" cy="9.3" r="1.6" fill="#8a4dff"/><circle cx="40.8" cy="27.8" r="1.5" fill="#59ac33"/><circle cx="36.8" cy="7.9" r="1.5" fill="#59ac33"/><circle cx="40.9" cy="27.2" r="1.5" fill="#59ac33"/><circle cx="41.9" cy="17.7" r="1.5" fill="#59ac33"/><circle cx="37.7" cy="9.1" r="1.5" fill="#59ac33"/><circle cx="40.3" cy="17.8" r="1.5" fill="#59ac33"/><circle cx="28.3" cy="5.5" r="1.5" fill="#59ac33"/><circle cx="40.8" cy="27.8" r="1.5" fill="#59ac33"/><circle cx="23.9" cy="23.2" r="1.5" fill="#59ac33"/></svg>',k:'Less dense points',t:'Soft echoes',b:['Hard things like rocks and the pier send back strong, dense echoes. These green clusters are weaker and more spread out: something that only partly reflects sound.',
      'Here they are probably algae growing on the rocks, but they could also be kelp, ropes, fish, bubbles or loose sediment. On the kelp farm, this layer is how we hope to see the kelp itself.']},
-    objects:{k:'Objects',t:'What stands out',b:['The sonar sends pulses of sound and listens for the echoes. Where echoes bunch into a compact shape that stands out from the seabed, the software marks it as a candidate object: the wireframe spheres. Everything else stays as points, like the seabed, the long rocky edges and the pier.',
+    objects:{ic:'<svg viewBox="0 0 32 32" width="30" height="30" fill="none" stroke="#8a4dff" stroke-width="1.5"><circle cx="16" cy="16" r="12"/><ellipse cx="16" cy="16" rx="5.5" ry="12"/><path d="M4 16h24M6 9.5h20M6 22.5h20"/></svg>',k:'Objects',t:'What stands out',b:['The sonar sends pulses of sound and listens for the echoes. Where echoes bunch into a compact shape that stands out from the seabed, the software marks it as a candidate object: the wireframe spheres. Everything else stays as points, like the seabed, the long rocky edges and the pier.',
      'This sonar\'s sound bounces off the seabed surface and does not go into the sand, so it cannot see buried things. The grey spheres below the seabed are most likely echoes of echoes, sound that bounced twice, not real buried objects.']},
     over:{k:'Namibia 2026',t:'ASKET in Lüderitz',b:['Zoom into a pin to explore: our first sonar test at Kelp Blue, or their kelp farm in Shearwater Bay.']},
     kelp:{k:'First test · 24 Nov 2026',t:'Kelp Blue Trading',b:['ASKET\'s first time in the water with its sonar. We launched from the slipway next to the Kelp Blue office and drove loops around this small bay for 10 minutes, until a propeller stopped and we brought the boat back in.',
@@ -314,7 +315,7 @@ function dzcol(d){if(d>0){const t=Math.min(1,d/2.5);return[.55+.45*t,.55-.35*t,.
    const cEl=document.getElementById('ctx'),closed={};let cur;
    document.getElementById('ctxX').onclick=()=>{if(cur===window._ctxOverride){window._ctxOverride=null;cur=undefined}else{closed[cur]=true;cEl.classList.remove('on')}};
    const showCtx=k=>{if(k===cur)return;cur=k;if(!k||closed[k]){cEl.classList.remove('on');return}const c=CTX[k];
-    cEl.querySelector('.ck').textContent=c.k;cEl.querySelector('h3').textContent=c.t;
+    cEl.querySelector('.ci').innerHTML=c.ic||'';cEl.querySelector('.ck').textContent=c.k;cEl.querySelector('h3').textContent=c.t;
     cEl.querySelector('.cb').innerHTML=c.b.map(x=>'<p>'+x+'</p>').join('')+(c.link?`<a href="${c.link[1]}" target="_blank" rel="noopener">${c.link[0]} ↗</a>`:'');
     cEl.classList.add('on')};
    window._ctxTick=()=>{if(!document.getElementById('tut').classList.contains('off'))return showCtx(null);if(window._ctxOverride){closed[window._ctxOverride]=false;return showCtx(window._ctxOverride)}const t=ctr.target,D=cam.position.distanceTo(t);let k=null;
