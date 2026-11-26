@@ -198,15 +198,16 @@ function dzcol(d){if(d>0){const t=Math.min(1,d/2.5);return[.55+.45*t,.55-.35*t,.
  const grid=new THREE.GridHelper(200,20,0x3a4250,0x232a35);grid.position.set(0,0.02,0);scene.add(grid);
  document.getElementById('g').onchange=e=>grid.visible=e.target.checked;
  // satellite image (Esri World Imagery, saved per run by tools/sat_tiles.py), a see-through sheet at the water surface
- const satMat=new THREE.MeshBasicMaterial({transparent:true,opacity:.45,depthWrite:false,side:THREE.DoubleSide});
- const satPlane=new THREE.Mesh(new THREE.PlaneGeometry(1,1),satMat);satPlane.rotation.x=-Math.PI/2;satPlane.visible=false;satPlane.renderOrder=5;scene.add(satPlane);
+ // the run's own (sharper) image marks its pixels in the stencil, the wide area image skips them, so the two never stack into a darker square
+ const satMat=new THREE.MeshBasicMaterial({transparent:true,opacity:.45,depthWrite:false,side:THREE.DoubleSide,stencilWrite:true,stencilRef:1,stencilFunc:THREE.AlwaysStencilFunc,stencilZPass:THREE.ReplaceStencilOp});
+ const satPlane=new THREE.Mesh(new THREE.PlaneGeometry(1,1),satMat);satPlane.rotation.x=-Math.PI/2;satPlane.visible=false;satPlane.renderOrder=3;scene.add(satPlane);
  const satCredit=document.createElement('div');satCredit.id='satCredit';satCredit.style.cssText='position:fixed;left:10px;bottom:6px;font-size:10px;opacity:.7;display:none;pointer-events:none';document.body.appendChild(satCredit);
  fetch(R+S+'_sat.json').then(r=>{if(!r.ok)throw 0;return r.json()}).then(m=>{
   new THREE.TextureLoader().load(R+S+'_sat.jpg',t=>{t.anisotropy=r.capabilities.getMaxAnisotropy();satMat.map=t;satMat.needsUpdate=true});
   satPlane.scale.set(m.e-m.w,m.n-m.s,1);satPlane.position.set((m.w+m.e)/2-cx,0,-((m.s+m.n)/2-cy));
   satCredit.textContent=m.credit+' · zoom '+m.zoom}).catch(()=>{});
  // wider area (jetty to Shearwater Bay, tools/area_sat.py), a sheet just under the run's own image
- const areaMat=new THREE.MeshBasicMaterial({transparent:true,opacity:.45,depthWrite:false,side:THREE.DoubleSide});
+ const areaMat=new THREE.MeshBasicMaterial({transparent:true,opacity:.45,depthWrite:false,side:THREE.DoubleSide,stencilWrite:true,stencilRef:1,stencilFunc:THREE.NotEqualStencilFunc,stencilZPass:THREE.KeepStencilOp});
  const areaPlane=new THREE.Mesh(new THREE.PlaneGeometry(1,1),areaMat);areaPlane.rotation.x=-Math.PI/2;areaPlane.visible=false;areaPlane.renderOrder=4;scene.add(areaPlane);
  const places=new THREE.Group();places.visible=false;scene.add(places);let bay=null;window._satPlanes=[satPlane,areaPlane];
  {const la0=REP.home[0],lo0=REP.home[1],mlat=111320,mlon=111320*Math.cos(la0*Math.PI/180);
