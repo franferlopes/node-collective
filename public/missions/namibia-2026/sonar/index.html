@@ -37,6 +37,15 @@ body.clay .panel{box-shadow:0 1px 6px rgba(0,0,0,.12)}
 #ctx h3{font-weight:600;font-size:18px;margin:3px 0 8px;letter-spacing:-.01em}
 #ctx p{margin:0 0 8px;font-size:13px;line-height:1.45;color:#2b2b2b}
 #ctx a{font-weight:600;font-size:13px;color:#151515;text-decoration:none;border-bottom:2px solid #e1ff4f}
+#ctl,#hide{display:none!important}
+#bar{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);display:flex;gap:6px;padding:6px;border-radius:14px;background:rgba(250,250,248,.92);box-shadow:0 4px 22px rgba(0,0,0,.14);z-index:15;max-width:calc(100% - 24px);flex-wrap:wrap;justify-content:center;font-family:'Inter Tight',Inter,system-ui,sans-serif}
+#bar button{display:flex;align-items:center;gap:7px;border:0;border-radius:10px;padding:9px 13px;background:transparent;color:#151515;font:600 13.5px 'Inter Tight',Inter,sans-serif;cursor:pointer;white-space:nowrap;outline:none}
+#bar button:hover{background:rgba(0,0,0,.06)}
+#bar button.on{background:#151515;color:#e1ff4f}
+#routeHud{position:fixed;left:50%;bottom:76px;transform:translateX(-50%);font:500 12px var(--mono);color:#151515;background:rgba(250,250,248,.9);padding:5px 10px;border-radius:8px;z-index:15;display:none;white-space:nowrap}
+#helpBtn{position:fixed;left:12px;bottom:12px;width:34px;height:34px;border-radius:50%;border:0;background:rgba(250,250,248,.92);box-shadow:0 2px 10px rgba(0,0,0,.12);font:600 15px 'Inter Tight',Inter,sans-serif;color:#151515;cursor:pointer;z-index:15}
+body:not(.ready) #bar,body:not(.ready) #helpBtn{opacity:0;pointer-events:none}
+@media (max-width:700px){#ctx{bottom:auto;top:12px}#legend{display:none}}
 #tut{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;background:rgba(21,21,21,.28);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);padding:16px}
 #tut.off{display:none}
 .tcard{position:relative;width:340px;max-width:100%;box-sizing:border-box;background:#fafaf8;color:#151515;border-radius:14px;padding:22px 22px 18px;box-shadow:0 10px 40px rgba(0,0,0,.18);font-family:'Inter Tight',Inter,system-ui,sans-serif}
@@ -54,14 +63,14 @@ body.clay .panel{box-shadow:0 1px 6px rgba(0,0,0,.12)}
 <div id="load">Loading point clouds…</div>
 <div id="info" class="panel"><a id="siteBack" href="/missions/namibia-2026" style="display:none;font-size:12px;color:var(--mut);text-decoration:none;margin-bottom:6px">&larr; Namibia 2026 mission</a><h1 id="ttl">ASKET sonar</h1>
 <div class="m" id="sub"></div>
-<div id="counts" style="margin-top:4px"></div>
-<div class="m">x east, y north, metres from the processing reference point</div></div>
+<div id="counts" style="display:none"></div>
+<div class="m" style="display:none">x east, y north, metres from the processing reference point</div></div>
 <div id="legend" class="panel">
 <div class="sononly" style="margin-bottom:8px"><div style="margin-bottom:4px">Seabed depth</div><div class="bar"></div>
 <div class="row"><span>0 m</span><span id="dmax"></span></div></div>
 <div style="margin-bottom:4px">Objects and structures by depth</div><div style="height:10px;border-radius:3px;background:linear-gradient(90deg,#d9c2ff,#8a4dff,#3d0f80)"></div>
 <div class="row"><span>0 m</span><span>4+ m</span></div>
-<div style="margin:8px 0 4px">Water column density</div><div style="height:10px;border-radius:3px;background:linear-gradient(90deg,rgb(26,89,38),rgb(89,172,51),rgb(153,255,64))"></div>
+<div style="margin:8px 0 4px">Less dense points</div><div style="height:10px;border-radius:3px;background:linear-gradient(90deg,rgb(26,89,38),rgb(89,172,51),rgb(153,255,64))"></div>
 <div class="row"><span>8%</span><span>sparse → dense</span><span>68%+</span></div>
 <div style="margin-top:8px;font-size:12px;line-height:1.7">
 <span class="sw" style="background:#e1ff4f"></span> route · hover or click it for speed<br>
@@ -105,6 +114,14 @@ body.clay .panel{box-shadow:0 1px 6px rgba(0,0,0,.12)}
 <div class="m" id="help" style="display:none"></div>
 </div>
 <div id="depthHud" class="panel" style="bottom:12px;right:64px;padding:6px 10px;font-size:12px;display:none"></div>
+<div id="bar">
+<button data-b="route"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="18" r="2"/><circle cx="19" cy="6" r="2"/><path d="M7 18h6a3 3 0 0 0 0-6H11a3 3 0 0 1 0-6h6"/></svg>Route</button>
+<button data-b="dense"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="7" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="17" cy="9" r="1"/><circle cx="8" cy="13" r="1"/><circle cx="15" cy="15" r="1"/><circle cx="10" cy="19" r="1"/><circle cx="19" cy="18" r="1"/></svg>Less dense points</button>
+<button data-b="objects"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><path d="M4 12h16M12 4c2.5 2.2 2.5 13.8 0 16M12 4c-2.5 2.2-2.5 13.8 0 16"/></svg>Objects</button>
+<button data-b="bay"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s6-6.2 6-11a6 6 0 1 0-12 0c0 4.8 6 11 6 11z"/><circle cx="12" cy="10" r="2"/></svg><span>Fly to Shearwater Bay</span></button>
+</div>
+<div id="routeHud"></div>
+<button id="helpBtn" title="How to explore">?</button>
 <div id="ctx" aria-live="polite"><button class="tx" id="ctxX" title="Close">✕</button><div class="ck"></div><h3></h3><div class="cb"></div></div>
 <div id="tut" role="dialog" aria-modal="true" aria-labelledby="tutT">
 <div class="tcard">
@@ -282,6 +299,12 @@ function dzcol(d){if(d>0){const t=Math.min(1,d/2.5);return[.55+.45*t,.55-.35*t,.
     satMat.opacity=areaMat.opacity=o};
    // context cards: which place the view is on decides the text
    const CTX={
+    route:{k:'The route',t:'10 minutes on the water',b:['The line is the path ASKET drove, and the boat replays it at about 6 times real speed. The colour of the line shows how fast it went: hover or click it for the speed at that point.',
+     'The fan on the boat\'s right side is the sonar beam. Everything it touches becomes a point. For a sharp seabed the boat should stay under 1 knot; on this first test it mostly went faster.']},
+    dense:{k:'Less dense points',t:'Soft echoes',b:['Hard things like rocks and the pier send back strong, dense echoes. These green clusters are weaker and more spread out: something that only partly reflects sound.',
+     'Here they are probably algae growing on the rocks, but they could also be kelp, ropes, fish, bubbles or loose sediment. On the kelp farm, this layer is how we hope to see the kelp itself.']},
+    objects:{k:'Objects',t:'What stands out',b:['The sonar sends pulses of sound and listens for the echoes. Where echoes bunch into a compact shape that stands out from the seabed, the software marks it as a candidate object: the wireframe spheres. Everything else stays as points, like the seabed, the long rocky edges and the pier.',
+     'This sonar\'s sound bounces off the seabed surface and does not go into the sand, so it cannot see buried things. The grey spheres below the seabed are most likely echoes of echoes, sound that bounced twice, not real buried objects.']},
     over:{k:'Namibia 2026',t:'ASKET in Lüderitz',b:['Zoom into a pin to explore: our first sonar test at Kelp Blue, or their kelp farm in Shearwater Bay.']},
     kelp:{k:'First test · 24 Nov 2026',t:'Kelp Blue Trading',b:['ASKET\'s first time in the water with its sonar. We launched from the slipway next to the Kelp Blue office and drove loops around this small bay for 10 minutes, until a propeller stopped and we brought the boat back in.',
      'In those 10 minutes the sonar logged over 2 million points: a seabed 1 to 2.5 m deep, the columns of the pier, the rocks around the bay and softer clusters on them that are probably algae.',
@@ -289,12 +312,12 @@ function dzcol(d){if(d>0){const t=Math.min(1,d/2.5);return[.55+.45*t,.55-.35*t,.
     bay:{k:'Kelp farm',t:'Shearwater Bay',b:['Home of Kelp Blue\'s kelp farm, about 6 km west of Lüderitz. Kelp Blue grows giant kelp offshore to bring back kelp forests, which store carbon and are home to marine life.',
      'Here you only see satellite imagery. ASKET\'s next mission is to survey the farm with sonar and map the kelp and the structures that hold it.'],link:['kelp.blue','https://kelp.blue']}};
    const cEl=document.getElementById('ctx'),closed={};let cur;
-   document.getElementById('ctxX').onclick=()=>{closed[cur]=true;cEl.classList.remove('on')};
+   document.getElementById('ctxX').onclick=()=>{if(cur===window._ctxOverride){window._ctxOverride=null;cur=undefined}else{closed[cur]=true;cEl.classList.remove('on')}};
    const showCtx=k=>{if(k===cur)return;cur=k;if(!k||closed[k]){cEl.classList.remove('on');return}const c=CTX[k];
     cEl.querySelector('.ck').textContent=c.k;cEl.querySelector('h3').textContent=c.t;
     cEl.querySelector('.cb').innerHTML=c.b.map(x=>'<p>'+x+'</p>').join('')+(c.link?`<a href="${c.link[1]}" target="_blank" rel="noopener">${c.link[0]} ↗</a>`:'');
     cEl.classList.add('on')};
-   window._ctxTick=()=>{if(!document.getElementById('tut').classList.contains('off'))return showCtx(null);const t=ctr.target,D=cam.position.distanceTo(t);let k=null;
+   window._ctxTick=()=>{if(!document.getElementById('tut').classList.contains('off'))return showCtx(null);if(window._ctxOverride){closed[window._ctxOverride]=false;return showCtx(window._ctxOverride)}const t=ctr.target,D=cam.position.distanceTo(t);let k=null;
     if(bay&&Math.hypot(t.x-bay[0],t.z-bay[1])<2500&&D<4000)k='bay';
     else if(kelpXZ&&Math.hypot(t.x-kelpXZ[0],t.z-kelpXZ[1])<700&&D<1200)k='kelp';
     else if(D>2500)k='over';
@@ -372,7 +395,7 @@ function dzcol(d){if(d>0){const t=Math.min(1,d/2.5);return[.55+.45*t,.55-.35*t,.
  scrub.oninput=()=>goTo(+scrub.value);
  setTimeout(()=>goTo(+scrub.value||0),0);
  let playing=null;document.getElementById('play').onclick=e=>{if(playing){clearInterval(playing);playing=null;e.target.textContent='▶';return}
-  e.target.textContent='❚❚';playing=setInterval(()=>{const k=+scrub.value+2;if(k>=RI.length){clearInterval(playing);playing=null;e.target.textContent='▶';return}goTo(k)},40)};
+  e.target.textContent='❚❚';playing=setInterval(()=>{const k=+scrub.value+1;if(k>=RI.length){clearInterval(playing);playing=null;e.target.textContent='▶';return}goTo(k)},80)}; // one fix (0.5 s) per 80 ms: about 6x real speed, the 10 min run in ~1.5 min
  const sv=new THREE.Vector3();
  function nearRoute(x,y){if(!tgrp.visible)return -1;let best=-1,bd=10;for(let k=0;k<RI.length;k++){sv.set(tp[3*k],tp[3*k+1],tp[3*k+2]).project(cam);
   if(sv.z>1)continue;const d=Math.hypot((sv.x+1)/2*innerWidth-x,(1-sv.y)/2*innerHeight-y);if(d<bd){bd=d;best=k}}return best}
@@ -561,7 +584,7 @@ function dzcol(d){if(d>0){const t=Math.min(1,d/2.5);return[.55+.45*t,.55-.35*t,.
  document.getElementById('g').addEventListener('change',()=>setStyle(clay));
  // ---- baseline: Reset applies BASE; "Copy my settings" captures the current state so it can become the new BASE
  // Francisco's baseline (24 Nov 2026)
- const BASE={style:'clay',surf:'mesh',base:'seabed',objects:true,structures:true,water:false,kmin:15,grid:true,sat:true,satOp:45,track:false,beam:false,boatTrueSize:false,ex:2,ps:0.75,slw:0.5,cam:{t:[-9.55,-0.78,1.61],c:[71.39,35.53,6.61]}};
+ const BASE={style:'clay',surf:'mesh',base:'seabed',objects:false,structures:true,water:false,kmin:15,grid:true,sat:true,satOp:45,track:false,beam:false,boatTrueSize:false,ex:2,ps:0.75,slw:0.5,cam:{t:[-9.55,-0.78,1.61],c:[71.39,35.53,6.61]}};
  // start (and reset) on an overview of Luderitz: the Kelp Blue pin in front, Shearwater Bay behind
  BASE.cam=(()=>{const P2=(e,n)=>[e-cx,-(n-cy)],[tx,tz]=P2(-1700,250),[qx,qz]=P2(2500,-1000);return{t:[tx,0,tz],c:[qx,1250,qz]}})();
  const chk=(id,v)=>{const e=document.getElementById(id);if(e&&e.checked!==v)e.click()};
@@ -632,6 +655,20 @@ function zoomStep(){if(!zp)return;if(Math.abs(zq)<1e-4){zq=0;zp=null;recenter();
 // glide the camera somewhere (used by double-click and the underwater button)
 function glide(t1,c1,ms=900){const t0=ctr.target.clone(),c0=cam.position.clone(),st=performance.now();
  const step=now=>{let u=Math.min(1,(now-st)/ms);u=1-Math.pow(1-u,3);ctr.target.lerpVectors(t0,t1,u);cam.position.lerpVectors(c0,c1,u);ctr.update();if(u<1)requestAnimationFrame(step)};requestAnimationFrame(step)}
+// bottom bar: three views of the run plus the flight to Shearwater Bay; each opens its explanation in the card
+{const RUN_VIEW={t:[-9.55,-0.78,1.61],c:[71.39,35.53,6.61]},V=(a)=>new THREE.Vector3(...a);
+ const toRun=()=>{if(cam.position.y>250){window._setUnder&&window._setUnder(false,true);glide(V(RUN_VIEW.t),V(RUN_VIEW.c),1800);return true}return false};
+ const btn=k=>document.querySelector(`#bar [data-b="${k}"]`),chk=(id,v)=>{const e=document.getElementById(id);if(e.checked!==v)e.click()};
+ const hud=document.getElementById('routeHud'),play=document.getElementById('play'),scrub=document.getElementById('scrub'),sv=document.getElementById('scrubv');
+ const isPlaying=()=>play.textContent!=='▶';
+ const set=(k,on)=>{btn(k).classList.toggle('on',on);if(on)window._ctxOverride=k;else if(window._ctxOverride===k)window._ctxOverride=null};
+ btn('route').onclick=()=>{const on=!btn('route').classList.contains('on');set('route',on);chk('t',on);hud.style.display=on?'block':'none';
+  if(on){const flew=toRun();scrub.value=0;scrub.dispatchEvent(new Event('input'));setTimeout(()=>{if(!isPlaying()&&btn('route').classList.contains('on'))play.click()},flew?1900:100)}else if(isPlaying())play.click()};
+ btn('dense').onclick=()=>{const on=!btn('dense').classList.contains('on');set('dense',on);chk('k',on);if(on)toRun()};
+ btn('objects').onclick=()=>{const on=!btn('objects').classList.contains('on');set('objects',on);chk('o',on);if(on)toRun()};
+ btn('bay').onclick=()=>{const b=document.getElementById('bBay');b.click();const back=/back/i.test(b.textContent);btn('bay').querySelector('span').textContent=back?'Back to the run':'Fly to Shearwater Bay'};
+ document.getElementById('helpBtn').onclick=()=>document.getElementById('bHelp').click();
+ setInterval(()=>{if(hud.style.display==='block')hud.textContent='ASKET · '+sv.textContent},150)}
 r.domElement.addEventListener('dblclick',e=>{const p=spotAt(e.clientX,e.clientY);if(!p)return;
  const B=window._bayXZ;if(B&&Math.hypot(p.x-B[0],p.z-B[1])<1500)p.set(B[0],0,B[1]); // near Shearwater Bay: go to the farm itself, the only spot with data there
  const off=cam.position.clone().sub(ctr.target),d=off.length(),nd=Math.max(6,d*0.45);off.multiplyScalar(nd/d);
