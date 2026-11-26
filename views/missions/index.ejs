@@ -19,8 +19,15 @@
     <p>Updates from the field: deployments, competitions, and events.</p>
   </section>
 
+  <div class="mission-tabs" role="tablist" aria-label="Missions, competitions and events">
+    <button role="tab" id="tab-missions" aria-controls="panel-missions" aria-selected="true">Missions</button>
+    <button role="tab" id="tab-competitions" aria-controls="panel-competitions" aria-selected="false">Competitions</button>
+    <button role="tab" id="tab-events" aria-controls="panel-events" aria-selected="false">Events</button>
+  </div>
+
   <section class="missions">
-    <h2 class="section-label">Missions and competitions</h2>
+    <div id="panel-missions" role="tabpanel" aria-labelledby="tab-missions">
+    <h2 class="section-label">Missions</h2>
     <div class="mission-featured-row">
       <a class="mission-featured has-image" href="/missions/namibia-2026">
         <img class="mission-featured-img" src="/images/missions/namibia/namibia-node-kelp-blue.jpg" alt="ASKET 2.0 between the NODE and Kelp Blue logos" loading="lazy">
@@ -28,6 +35,11 @@
         <h3>Namibia 2026: the kelp below the canopy</h3>
         <p>ASKET in Lüderitz with Kelp Blue, 7 November to 2 December 2026.</p>
       </a>
+    </div>
+    </div>
+    <div id="panel-competitions" role="tabpanel" aria-labelledby="tab-competitions" hidden>
+    <h2 class="section-label">Competitions</h2>
+    <div class="mission-featured-row">
       <a class="mission-featured has-image" href="/missions/njord-2026">
         <img class="mission-featured-img" src="/images/missions/njord/njord-teams.jpg" alt="All Njord 2026 teams with their boats and flags in front of the Haven building in Trondheim" loading="lazy">
         <div class="mission-category">Competition</div>
@@ -41,7 +53,9 @@
         <p>Trondheim, August 2025. A partnership with Team AMORE and the Team Spirit Award.</p>
       </a>
     </div>
+    </div>
     <%# Events. The 2027 card stays a placeholder until it is announced. %>
+    <div id="panel-events" role="tabpanel" aria-labelledby="tab-events" hidden>
     <h2 class="section-label">Events</h2>
     <div class="mission-featured-row">
       <a class="mission-featured has-image" href="/missions/marine-tech-forum-2026">
@@ -57,6 +71,7 @@
         <span class="mission-soon">Date coming soon</span>
       </div>
     </div>
+    </div>
     <% if (posts.length === 0) { %>
     <% } else { %>
       <div class="focus-grid">
@@ -71,6 +86,17 @@
       </div>
     <% } %>
   </section>
+
+  <script>
+  // Missions / Competitions / Events tabs; #competitions or #events in the link opens that tab
+  (function(){
+    var tabs=['missions','competitions','events'].map(function(n){return [n,document.getElementById('tab-'+n)]});
+    function show(name){tabs.forEach(function(t){var on=t[0]===name;t[1].setAttribute('aria-selected',on);document.getElementById('panel-'+t[0]).hidden=!on});
+      if(history.replaceState)history.replaceState(null,'',name==='missions'?location.pathname:'#'+name)}
+    tabs.forEach(function(t){t[1].addEventListener('click',function(){show(t[0])})});
+    var h=location.hash.slice(1);if(h==='competitions'||h==='events')show(h);
+  })();
+  </script>
 
   <%- include('../partials/footer') %>
 

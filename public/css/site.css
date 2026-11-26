@@ -892,3 +892,26 @@ nav .nav-cta a:hover { background: var(--black); color: var(--white); }
 /* Partner logos link to each partner's site */
 .partners .partners-logos a { display: flex; align-items: center; justify-content: center; width: 100%; transition: opacity .2s; }
 .partners .partners-logos a:hover { opacity: .6; }
+
+/* ─── LIVE MISSION BUTTON (calls attention to the sonar viewer) ─── */
+.btn-live { display: inline-flex; align-items: center; gap: 12px; padding: 15px 24px; background: #e1ff4f; color: #151515; text-decoration: none; font-weight: 700; font-size: 0.9375rem; letter-spacing: 0.01em; border-radius: 2px; box-shadow: 0 0 0 0 rgba(225,255,79,.5); animation: btnLiveGlow 2.6s ease-out infinite; transition: transform .2s, background .2s; white-space: nowrap; }
+.btn-live:hover { background: #ecff86; transform: translateY(-1px); }
+.btn-live-dot { width: 8px; height: 8px; border-radius: 50%; background: #151515; position: relative; flex-shrink: 0; }
+.btn-live-dot::after { content: ''; position: absolute; inset: -4px; border-radius: 50%; border: 2px solid #151515; opacity: 0; animation: btnLiveDot 1.8s ease-out infinite; }
+.btn-live-arrow { transition: transform .2s; }
+.btn-live:hover .btn-live-arrow { transform: translateX(4px); }
+@keyframes btnLiveGlow { 0% { box-shadow: 0 0 0 0 rgba(225,255,79,.45); } 70% { box-shadow: 0 0 0 14px rgba(225,255,79,0); } 100% { box-shadow: 0 0 0 0 rgba(225,255,79,0); } }
+@keyframes btnLiveDot { 0% { transform: scale(.6); opacity: .8; } 100% { transform: scale(1.6); opacity: 0; } }
+.mission-hero .btn-live { margin-top: 32px; }
+.home-live .btn-live { flex-shrink: 0; }
+@media (prefers-reduced-motion: reduce) { .btn-live, .btn-live-dot::after { animation: none; } }
+
+/* ─── MISSIONS / EVENTS TABS (under the page header line) ─── */
+.mission-tabs { display: flex; gap: 32px; padding: 0 48px; background: var(--white); border-bottom: 1px solid var(--gray-light); margin-top: -1px; }
+.mission-tabs button { background: none; border: 0; padding: 18px 0 16px; font: inherit; font-size: 0.9375rem; font-weight: 500; color: var(--gray-mid); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+.mission-tabs button:hover { color: var(--black); }
+.mission-tabs button[aria-selected="true"] { color: var(--black); border-bottom-color: var(--black); }
+@media (max-width: 768px) { .mission-tabs { padding: 0 24px; } }
+/* same card size in every tab, even when a tab has only one or two cards */
+.missions [role="tabpanel"] .mission-featured-row { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 900px) { .missions [role="tabpanel"] .mission-featured-row { grid-template-columns: 1fr; } }
