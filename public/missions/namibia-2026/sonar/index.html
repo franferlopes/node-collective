@@ -1,7 +1,7 @@
 <!doctype html>
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <title>ASKET Sonar Layers</title>
 <style>
 :root{--font:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;--mono:'JetBrains Mono',ui-monospace,'SFMono-Regular',Menlo,Consolas,monospace;--bg:#0d1117;--panel:rgba(20,24,32,.9);--fg:#e6e6e6;--mut:#9aa4b2}
@@ -61,6 +61,8 @@ body.clay .panel{box-shadow:0 1px 6px rgba(0,0,0,.12)}
 <label><input type="radio" name="base" value="none"> No seabed</label>
 <label><input id="o" type="checkbox" checked> Candidate objects</label>
 <label><input id="hl" type="checkbox" checked> Structures above seabed <span class="m">(pillars, rocks)</span></label>
+<div style="padding-left:22px;display:flex;align-items:center;gap:4px">show as <button id="sh3d" style="display:none">3D</button><button id="shSolid" class="on">Mesh</button><button id="shDots">Dots</button></div>
+<div id="certRow" style="padding-left:22px;display:none;align-items:center;gap:4px;margin-top:3px" title="Confirmed: only what the sonar heard on 2 or more separate visits (more than 20 s apart). All: everything, hidden sides filled in see-through.">certainty <button id="cConf" class="on">Confirmed</button><button id="cAll">All</button></div>
 <label><input id="k" type="checkbox"> 🌿 Water column: kelp, ropes, buoys… <span class="m" id="kn"></span></label>
 <label style="padding-left:22px">min density <input id="kmin" type="range" min="8" max="70" value="15"> <span id="kminv">15%</span></label>
 <label><input id="g" type="checkbox" checked> 10 m grid</label>
@@ -158,13 +160,27 @@ function dzcol(d){if(d>0){const t=Math.min(1,d/2.5);return[.55+.45*t,.55-.35*t,.
   for(let i=0;i<cloud.dz.length;i++)if(cloud.dz[i]>1.0){const k=key(i);cnt.set(k,(cnt.get(k)||0)+1)}
   const foot=new Set();for(const [k,c] of cnt)if(c>=8){const [a,b]=k.split(',');foot.add(a+','+b)}
   const hp=column(dilate(foot),0.15),hc=[];for(let i=0;i<hp.length;i+=3)hc.push(...purple(-hp[i+2]));
-  L.hl=layer(new Float32Array(hp),null,2,new Float32Array(hc));window._hlN=hp.length/3}
+  L.hl=layer(new Float32Array(hp),null,2,new Float32Array(hc));window._hlN=hp.length/3;
+  window._structFoot=dilate(foot)}
+ const structMesh=new THREE.Group();world.add(structMesh); // filled by structSurface() once the seabed grid is loaded
+ // candidate objects as rounded lumps (size and depth from the object list); the 3 'below seabed: echo' ones are see-through
+ const objLumps=new THREE.Group();world.add(objLumps);
+ objs.forEach(o=>{const echo=o.note.includes('below'),h=Math.max(.15,(+o.bottom_m-+o.top_m)/2),rr=Math.max(.15,+o.size_m/2);
+  const m=new THREE.Mesh(new THREE.SphereGeometry(1,24,16),new THREE.MeshStandardMaterial({color:echo?0x9a9a9a:new THREE.Color(...purple(+o.depth_m)),roughness:.8,transparent:echo,opacity:echo?.35:1}));
+  m.scale.set(rr,h,rr);m.position.set(+o.east_m-cx,-+o.depth_m,-(+o.north_m-cy));objLumps.add(m)});
+ const struct3d=new THREE.Group();struct3d.visible=false;world.add(struct3d); // carved 3D mesh from tools/struct3d.py, if the run has one
+ let shMode='mesh';
+ function showAs(md){shMode=md;[['sh3d','3d'],['shSolid','mesh'],['shDots','dots']].forEach(([id,v])=>document.getElementById(id).classList.toggle('on',md==v));
+  const hl=document.getElementById('hl').checked,ob=document.getElementById('o').checked;
+  structMesh.visible=hl&&md=='mesh';struct3d.visible=hl&&md=='3d';if(window._has3dConf)document.getElementById('certRow').style.display=md=='3d'?'flex':'none';L.hl.visible=hl&&md=='dots';objLumps.visible=ob&&md!='dots';if(L.obj)L.obj.visible=ob&&md=='dots'}
+ window._showAs=()=>showAs(shMode);
+ document.getElementById('sh3d').onclick=()=>showAs('3d');document.getElementById('shSolid').onclick=()=>showAs('mesh');document.getElementById('shDots').onclick=()=>showAs('dots');
  // candidate objects: Lakshmi's object points + the rest of their column down to the seabed
  {const foot=new Set();for(let i=0;i<objp.length;i+=3)foot.add(k2(objp[i],objp[i+1]));
   const ext=column(dilate(foot),0.15);window._objExt=ext.length/3;
   const all=new Float32Array(objp.length+ext.length);all.set(objp);all.set(ext,objp.length);
   world.remove(L.obj);L.obj=layer(all,[1,1,1],2.5);window._objAll=all}
- document.getElementById('hl').onchange=e=>L.hl.visible=e.target.checked;
+ document.getElementById('hl').onchange=()=>window._showAs();
  // track (in world, flat at surface)
  const lat0=REP.home[0],lon0=REP.home[1],ml=111320,mo=111320*Math.cos(lat0*Math.PI/180);
  const tp=[],tc=[],TE=track.map(p=>(p.lon-lon0)*mo),TN=track.map(p=>(p.lat-lat0)*ml),TS=track.map(p=>+p.utc_s);
@@ -198,13 +214,20 @@ function dzcol(d){if(d>0){const t=Math.min(1,d/2.5);return[.55+.45*t,.55-.35*t,.
   fetch('area_sat.json').then(r=>{if(!r.ok)throw 0;return r.json()}).then(m=>{
    new THREE.TextureLoader().load('area_sat.jpg',t=>{t.anisotropy=r.capabilities.getMaxAnisotropy();areaMat.map=t;areaMat.needsUpdate=true});
    const [x0,z0]=P(m.n,m.w),[x1,z1]=P(m.s,m.e);areaPlane.scale.set(x1-x0,z1-z0,1);areaPlane.position.set((x0+x1)/2,-0.05,(z0+z1)/2);
-   m.places.forEach(p=>{const c=document.createElement('canvas');c.width=512;c.height=200;const g=c.getContext('2d');
-    g.beginPath();g.arc(40,100,22,0,7);g.fillStyle=NODE_ACCENT;g.fill();g.lineWidth=5;g.strokeStyle='#151515';g.stroke();
-    g.font='600 46px Inter,Helvetica,Arial';g.lineWidth=8;g.strokeStyle='rgba(0,0,0,.6)';g.strokeText(p.name,80,92);g.fillStyle='#fff';g.fillText(p.name,80,92);
-    g.font='500 30px Inter,Helvetica,Arial';g.strokeText(p.sub,80,134);g.fillStyle='#e1ff4f';g.fillText(p.sub,80,134);
-    const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),depthTest:false,sizeAttenuation:false}));
-    sp.center.set(40/512,.5);sp.scale.set(.32,.125,1);sp.renderOrder=12;const [x,z]=P(p.lat,p.lon);sp.position.set(x,0.5,z);places.add(sp);
-    if(/shearwater/i.test(p.name))bay=[x,z]});
+   // place labels: black pin, name in Inter Tight (NODE brand), small lime caption in JetBrains Mono
+   const drawPlace=p=>{const c=document.createElement('canvas');c.width=1024;c.height=256;const g=c.getContext('2d');
+    g.beginPath();g.arc(70,92,56,Math.PI*0.8,Math.PI*0.2);g.lineTo(70,244);g.closePath();g.fillStyle='#111';g.fill();g.lineWidth=5;g.strokeStyle='rgba(255,255,255,.9)';g.stroke();
+    g.beginPath();g.arc(70,92,18,0,7);g.fillStyle='#fff';g.fill();g.lineJoin='round';
+    g.font='600 76px "Inter Tight",Inter,Helvetica,Arial';g.lineWidth=10;g.strokeStyle='rgba(0,0,0,.55)';g.strokeText(p.name,150,112);g.fillStyle='#fff';g.fillText(p.name,150,112);
+    g.font='500 40px "JetBrains Mono",ui-monospace,monospace';if('letterSpacing' in g)g.letterSpacing='4px';const sub=(p.sub||'').toUpperCase();
+    g.lineWidth=8;g.strokeText(sub,153,172);g.fillStyle=NODE_ACCENT;g.fillText(sub,153,172);
+    const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),depthTest:false,transparent:true}));
+    sp.center.set(70/1024,12/256);sp.renderOrder=12;const [x,z]=P(p.lat,p.lon);sp.position.set(x,0.3,z);sp.userData={near:+p.near||0};places.add(sp);return [x,z]};
+   Promise.all([document.fonts.load('600 76px "Inter Tight"'),document.fonts.load('500 40px "JetBrains Mono"')]).catch(()=>{})
+    .then(()=>m.places.forEach(p=>{const xz=drawPlace(p);if(/shearwater/i.test(p.name))bay=xz}));
+   // sized in the scene (nearer labels look bigger, farther ones smaller), scaled with the zoom so they stay readable
+   window._placesTick=()=>{if(!places.visible)return;const D=cam.position.distanceTo(ctr.target),w=Math.min(Math.max(D*.38,12),2400);
+    places.children.forEach(sp=>{sp.scale.set(w,w/4,1);const n=sp.userData.near;sp.material.opacity=n&&D<n?Math.max(0,(D-n*.5)/(n*.5)):1})};
    document.getElementById('bBay').style.display='inline-block'}).catch(()=>{});}
  // keep near/far in proportion to the view, so the run (metres) and the bay (kilometres) both draw cleanly
  const clip=()=>{const d=cam.position.distanceTo(ctr.target);cam.near=Math.max(.1,d/3000);cam.far=Math.max(5000,d*8+9000);cam.updateProjectionMatrix()};ctr.addEventListener('change',clip);
@@ -294,7 +317,7 @@ function dzcol(d){if(d>0){const t=Math.min(1,d/2.5);return[.55+.45*t,.55-.35*t,.
  function applyEx(){const e=+ex.value;document.getElementById('exv').textContent=e.toFixed(1)+'×';world.scale.y=e;rings.forEach(m=>{const o=m.userData;m.position.set(+o.east_m-cx,-o.depth_m*e,-(+o.north_m-cy))})}
  ex.oninput=applyEx;applyEx();
  document.querySelectorAll('input[name=base]').forEach(el=>el.onchange=()=>{const v=document.querySelector('input[name=base]:checked').value;L.cloud.visible=v=='cloud';L.seabed.visible=v=='seabed'});
- document.getElementById('o').onchange=e=>{L.obj.visible=og.visible=e.target.checked};
+ document.getElementById('o').onchange=e=>{og.visible=e.target.checked;window._showAs()};
  document.getElementById('t').onchange=e=>{const v=e.target.checked;tgrp.visible=v;boat.visible=v;[fan,foot,edges].forEach(o=>o.visible=v)};
  document.getElementById('ps').oninput=e=>mats.forEach(m=>m.size=m.userData.base*+e.target.value);
  const ray=new THREE.Raycaster(),mv=new THREE.Vector2(),tip=document.getElementById('tip');
@@ -305,6 +328,7 @@ function dzcol(d){if(d>0){const t=Math.min(1,d/2.5);return[.55+.45*t,.55-.35*t,.
  // camera presets (work for any run: framed on the middle of the data)
  const CAM={top:{t:[0,-2,0],c:[0,95,0.01]},sideS:{t:[0,-3,0],c:[0,1,95]},sideE:{t:[0,-3,0],c:[95,1,0]},persp:{t:[0,-4,0],c:[0,55,65]}};
  const camTo=v=>{ctr.target.set(...v.t);cam.position.set(...v.c);ctr.update()};
+ window._lookAtEN=(e,n,d=9,h=6)=>{const x=e-cx,z=-(n-cy),y=-1.5*world.scale.y;camTo({t:[x,y,z],c:[x+d*.7,y+h,z+d*.7]})}; // console helper: frame a spot by east/north metres
  document.querySelectorAll('button[data-p]').forEach(b=>b.onclick=()=>{window._setUnder(/^side/.test(b.dataset.p),true);camTo(CAM[b.dataset.p])});
  // ---- tools: slice + measure (two clicks on the map, picked on the water surface plane)
  const msg=document.getElementById('toolMsg'),plane=new THREE.Plane(new THREE.Vector3(0,1,0),0),pick=new THREE.Vector3();
@@ -383,6 +407,55 @@ function dzcol(d){if(d>0){const t=Math.min(1,d/2.5);return[.55+.45*t,.55-.35*t,.
  document.querySelectorAll('button[data-s]').forEach(b=>b.onclick=()=>setSurf(b.dataset.s));setSurf('mesh');window._surf='mesh';
  document.querySelectorAll('button[data-s]').forEach(b=>b.addEventListener('click',()=>window._surf=b.dataset.s));
  window._bedPick=bedSmooth;
+ // ---- structures as a surface, the same way as the seabed: a 0.2 m height grid (aligned with the fine seabed grid),
+ // structure cells at the top of their returns, a one-cell skirt at seabed level so they rise out of the bed; same smooth / grain / mesh looks
+ {const gb=await (await fetch(R+S+'_bedgrid_fine.bin')).arrayBuffer(),[gx0,gy0,gc,GW,GH]=new Float32Array(gb,0,5),GZ=new Float32Array(gb,20);
+  const foot=window._structFoot,top=new Float32Array(GW*GH).fill(NaN),buf=new Map();
+  for(let i=0;i<cloud.dz.length;i++){if(!(cloud.dz[i]>0.15))continue;const x=cloud[3*i],y=cloud[3*i+1];if(!foot.has(k2(x,y)))continue;
+   const ci=Math.floor((x-gx0)/gc),cj=Math.floor((y-gy0)/gc);if(ci<0||cj<0||ci>=GW||cj>=GH)continue;const k=cj*GW+ci;let a=buf.get(k);if(!a)buf.set(k,a=[]);a.push(cloud[3*i+2])}
+  for(const [k,a] of buf)if(a.length>=2){a.sort((u,v)=>u-v);top[k]=a[Math.floor(a.length*.9)]}
+  const N8=[[-1,-1],[0,-1],[1,-1],[-1,0],[1,0],[-1,1],[0,1],[1,1]];
+  const each=(k,f)=>{const i=k%GW,j=(k-i)/GW;for(const [a,b] of N8){const ii=i+a,jj=j+b;if(ii>=0&&jj>=0&&ii<GW&&jj<GH)f(jj*GW+ii)}};
+  // fill pin-holes, drop lonely cells, then one smoothing pass (like the seabed's smooth look)
+  for(let pass=0;pass<2;pass++){const add=[];for(const k of buf.keys())each(k,n=>{if(isNaN(top[n])){let s=0,c=0;each(n,m=>{if(!isNaN(top[m])){s+=top[m];c++}});if(c>=5)add.push([n,s/c])}});add.forEach(([n,v])=>{if(isNaN(top[n])){top[n]=v;buf.set(n,[v])}})}
+  for(const k of [...buf.keys()]){if(isNaN(top[k]))continue;let c=0;each(k,n=>{if(!isNaN(top[n]))c++});if(c<2){top[k]=NaN;buf.delete(k)}}
+  {const t2=top.slice();for(const k of buf.keys()){if(isNaN(top[k]))continue;let s=top[k]*2,w=2;each(k,n=>{if(!isNaN(top[n])){s+=top[n];w++}});t2[k]=s/w}top.set(t2)}
+  // skirt: empty neighbours sit just under the seabed so the structure grows out of it
+  const Z=top.slice(),isS=new Uint8Array(GW*GH);for(let k=0;k<Z.length;k++)if(!isNaN(top[k]))isS[k]=1;
+  for(let k=0;k<Z.length;k++)if(isS[k])each(k,n=>{if(!isS[n]&&isNaN(Z[n])&&!isNaN(GZ[n]))Z[n]=GZ[n]-.03});
+  const vpos=new Float32Array(GW*GH*3),vcol=new Float32Array(GW*GH*3),idx=[];
+  for(let j=0;j<GH;j++)for(let i=0;i<GW;i++){const k=j*GW+i,z=isNaN(Z[k])?0:Z[k];vpos[3*k]=gx0+(i+.5)*gc-cx;vpos[3*k+1]=z;vpos[3*k+2]=-(gy0+(j+.5)*gc-cy);vcol.set(purple(-z),3*k)}
+  const ok=k=>!isNaN(Z[k]);
+  for(let j=0;j<GH-1;j++)for(let i=0;i<GW-1;i++){const a=j*GW+i,b=a+1,c=a+GW,d=c+1;if(!(isS[a]||isS[b]||isS[c]||isS[d]))continue;
+   if(ok(a)&&ok(c)&&ok(b))idx.push(a,c,b);if(ok(b)&&ok(c)&&ok(d))idx.push(b,c,d)}
+  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(vpos,3));g.setAttribute('color',new THREE.BufferAttribute(vcol,3));g.setIndex(idx);g.computeVertexNormals();
+  const sm=o=>new THREE.MeshStandardMaterial(Object.assign({vertexColors:true,roughness:.9,metalness:0,side:THREE.DoubleSide},o));
+  const sSmooth=new THREE.Mesh(g,sm({})),sGrain=new THREE.Mesh(g,sm({flatShading:true})),sFill=new THREE.Mesh(g,sm({flatShading:true,transparent:true,opacity:.55})),
+   sWire=new THREE.Mesh(g,new THREE.MeshBasicMaterial({color:0x5a2fb0,wireframe:true,transparent:true,opacity:.35}));
+  structMesh.add(sSmooth,sGrain,sFill,sWire);window._structParts={smooth:[sSmooth],grain:[sGrain],mesh:[sFill,sWire]};window._structCells=buf.size;
+  const ss=v=>{for(const [m,arr] of Object.entries(window._structParts))arr.forEach(o=>o.visible=m===v)};ss(window._surf||'mesh');
+  document.querySelectorAll('button[data-s]').forEach(b=>b.addEventListener('click',()=>ss(b.dataset.s)))}
+ // ---- carved 3D structures: seen surfaces solid, hidden sides (sonar shadow, filled in) see-through
+ // two versions from tools/struct3d.py: All (_struct3d.bin) and Confirmed, heard on 2+ separate visits (_struct3d_conf.bin)
+ const load3d=async(file,showHidden)=>{const r=await fetch(R+S+file);if(!r.ok)return null;const b=await r.arrayBuffer(),[nv,nf]=new Int32Array(b,0,2);
+  const src=new Float32Array(b,8,nv*3),conf=new Float32Array(b,8+nv*24,nv),F=new Uint32Array(b,8+nv*28,nf*3);
+  const pos=new Float32Array(nv*3),col=new Float32Array(nv*3);
+  for(let i=0;i<nv;i++){pos[3*i]=src[3*i]-cx;pos[3*i+1]=src[3*i+2];pos[3*i+2]=-(src[3*i+1]-cy);col.set(purple(-src[3*i+2]),3*i)}
+  const seen=[],hid=[];for(let t=0;t<nf;t++){const a=F[3*t],b2=F[3*t+1],c=F[3*t+2];(!showHidden||Math.min(conf[a],conf[b2],conf[c])>0?seen:hid).push(a,b2,c)}
+  const geo=ix=>{const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('color',new THREE.BufferAttribute(col,3));g.setIndex(ix);g.computeVertexNormals();return g};
+  const gS=geo(seen),sm=o=>new THREE.MeshStandardMaterial(Object.assign({vertexColors:true,roughness:.85,metalness:0,side:THREE.DoubleSide},o));
+  const grp=new THREE.Group();
+  const cSmooth=new THREE.Mesh(gS,sm({})),cGrain=new THREE.Mesh(gS,sm({flatShading:true})),cFill=new THREE.Mesh(gS,sm({flatShading:true,transparent:true,opacity:.6})),
+   cWire=new THREE.Mesh(gS,new THREE.MeshBasicMaterial({color:0x5a2fb0,wireframe:true,transparent:true,opacity:.3}));
+  grp.add(cSmooth,cGrain,cFill,cWire);if(hid.length)grp.add(new THREE.Mesh(geo(hid),sm({transparent:true,opacity:.22,depthWrite:false})));
+  const parts={smooth:[cSmooth],grain:[cGrain],mesh:[cFill,cWire]},s3=v=>{for(const [m,arr] of Object.entries(parts))arr.forEach(o=>o.visible=m===v)};s3(window._surf||'mesh');
+  document.querySelectorAll('button[data-s]').forEach(bt=>bt.addEventListener('click',()=>s3(bt.dataset.s)));
+  grp.userData={nv,nf,seen:seen.length/3,hidden:hid.length/3};struct3d.add(grp);return grp};
+ try{const [gAll,gConf]=await Promise.all([load3d('_struct3d.bin',true),load3d('_struct3d_conf.bin',false)]);
+  if(gAll){window._has3dConf=!!gConf;
+   const cert=c=>{if(gConf){gConf.visible=c;gAll.visible=!c}document.getElementById('cConf').classList.toggle('on',c);document.getElementById('cAll').classList.toggle('on',!c)};
+   document.getElementById('cConf').onclick=()=>cert(true);document.getElementById('cAll').onclick=()=>cert(false);cert(!!gConf);
+   window._struct3d={all:gAll.userData,confirmed:gConf&&gConf.userData};document.getElementById('sh3d').style.display='';showAs('3d')}}catch(e){console.warn('3D structures',e)}
  // depth under the mouse (from the seabed surface), throttled
  const hud=document.getElementById('depthHud');let hudT=0;
  r.domElement.addEventListener('pointermove',e=>{if(e.buttons)return;const now=performance.now();if(now-hudT<80)return;hudT=now;
@@ -414,7 +487,7 @@ function dzcol(d){if(d>0){const t=Math.min(1,d/2.5);return[.55+.45*t,.55-.35*t,.
  function applySettings(s){document.querySelector(`input[name=base][value=${s.base}]`).click();
   chk('o',s.objects);chk('hl',s.structures);chk('k',s.water);set('#kmin',s.kmin,'input');chk('g',s.grid);chk('sat',!!s.sat);set('#satOp',s.satOp||45,'input');chk('t',s.track);chk('beam',s.beam);chk('bsize',s.boatTrueSize);
   set('#ex',s.ex,'input');set('#ps',s.ps,'input');set('#slw',Math.round(s.slw*10),'input');
-  setSurf(s.surf);window._surf=s.surf;setStyle(s.style=='clay');camTo(s.cam);if(s.deploy)window._setDeploy(s.deploy.e,s.deploy.n,true)}
+  setSurf(s.surf);window._surf=s.surf;setStyle(s.style=='clay');camTo(s.cam);if(s.deploy)window._setDeploy(s.deploy.e,s.deploy.n,true);window._showAs()}
  // run picker (runs.json lists the processed runs, newest first)
  fetch('runs.json').then(r=>r.json()).then(list=>{if(!list.length)return;const sel=document.createElement('select');sel.style.marginTop='4px';
   list.forEach(x=>{const o=document.createElement('option');o.value=x;o.textContent=x;if(x==S)o.selected=true;sel.appendChild(o)});
@@ -518,7 +591,7 @@ const needle=document.getElementById('needle');
 function stack(){const i=document.getElementById('info').getBoundingClientRect(),c=document.getElementById('ctl'),t=Math.round(i.bottom+10);
  c.style.top=t+'px';c.style.maxHeight=(innerHeight-t-12)+'px'}
 new ResizeObserver(stack).observe(document.getElementById('info'));addEventListener('resize',stack);stack();
-(function loop(){requestAnimationFrame(loop);zoomStep();adapt();ctr.update();needle.style.transform=`rotate(${ctr.getAzimuthalAngle()*180/Math.PI}deg)`;r.render(scene,cam)})();
+(function loop(){requestAnimationFrame(loop);zoomStep();adapt();ctr.update();if(window._placesTick)window._placesTick();needle.style.transform=`rotate(${ctr.getAzimuthalAngle()*180/Math.PI}deg)`;r.render(scene,cam)})();
 </script><script>// on the NODE website: back link, clay model only (no sonar-colours option)
 if(location.pathname.startsWith('/missions/')){document.getElementById('siteBack').style.display='block';document.getElementById('styleRow').style.display='none'}</script>
 </body></html>
