@@ -8,13 +8,15 @@
 html,body{margin:0;height:100%;background:var(--bg);color:var(--fg);font:13px/1.45 var(--font);overflow:hidden}
 #c{position:fixed;inset:0}
 .panel{position:fixed;background:var(--panel);border-radius:8px;padding:10px 12px}
-#info{top:12px;left:12px;width:330px;box-sizing:border-box}
+#info{top:12px;right:12px;width:230px;box-sizing:border-box;font-family:'Inter Tight',Inter,sans-serif}
+#info select,#siteBack{display:none!important}
+#brand{top:12px;left:12px;padding:10px 14px;color:#151515;display:block;text-decoration:none}
 #info h1{font-size:15px;margin:0 0 4px}
 .m{color:var(--mut)}
 #ctl{top:178px;left:12px;width:330px;box-sizing:border-box;overflow-y:auto}
 #ctl label{display:flex;gap:8px;align-items:center;margin:3px 0}
 #ctl .h{margin-top:6px;font-weight:600}
-#legend{top:12px;right:12px;width:210px;box-sizing:border-box}
+#legend{top:96px;right:12px;width:230px;box-sizing:border-box}
 .bar{height:10px;border-radius:3px;background:linear-gradient(90deg,#fde725,#5ec962,#21918c,#3b528b,#440154)}
 .row{display:flex;justify-content:space-between;color:var(--mut);font-size:11px}
 #tip{position:fixed;pointer-events:none;display:none;background:#000d;color:#d6d6d6;padding:6px 8px;border-radius:5px;font-size:12px;max-width:240px}
@@ -46,7 +48,7 @@ body.clay .panel{box-shadow:0 1px 6px rgba(0,0,0,.12)}
 #routeHud{position:fixed;left:50%;bottom:76px;transform:translateX(-50%);font:500 12px var(--mono);color:#151515;background:rgba(250,250,248,.9);padding:5px 10px;border-radius:8px;z-index:15;display:none;white-space:nowrap}
 #helpBtn{position:fixed;left:12px;bottom:12px;width:34px;height:34px;border-radius:50%;border:0;background:rgba(250,250,248,.92);box-shadow:0 2px 10px rgba(0,0,0,.12);font:600 15px 'Inter Tight',Inter,sans-serif;color:#151515;cursor:pointer;z-index:15}
 body:not(.ready) #bar,body:not(.ready) #helpBtn{opacity:0;pointer-events:none}
-@media (max-width:700px){#ctx{bottom:auto;top:12px}#legend{display:none}}
+@media (max-width:700px){#ctx{bottom:auto;top:64px}#legend,#info{display:none}}
 #tut{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;background:rgba(21,21,21,.28);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);padding:16px}
 #tut.off{display:none}
 .tcard{position:relative;width:340px;max-width:100%;box-sizing:border-box;background:#fafaf8;color:#151515;border-radius:14px;padding:22px 22px 18px;box-shadow:0 10px 40px rgba(0,0,0,.18);font-family:'Inter Tight',Inter,system-ui,sans-serif}
@@ -62,6 +64,7 @@ body:not(.ready) #bar,body:not(.ready) #helpBtn{opacity:0;pointer-events:none}
 </style></head><body class="clay">
 <canvas id="c"></canvas>
 <div id="load">Loading point clouds…</div>
+<a id="brand" class="panel" title="NODE Engineering Club"><svg height="22" style="display:block" aria-label="NODE" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="584.0 463.0 752.4101559999999 153.75" fill="currentColor"><path d="M 739.324219 495.972656 C 736.917969 498.761719 735.601562 500.097656 732.421875 503.777344 C 724.433594 513.015625 711.085938 528.476562 690.652344 528.476562 C 670.21875 528.476562 656.867188 513.015625 648.882812 503.777344 C 645.976562 500.417969 644.480469 498.871094 641.980469 495.972656 C 632.667969 485.148438 615.300781 465 586 465 L 586 487.796875 C 604.855469 487.796875 616.804688 501.679688 624.714844 510.863281 C 627.1875 513.734375 628.679688 515.273438 631.628906 518.6875 C 634.046875 521.488281 637.152344 525.070312 640.980469 528.847656 L 586 528.847656 L 586 550.902344 L 640.992188 550.902344 C 637.164062 554.679688 634.058594 558.273438 631.640625 561.0625 C 628.542969 564.644531 627.152344 566.066406 624.726562 568.886719 C 616.816406 578.070312 604.855469 591.953125 586.011719 591.953125 L 586.011719 614.75 C 615.308594 614.75 632.679688 594.601562 642 583.777344 C 644.40625 580.988281 645.722656 579.652344 648.902344 575.972656 C 656.878906 566.734375 670.238281 551.273438 690.671875 551.273438 C 711.105469 551.273438 724.457031 566.734375 732.441406 575.972656 C 735.347656 579.332031 736.84375 580.878906 739.34375 583.777344 C 748.675781 594.601562 766.035156 614.75 795.332031 614.75 L 795.332031 591.953125 C 776.480469 591.953125 764.527344 578.070312 756.617188 568.886719 C 754.210938 566.097656 752.769531 564.613281 749.703125 561.0625 C 747.285156 558.261719 744.179688 554.679688 740.351562 550.902344 L 795.34375 550.902344 L 795.34375 528.847656 L 740.351562 528.847656 C 744.179688 525.070312 747.285156 521.476562 749.703125 518.6875 C 752.800781 515.105469 754.191406 513.683594 756.617188 510.863281 C 764.527344 501.679688 776.492188 487.796875 795.332031 487.796875 L 795.332031 465 C 766.011719 465 748.644531 485.148438 739.324219 495.972656 Z M 739.324219 495.972656 "/><path d="M 954.355469 559.949219 L 895.980469 485.105469 L 872.925781 485.105469 L 872.925781 594.644531 L 895.640625 594.644531 L 895.640625 519.8125 L 953.738281 594.644531 L 977.066406 594.644531 L 977.066406 485.105469 L 954.355469 485.105469 Z M 954.355469 559.949219 "/><path d="M 1051.78125 483.492188 C 1035.832031 483.492188 1022.238281 488.921875 1010.976562 499.769531 C 999.722656 510.628906 994.09375 524.023438 994.09375 539.96875 C 994.09375 555.917969 999.683594 569.449219 1010.878906 580.167969 C 1022.066406 590.890625 1035.703125 596.246094 1051.78125 596.246094 C 1067.855469 596.246094 1081.289062 590.859375 1092.476562 580.0625 C 1103.664062 569.28125 1109.265625 555.90625 1109.265625 539.960938 C 1109.265625 524.011719 1103.664062 510.617188 1092.476562 499.757812 C 1081.289062 488.902344 1067.71875 483.484375 1051.78125 483.484375 Z M 1076.199219 564.601562 C 1069.839844 571.101562 1061.695312 574.347656 1051.78125 574.347656 C 1041.863281 574.347656 1033.519531 571.136719 1027.15625 564.699219 C 1020.792969 558.261719 1017.613281 550.023438 1017.613281 539.96875 C 1017.613281 529.917969 1020.792969 521.476562 1027.15625 515.050781 C 1033.519531 508.613281 1041.726562 505.402344 1051.78125 505.402344 C 1061.832031 505.402344 1069.839844 508.613281 1076.199219 515.050781 C 1082.5625 521.488281 1085.746094 529.789062 1085.746094 539.96875 C 1085.746094 550.148438 1082.5625 558.09375 1076.199219 564.59375 Z M 1076.199219 564.601562 "/><path d="M 1212.984375 500.578125 C 1202.125 490.257812 1188.796875 485.09375 1172.984375 485.09375 L 1126.296875 485.09375 L 1126.296875 594.644531 L 1172.984375 594.644531 C 1188.796875 594.644531 1202.136719 589.523438 1212.984375 579.269531 C 1223.839844 569.015625 1229.261719 555.855469 1229.261719 539.769531 C 1229.261719 523.683594 1223.832031 510.894531 1212.984375 500.578125 Z M 1196.90625 563.597656 C 1191.011719 569.429688 1183.035156 572.34375 1172.984375 572.34375 L 1149.613281 572.34375 L 1149.613281 507.214844 L 1172.984375 507.214844 C 1183.035156 507.214844 1191.011719 510.128906 1196.90625 515.953125 C 1202.804688 521.785156 1205.75 529.726562 1205.75 539.769531 C 1205.75 549.8125 1202.804688 557.753906 1196.90625 563.585938 Z M 1196.90625 563.597656 "/><path d="M 1334.410156 506.28125 L 1334.410156 485.105469 L 1245.769531 485.105469 L 1245.769531 594.644531 L 1334.410156 594.644531 L 1334.410156 573.265625 L 1269.078125 573.265625 L 1269.078125 550.085938 L 1331.199219 550.085938 L 1331.199219 528.898438 L 1269.078125 528.898438 L 1269.078125 506.28125 Z M 1334.410156 506.28125 "/></svg></a>
 <div id="info" class="panel"><a id="siteBack" href="/missions/namibia-2026" style="display:none;font-size:12px;color:var(--mut);text-decoration:none;margin-bottom:6px">&larr; Namibia 2026 mission</a><h1 id="ttl">ASKET sonar</h1>
 <div class="m" id="sub"></div>
 <div id="counts" style="display:none"></div>
@@ -603,7 +606,7 @@ function dzcol(d){if(d>0){const t=Math.min(1,d/2.5);return[.55+.45*t,.55-.35*t,.
  fetch(R+'report.json').then(r=>r.json()).then(rep=>{const rc=rep.recordings[0],d=S.slice(0,10).split('-');
   const mon=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][+d[1]-1];
   document.getElementById('ttl').textContent=`ASKET sonar · ${+d[2]} ${mon} ${d[0]}`;document.title=`ASKET Sonar ${+d[2]} ${mon}`;
-  document.getElementById('sub').textContent=`${rc.utc[0].slice(0,5)} to ${rc.utc[1].slice(0,5)} UTC · ${Math.round(rc.track_m)} m track · ${rc.pings.toLocaleString()} pings`}).catch(()=>{});
+  document.getElementById('sub').textContent=`${rc.utc[0].slice(0,5)} to ${rc.utc[1].slice(0,5)} UTC · ${Math.round(rc.track_m)} m track · ${rc.pings.toLocaleString()} pings`;placeLegend()}).catch(()=>{});
  function currentSettings(){const r2=v=>+v.toFixed(2),q=id=>{const e=document.getElementById(id);return e?e.checked:null};
   return{style:clay?'clay':'sonar',surf:window._surf,base:document.querySelector('input[name=base]:checked').value,objects:q('o'),structures:q('hl'),water:q('k'),
    kmin:+document.getElementById('kmin').value,grid:q('g'),sat:q('sat'),satOp:+document.getElementById('satOp').value,track:q('t'),beam:q('beam'),boatTrueSize:q('bsize'),ex:+document.getElementById('ex').value,
@@ -723,12 +726,13 @@ function mouseStyle(m){
   help.textContent='Drag or two-finger press-and-swipe to rotate (high up, drag slides the map) · two-finger swipe sideways or Shift+drag to move · swipe forward/back, scroll or pinch to zoom where the mouse is (zoom into the seabed to go underwater) · double-click to fly there'}
 }
 mouseStyle('orbit'); // the curated controls (25 Nov); Map style kept in code only
-function rs(){r.setSize(innerWidth,innerHeight);cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix();if(window._tmat)window._tmat.resolution.set(innerWidth,innerHeight)}addEventListener('resize',rs);rs();
+function placeLegend(){const i=document.getElementById('info').getBoundingClientRect(),l=document.getElementById('legend');if(i.height)l.style.top=Math.round(i.bottom+8)+'px'}
+function rs(){placeLegend();r.setSize(innerWidth,innerHeight);cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix();if(window._tmat)window._tmat.resolution.set(innerWidth,innerHeight)}addEventListener('resize',rs);rs();
 const needle=document.getElementById('needle');
 function stack(){const i=document.getElementById('info').getBoundingClientRect(),c=document.getElementById('ctl'),t=Math.round(i.bottom+10);
  c.style.top=t+'px';c.style.maxHeight=(innerHeight-t-12)+'px'}
 new ResizeObserver(stack).observe(document.getElementById('info'));addEventListener('resize',stack);stack();
 (function loop(){requestAnimationFrame(loop);zoomStep();adapt();ctr.update();if(window._placesTick)window._placesTick();if(window._satTick)window._satTick();if(window._ctxTick)window._ctxTick();if(window._revealTick)window._revealTick();needle.style.transform=`rotate(${ctr.getAzimuthalAngle()*180/Math.PI}deg)`;r.render(scene,cam)})();
 </script><script>// on the NODE website: back link, clay model only (no sonar-colours option)
-if(location.pathname.startsWith('/missions/')){document.getElementById('siteBack').style.display='block';document.getElementById('styleRow').style.display='none'}</script>
+if(location.pathname.startsWith('/missions/')){document.getElementById('brand').href='/missions/namibia-2026';document.getElementById('styleRow').style.display='none'}</script>
 </body></html>
