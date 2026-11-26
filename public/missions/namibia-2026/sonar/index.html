@@ -18,6 +18,8 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--fg);font:13px/1.
 .bar{height:10px;border-radius:3px;background:linear-gradient(90deg,#fde725,#5ec962,#21918c,#3b528b,#440154)}
 .row{display:flex;justify-content:space-between;color:var(--mut);font-size:11px}
 #tip{position:fixed;pointer-events:none;display:none;background:#000d;color:#d6d6d6;padding:6px 8px;border-radius:5px;font-size:12px;max-width:240px}
+#c,.panel{transition:opacity .6s}
+body:not(.ready) #c,body:not(.ready) .panel,body:not(.ready) #ctx{opacity:0!important;pointer-events:none!important} /* nothing shows until the start view is set */
 #load{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--mut)}
 .sw{display:inline-block;width:10px;height:10px;border-radius:50%;vertical-align:middle}
 button.on{outline:2px solid #6cf}
@@ -577,8 +579,8 @@ function dzcol(d){if(d>0){const t=Math.min(1,d/2.5);return[.55+.45*t,.55-.35*t,.
  document.getElementById('reset').onclick=()=>applySettings(BASE);
  window._currentSettings=currentSettings; // console: copy(JSON.stringify(_currentSettings())) to update BASE
  applySettings(BASE);
- document.getElementById('load').remove();
-})().catch(e=>document.getElementById('load').textContent='Could not load: '+e);
+ document.getElementById('load').remove();requestAnimationFrame(()=>requestAnimationFrame(()=>document.body.classList.add('ready'))); // fade in once the start view has rendered
+})().catch(e=>{document.getElementById('load').textContent='Could not load: '+e;document.body.classList.add('ready')});
 cam.position.set(0,60,70);ctr.target.set(0,-6,0);ctr.update();
 // ---- navigation: zoom to the spot under the mouse, double-click to fly there, stay above water unless asked
 ctr.enableDamping=true; // OrbitControls zoom stays on for touch pinch; the wheel is handled below
