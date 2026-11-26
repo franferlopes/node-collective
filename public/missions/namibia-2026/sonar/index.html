@@ -73,7 +73,7 @@ body.clay .panel{box-shadow:0 1px 6px rgba(0,0,0,.12)}
 <label><input type="radio" name="base" value="none"> No seabed</label>
 <label><input id="o" type="checkbox" checked> Candidate objects</label>
 <label><input id="hl" type="checkbox" checked> Structures above seabed <span class="m">(pillars, rocks)</span></label>
-<div style="padding-left:22px;display:flex;align-items:center;gap:4px">show as <button id="sh3d" style="display:none">3D</button><button id="shSolid" style="display:none">Mesh</button><button id="shDots" class="on">Dots</button></div>
+<div style="padding-left:22px;display:none;align-items:center;gap:4px">show as <button id="sh3d" style="display:none">3D</button><button id="shSolid" style="display:none">Mesh</button><button id="shDots" class="on">Dots</button></div>
 <div id="certRow" style="padding-left:22px;display:none;align-items:center;gap:4px;margin-top:3px" title="Confirmed: only what the sonar heard on 2 or more separate visits (more than 20 s apart). All: everything, hidden sides filled in see-through.">certainty <button id="cConf" class="on">Confirmed</button><button id="cAll">All</button></div>
 <label><input id="k" type="checkbox"> Less dense point cloud <span class="m" id="kn"></span></label>
 <label style="padding-left:22px">min density <input id="kmin" type="range" min="8" max="70" value="15"> <span id="kminv">15%</span></label>
@@ -484,7 +484,8 @@ function dzcol(d){if(d>0){const t=Math.min(1,d/2.5);return[.55+.45*t,.55-.35*t,.
   const parts={smooth:[cSmooth],grain:[cGrain],mesh:[cFill,cWire]},s3=v=>{for(const [m,arr] of Object.entries(parts))arr.forEach(o=>o.visible=m===v)};s3(window._surf||'mesh');
   document.querySelectorAll('button[data-s]').forEach(bt=>bt.addEventListener('click',()=>s3(bt.dataset.s)));
   grp.userData={nv,nf,seen:seen.length/3,hidden:hid.length/3};struct3d.add(grp);return grp};
- try{const [gAll,gConf]=await Promise.all([load3d('_struct3d.bin',true),load3d('_struct3d_conf.bin',false)]);
+ const USE_3D=false; // 26 Nov: structures shown as dots only; set true to bring back the 3D option (tools/struct3d.py files)
+ if(USE_3D)try{const [gAll,gConf]=await Promise.all([load3d('_struct3d.bin',true),load3d('_struct3d_conf.bin',false)]);
   if(gAll){window._has3dConf=!!gConf;
    const cert=c=>{if(gConf){gConf.visible=c;gAll.visible=!c}document.getElementById('cConf').classList.toggle('on',c);document.getElementById('cAll').classList.toggle('on',!c)};
    document.getElementById('cConf').onclick=()=>cert(true);document.getElementById('cAll').onclick=()=>cert(false);cert(!!gConf);
