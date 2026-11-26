@@ -147,7 +147,7 @@ async function ply(url){const b=await (await fetch(url)).arrayBuffer();const u=n
  const dv=new DataView(b,off),P=new Float32Array(n*3);for(let i=0;i<n;i++){const o=i*19;P[3*i]=dv.getFloat32(o,true);P[3*i+1]=dv.getFloat32(o+4,true);P[3*i+2]=dv.getFloat32(o+8,true)}return P}
 async function csv(url){const t=(await (await fetch(url)).text()).trim().split('\n');const h=t[0].split(',');return t.slice(1).map(l=>{const v=l.split(',');return Object.fromEntries(h.map((k,i)=>[k,v[i]]))})}
 
-const r=new THREE.WebGLRenderer({canvas:document.getElementById('c'),antialias:true});r.setPixelRatio(devicePixelRatio);
+const r=new THREE.WebGLRenderer({canvas:document.getElementById('c'),antialias:true});r.setPixelRatio(Math.min(devicePixelRatio,1.5)); // capped: retina at full 2x made moving around lag
 const scene=new THREE.Scene();scene.background=new THREE.Color(0xe9e8e4); // start in clay (the baseline), no dark flash while loading
 const cam=new THREE.PerspectiveCamera(50,1,0.1,5000);const ctr=new THREE.OrbitControls(cam,r.domElement);
 const world=new THREE.Group();scene.add(world);
@@ -271,7 +271,7 @@ function dzcol(d){if(d>0){const t=Math.min(1,d/2.5);return[.55+.45*t,.55-.35*t,.
     const h=.1*(+p.size||1);sp.scale.set(h*4,h,1);
     sp.center.set(px/1024,6/256);sp.renderOrder=12;const [x,z]=P(p.lat,p.lon);sp.position.set(x,0.3,z);sp.userData={near:+p.near||0};places.add(sp);return [x,z]};
    Promise.all([document.fonts.load('600 64px "Inter Tight"'),document.fonts.load('700 34px "JetBrains Mono"')]).catch(()=>{})
-    .then(()=>m.places.forEach(p=>{const xz=drawPlace(p);if(/shearwater/i.test(p.name))bay=xz;if(/kelp blue/i.test(p.name))kelpXZ=xz}));
+    .then(()=>m.places.forEach(p=>{const xz=drawPlace(p);if(/shearwater/i.test(p.name)){bay=xz;window._bayXZ=xz}if(/kelp blue/i.test(p.name))kelpXZ=xz}));
    // fixed size on screen, set per place ("size" in area_sat.json); "near" fades a label out when zoomed in closer than that
    window._placesTick=()=>{if(!places.visible)return;const D=cam.position.distanceTo(ctr.target);
     places.children.forEach(sp=>{const n=sp.userData.near;sp.material.opacity=n&&D<n?Math.max(0,(D-n*.5)/(n*.5)):1})};
@@ -392,8 +392,8 @@ function dzcol(d){if(d>0){const t=Math.min(1,d/2.5);return[.55+.45*t,.55-.35*t,.
  // reveal: the pier, rocks and objects fade in as you come down (the satellite fades out): hidden above ~400 m, full below ~80 m
  rings.forEach(m=>m.userData.op=m.material.opacity);
  window._revealTick=()=>{const h=Math.max(cam.position.y,1),r=Math.min(1,Math.max(0,(Math.log10(400)-Math.log10(h))/(Math.log10(400)-Math.log10(80))));
-  [L.hl,L.obj].forEach(l=>{if(!l)return;l.material.transparent=r<1;l.material.opacity=r;l.material.depthWrite=r>=1});
-  rings.forEach(m=>m.material.opacity=m.userData.op*r)};
+  [L.hl,L.obj].forEach(l=>{if(!l)return;l.material.visible=r>0;l.material.transparent=r<1;l.material.opacity=r;l.material.depthWrite=r>=1}); // not drawn at all while faded out
+  rings.forEach(m=>{m.material.visible=r>0;m.material.opacity=m.userData.op*r})};
  document.getElementById('t').onchange=e=>{const v=e.target.checked;tgrp.visible=v;boat.visible=v;[fan,foot,edges].forEach(o=>o.visible=v)};
  document.getElementById('ps').oninput=e=>mats.forEach(m=>m.size=m.userData.base*+e.target.value);
  const ray=new THREE.Raycaster(),mv=new THREE.Vector2(),tip=document.getElementById('tip');
@@ -633,6 +633,7 @@ function zoomStep(){if(!zp)return;if(Math.abs(zq)<1e-4){zq=0;zp=null;recenter();
 function glide(t1,c1,ms=900){const t0=ctr.target.clone(),c0=cam.position.clone(),st=performance.now();
  const step=now=>{let u=Math.min(1,(now-st)/ms);u=1-Math.pow(1-u,3);ctr.target.lerpVectors(t0,t1,u);cam.position.lerpVectors(c0,c1,u);ctr.update();if(u<1)requestAnimationFrame(step)};requestAnimationFrame(step)}
 r.domElement.addEventListener('dblclick',e=>{const p=spotAt(e.clientX,e.clientY);if(!p)return;
+ const B=window._bayXZ;if(B&&Math.hypot(p.x-B[0],p.z-B[1])<1500)p.set(B[0],0,B[1]); // near Shearwater Bay: go to the farm itself, the only spot with data there
  const off=cam.position.clone().sub(ctr.target),d=off.length(),nd=Math.max(6,d*0.45);off.multiplyScalar(nd/d);
  const c=p.clone().add(off);glide(p.clone(),c)});
 // above water / underwater
