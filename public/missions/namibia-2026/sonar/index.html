@@ -337,7 +337,7 @@ function dzcol(d){if(d>0){const t=Math.min(1,d/2.5);return[.55+.45*t,.55-.35*t,.
      'In those 10 minutes the sonar logged over 2 million points: a seabed 1 to 2.5 m deep, the columns of the pier, the rocks around the bay and softer clusters on them that are probably algae.',
      'We were going about 1.5 knots, too fast for a sharp image. Next time we survey below 1 knot.']},
     bay:{k:'Kelp farm',t:'Shearwater Bay',b:['Home of Kelp Blue\'s kelp farm, about 6 km west of Lüderitz. Kelp Blue grows giant kelp offshore to bring back kelp forests, which store carbon and are home to marine life.',
-     'Here you only see satellite imagery. ASKET\'s next mission is to survey the farm with sonar and map the kelp and the structures that hold it.'],link:['kelp.blue','https://kelp.blue']}};
+     'For now you only see satellite imagery. Tomorrow, 27 November, we take ASKET out to survey the farm with sonar and map the kelp and the structures that hold it.'],link:['kelp.blue','https://kelp.blue']}};
    const cEl=document.getElementById('ctx'),closed={};let cur;
    document.getElementById('ctxX').onclick=()=>{if(cur===window._ctxOverride){window._ctxOverride=null;cur=undefined}else{closed[cur]=true;cEl.classList.remove('on')}};
    const showCtx=k=>{if(k===cur)return;cur=k;if(!k||closed[k]){cEl.classList.remove('on');return}const c=CTX[k];
