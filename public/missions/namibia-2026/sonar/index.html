@@ -29,6 +29,12 @@ button,select,input,textarea{font-family:var(--font)}
 body.clay{--bg:#e9e8e4;--panel:rgba(250,250,248,.9);--fg:#1d1f22;--mut:#6b7078}
 body.clay .panel{box-shadow:0 1px 6px rgba(0,0,0,.12)}
 .clayonly{display:none} body.clay .clayonly{display:block} body.clay .sononly{display:none}
+#ctx{position:fixed;right:12px;bottom:64px;width:320px;max-width:calc(100% - 24px);box-sizing:border-box;z-index:20;background:rgba(250,250,248,.94);color:#151515;border-radius:12px;padding:16px 18px 14px;box-shadow:0 6px 28px rgba(0,0,0,.14);font-family:'Inter Tight',Inter,system-ui,sans-serif;opacity:0;transform:translateY(8px);pointer-events:none;transition:opacity .35s,transform .35s}
+#ctx.on{opacity:1;transform:none;pointer-events:auto}
+#ctx .ck{font:500 10.5px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:#4d4d4d}
+#ctx h3{font-weight:600;font-size:18px;margin:3px 0 8px;letter-spacing:-.01em}
+#ctx p{margin:0 0 8px;font-size:13px;line-height:1.45;color:#2b2b2b}
+#ctx a{font-weight:600;font-size:13px;color:#151515;text-decoration:none;border-bottom:2px solid #e1ff4f}
 #tut{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;background:rgba(21,21,21,.28);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);padding:16px}
 #tut.off{display:none}
 .tcard{position:relative;width:340px;max-width:100%;box-sizing:border-box;background:#fafaf8;color:#151515;border-radius:14px;padding:22px 22px 18px;box-shadow:0 10px 40px rgba(0,0,0,.18);font-family:'Inter Tight',Inter,system-ui,sans-serif}
@@ -79,7 +85,7 @@ body.clay .panel{box-shadow:0 1px 6px rgba(0,0,0,.12)}
 <label style="padding-left:22px">min density <input id="kmin" type="range" min="8" max="70" value="15"> <span id="kminv">15%</span></label>
 <label><input id="g" type="checkbox" checked> 10 m grid</label>
 <div id="satRow"><label><input id="sat" type="checkbox"> Satellite view <span class="m">(at the water surface)</span></label>
-<label style="padding-left:22px">opacity <input id="satOp" type="range" min="5" max="100" value="45"> <span id="satOpv">45%</span></label>
+<label style="display:none">opacity <input id="satOp" type="range" min="5" max="100" value="45"> <span id="satOpv">45%</span></label>
 <div style="padding-left:22px;margin-top:4px"><button id="bBay" style="display:none">Fly to Shearwater Bay</button></div></div>
 <div class="h">Navigation track</div>
 <label><input id="t" type="checkbox" checked> Show track <span class="m">(route, START / FINISH, ASKET, beam)</span></label>
@@ -97,6 +103,7 @@ body.clay .panel{box-shadow:0 1px 6px rgba(0,0,0,.12)}
 <div class="m" id="help" style="display:none"></div>
 </div>
 <div id="depthHud" class="panel" style="bottom:12px;right:64px;padding:6px 10px;font-size:12px;display:none"></div>
+<div id="ctx" aria-live="polite"><button class="tx" id="ctxX" title="Close">✕</button><div class="ck"></div><h3></h3><div class="cb"></div></div>
 <div id="tut" role="dialog" aria-modal="true" aria-labelledby="tutT">
 <div class="tcard">
 <button class="tx" id="tutX" title="Close">✕</button>
@@ -240,7 +247,7 @@ function dzcol(d){if(d>0){const t=Math.min(1,d/2.5);return[.55+.45*t,.55-.35*t,.
  // wider area (jetty to Shearwater Bay, tools/area_sat.py), a sheet just under the run's own image
  const areaMat=new THREE.MeshBasicMaterial({transparent:true,opacity:.45,depthWrite:false,side:THREE.DoubleSide,stencilWrite:true,stencilRef:1,stencilFunc:THREE.NotEqualStencilFunc,stencilZPass:THREE.KeepStencilOp});
  const areaPlane=new THREE.Mesh(new THREE.PlaneGeometry(1,1),areaMat);areaPlane.rotation.x=-Math.PI/2;areaPlane.visible=false;areaPlane.renderOrder=4;scene.add(areaPlane);
- const places=new THREE.Group();places.visible=false;scene.add(places);let bay=null;window._satPlanes=[satPlane,areaPlane];
+ const places=new THREE.Group();places.visible=false;scene.add(places);let bay=null,kelpXZ=null;window._satPlanes=[satPlane,areaPlane];
  {const la0=REP.home[0],lo0=REP.home[1],mlat=111320,mlon=111320*Math.cos(la0*Math.PI/180);
   const P=(lat,lon)=>[(lon-lo0)*mlon-cx,-((lat-la0)*mlat-cy)];
   fetch('area_sat.json').then(r=>{if(!r.ok)throw 0;return r.json()}).then(m=>{
@@ -256,10 +263,34 @@ function dzcol(d){if(d>0){const t=Math.min(1,d/2.5);return[.55+.45*t,.55-.35*t,.
     const h=.1*(+p.size||1);sp.scale.set(h*4,h,1);
     sp.center.set(30/1024,6/256);sp.renderOrder=12;const [x,z]=P(p.lat,p.lon);sp.position.set(x,0.3,z);sp.userData={near:+p.near||0};places.add(sp);return [x,z]};
    Promise.all([document.fonts.load('600 64px "Inter Tight"'),document.fonts.load('700 34px "JetBrains Mono"')]).catch(()=>{})
-    .then(()=>m.places.forEach(p=>{const xz=drawPlace(p);if(/shearwater/i.test(p.name))bay=xz}));
+    .then(()=>m.places.forEach(p=>{const xz=drawPlace(p);if(/shearwater/i.test(p.name))bay=xz;if(/kelp blue/i.test(p.name))kelpXZ=xz}));
    // fixed size on screen, set per place ("size" in area_sat.json); "near" fades a label out when zoomed in closer than that
    window._placesTick=()=>{if(!places.visible)return;const D=cam.position.distanceTo(ctr.target);
     places.children.forEach(sp=>{const n=sp.userData.near;sp.material.opacity=n&&D<n?Math.max(0,(D-n*.5)/(n*.5)):1})};
+   // satellite fades with height: 70% high up, 50% at ~200 m, 10% at ~20 m, gone at the water surface (and underwater)
+   const FADE=[[0.3,0],[1.3,.1],[2.3,.5],[3.3,.7]];
+   window._satTick=()=>{if(!areaPlane.visible)return;const h=cam.position.y,L=Math.log10(Math.max(h,1e-3));let o=L>=3.3?.7:0;
+    for(let i=0;i<3;i++)if(L>=FADE[i][0]&&L<FADE[i+1][0]){const u=(L-FADE[i][0])/(FADE[i+1][0]-FADE[i][0]);o=FADE[i][1]+u*(FADE[i+1][1]-FADE[i][1])}
+    satMat.opacity=areaMat.opacity=o};
+   // context cards: which place the view is on decides the text
+   const CTX={
+    over:{k:'Namibia 2026',t:'ASKET in Lüderitz',b:['Zoom into a pin to explore: our first sonar test at Kelp Blue, or their kelp farm in Shearwater Bay.']},
+    kelp:{k:'First test · 24 Nov 2026',t:'Kelp Blue Trading',b:['ASKET\'s first time in the water with its sonar. We launched from the slipway next to the Kelp Blue office and drove loops around this small bay for 10 minutes, until a propeller stopped and we brought the boat back in.',
+     'In those 10 minutes the sonar logged over 2 million points: a seabed 1 to 2.5 m deep, the columns of the pier, the rocks around the bay and softer clusters on them that are probably algae.',
+     'We were going about 1.5 knots, too fast for a sharp image. Next time we survey below 1 knot.']},
+    bay:{k:'Kelp farm',t:'Shearwater Bay',b:['Home of Kelp Blue\'s kelp farm, about 6 km west of Lüderitz. Kelp Blue grows giant kelp offshore to bring back kelp forests, which store carbon and are home to marine life.',
+     'Here you only see satellite imagery. ASKET\'s next mission is to survey the farm with sonar and map the kelp and the structures that hold it.'],link:['kelp.blue','https://kelp.blue']}};
+   const cEl=document.getElementById('ctx'),closed={};let cur;
+   document.getElementById('ctxX').onclick=()=>{closed[cur]=true;cEl.classList.remove('on')};
+   const showCtx=k=>{if(k===cur)return;cur=k;if(!k||closed[k]){cEl.classList.remove('on');return}const c=CTX[k];
+    cEl.querySelector('.ck').textContent=c.k;cEl.querySelector('h3').textContent=c.t;
+    cEl.querySelector('.cb').innerHTML=c.b.map(x=>'<p>'+x+'</p>').join('')+(c.link?`<a href="${c.link[1]}" target="_blank" rel="noopener">${c.link[0]} ↗</a>`:'');
+    cEl.classList.add('on')};
+   window._ctxTick=()=>{if(!document.getElementById('tut').classList.contains('off'))return showCtx(null);const t=ctr.target,D=cam.position.distanceTo(t);let k=null;
+    if(bay&&Math.hypot(t.x-bay[0],t.z-bay[1])<2500&&D<4000)k='bay';
+    else if(kelpXZ&&Math.hypot(t.x-kelpXZ[0],t.z-kelpXZ[1])<700&&D<1200)k='kelp';
+    else if(D>2500)k='over';
+    showCtx(k)};
    document.getElementById('bBay').style.display='inline-block'}).catch(()=>{});}
  // keep near/far in proportion to the view, so the run (metres) and the bay (kilometres) both draw cleanly
  const clip=()=>{const d=cam.position.distanceTo(ctr.target);cam.near=Math.max(.1,d/3000);cam.far=Math.max(5000,d*8+9000);cam.updateProjectionMatrix()};ctr.addEventListener('change',clip);
@@ -516,7 +547,9 @@ function dzcol(d){if(d>0){const t=Math.min(1,d/2.5);return[.55+.45*t,.55-.35*t,.
  document.getElementById('g').addEventListener('change',()=>setStyle(clay));
  // ---- baseline: Reset applies BASE; "Copy my settings" captures the current state so it can become the new BASE
  // Francisco's baseline (24 Nov 2026)
- const BASE={style:'clay',surf:'mesh',base:'seabed',objects:false,structures:false,water:false,kmin:15,grid:true,sat:false,satOp:45,track:false,beam:false,boatTrueSize:false,ex:2,ps:0.75,slw:0.5,cam:{t:[-9.55,-0.78,1.61],c:[71.39,35.53,6.61]}};
+ const BASE={style:'clay',surf:'mesh',base:'seabed',objects:false,structures:false,water:false,kmin:15,grid:true,sat:true,satOp:45,track:false,beam:false,boatTrueSize:false,ex:2,ps:0.75,slw:0.5,cam:{t:[-9.55,-0.78,1.61],c:[71.39,35.53,6.61]}};
+ // start (and reset) on an overview of Luderitz: the Kelp Blue pin in front, Shearwater Bay behind
+ BASE.cam=(()=>{const x=-2400-cx,z=-(300-cy);return{t:[x,0,z],c:[x+3640,1500,z+3640]}})();
  const chk=(id,v)=>{const e=document.getElementById(id);if(e&&e.checked!==v)e.click()};
  function applySettings(s){document.querySelector(`input[name=base][value=${s.base}]`).click();
   chk('o',s.objects);chk('hl',s.structures);chk('k',s.water);set('#kmin',s.kmin,'input');chk('g',s.grid);chk('sat',!!s.sat);set('#satOp',s.satOp||45,'input');chk('t',s.track);chk('beam',s.beam);chk('bsize',s.boatTrueSize);
@@ -625,7 +658,7 @@ const needle=document.getElementById('needle');
 function stack(){const i=document.getElementById('info').getBoundingClientRect(),c=document.getElementById('ctl'),t=Math.round(i.bottom+10);
  c.style.top=t+'px';c.style.maxHeight=(innerHeight-t-12)+'px'}
 new ResizeObserver(stack).observe(document.getElementById('info'));addEventListener('resize',stack);stack();
-(function loop(){requestAnimationFrame(loop);zoomStep();adapt();ctr.update();if(window._placesTick)window._placesTick();needle.style.transform=`rotate(${ctr.getAzimuthalAngle()*180/Math.PI}deg)`;r.render(scene,cam)})();
+(function loop(){requestAnimationFrame(loop);zoomStep();adapt();ctr.update();if(window._placesTick)window._placesTick();if(window._satTick)window._satTick();if(window._ctxTick)window._ctxTick();needle.style.transform=`rotate(${ctr.getAzimuthalAngle()*180/Math.PI}deg)`;r.render(scene,cam)})();
 </script><script>// on the NODE website: back link, clay model only (no sonar-colours option)
 if(location.pathname.startsWith('/missions/')){document.getElementById('siteBack').style.display='block';document.getElementById('styleRow').style.display='none'}</script>
 </body></html>
