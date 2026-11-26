@@ -255,13 +255,18 @@ function dzcol(d){if(d>0){const t=Math.min(1,d/2.5);return[.55+.45*t,.55-.35*t,.
    const [x0,z0]=P(m.n,m.w),[x1,z1]=P(m.s,m.e);areaPlane.scale.set(x1-x0,z1-z0,1);areaPlane.position.set((x0+x1)/2,-0.05,(z0+z1)/2);
    // place labels: minimal pin (thin black stick, small ball on top), white name in Inter Tight (NODE brand), lime caption in JetBrains Mono, no outlines
    const drawPlace=p=>{const c=document.createElement('canvas');c.width=1024;c.height=256;const g=c.getContext('2d');
-    g.strokeStyle='#111';g.lineWidth=5;g.lineCap='round';g.beginPath();g.moveTo(30,56);g.lineTo(30,250);g.stroke();
-    g.beginPath();g.arc(30,40,15,0,7);g.fillStyle='#111';g.fill();
-    g.font='600 64px "Inter Tight",Inter,Helvetica,Arial';g.fillStyle='#fff';g.fillText(p.name,66,96);
-    g.font='700 34px "JetBrains Mono",ui-monospace,monospace';if('letterSpacing' in g)g.letterSpacing='4px';g.fillStyle=NODE_ACCENT;g.fillText((p.sub||'').toUpperCase(),68,146);
+    if(p.pin===false){ // area name (a desert, a region): spaced capitals, no pin, centred on the spot
+     g.font='500 54px "Inter Tight",Inter,Helvetica,Arial';if('letterSpacing' in g)g.letterSpacing='14px';g.fillStyle='rgba(255,255,255,.92)';g.textAlign='center';g.fillText(p.name.toUpperCase(),512,148);
+     const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),depthTest:false,transparent:true,sizeAttenuation:false}));
+     const h=.1*(+p.size||1);sp.scale.set(h*4,h,1);sp.center.set(.5,.5);sp.renderOrder=12;const [x,z]=P(p.lat,p.lon);sp.position.set(x,0.3,z);sp.userData={near:+p.near||0};places.add(sp);return [x,z]}
+    const L=p.side==='left',px=L?994:30; // side 'left': text to the left of the pin (when two places line up)
+    g.strokeStyle='#111';g.lineWidth=5;g.lineCap='round';g.beginPath();g.moveTo(px,56);g.lineTo(px,250);g.stroke();
+    g.beginPath();g.arc(px,40,15,0,7);g.fillStyle='#111';g.fill();g.textAlign=L?'right':'left';
+    g.font='600 64px "Inter Tight",Inter,Helvetica,Arial';g.fillStyle='#fff';g.fillText(p.name,L?958:66,96);
+    g.font='700 34px "JetBrains Mono",ui-monospace,monospace';if('letterSpacing' in g)g.letterSpacing='4px';g.fillStyle=NODE_ACCENT;if(p.sub)g.fillText(p.sub.toUpperCase(),L?956:68,146);
     const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),depthTest:false,transparent:true,sizeAttenuation:false}));
     const h=.1*(+p.size||1);sp.scale.set(h*4,h,1);
-    sp.center.set(30/1024,6/256);sp.renderOrder=12;const [x,z]=P(p.lat,p.lon);sp.position.set(x,0.3,z);sp.userData={near:+p.near||0};places.add(sp);return [x,z]};
+    sp.center.set(px/1024,6/256);sp.renderOrder=12;const [x,z]=P(p.lat,p.lon);sp.position.set(x,0.3,z);sp.userData={near:+p.near||0};places.add(sp);return [x,z]};
    Promise.all([document.fonts.load('600 64px "Inter Tight"'),document.fonts.load('700 34px "JetBrains Mono"')]).catch(()=>{})
     .then(()=>m.places.forEach(p=>{const xz=drawPlace(p);if(/shearwater/i.test(p.name))bay=xz;if(/kelp blue/i.test(p.name))kelpXZ=xz}));
    // fixed size on screen, set per place ("size" in area_sat.json); "near" fades a label out when zoomed in closer than that
@@ -391,6 +396,7 @@ function dzcol(d){if(d>0){const t=Math.min(1,d/2.5);return[.55+.45*t,.55-.35*t,.
  // camera presets (work for any run: framed on the middle of the data)
  const CAM={top:{t:[0,-2,0],c:[0,95,0.01]},sideS:{t:[0,-3,0],c:[0,1,95]},sideE:{t:[0,-3,0],c:[95,1,0]},persp:{t:[0,-4,0],c:[0,55,65]}};
  const camTo=v=>{ctr.target.set(...v.t);cam.position.set(...v.c);ctr.update()};
+ window._camEN=(te,tn,ce,cn,h)=>camTo({t:[te-cx,0,-(tn-cy)],c:[ce-cx,h,-(cn-cy)]}); // console helper: target and camera by east/north metres
  window._lookAtEN=(e,n,d=9,h=6)=>{const x=e-cx,z=-(n-cy),y=-1.5*world.scale.y;camTo({t:[x,y,z],c:[x+d*.7,y+h,z+d*.7]})}; // console helper: frame a spot by east/north metres
  document.querySelectorAll('button[data-p]').forEach(b=>b.onclick=()=>{window._setUnder(/^side/.test(b.dataset.p),true);camTo(CAM[b.dataset.p])});
  // ---- tools: slice + measure (two clicks on the map, picked on the water surface plane)
@@ -549,7 +555,7 @@ function dzcol(d){if(d>0){const t=Math.min(1,d/2.5);return[.55+.45*t,.55-.35*t,.
  // Francisco's baseline (24 Nov 2026)
  const BASE={style:'clay',surf:'mesh',base:'seabed',objects:false,structures:false,water:false,kmin:15,grid:true,sat:true,satOp:45,track:false,beam:false,boatTrueSize:false,ex:2,ps:0.75,slw:0.5,cam:{t:[-9.55,-0.78,1.61],c:[71.39,35.53,6.61]}};
  // start (and reset) on an overview of Luderitz: the Kelp Blue pin in front, Shearwater Bay behind
- BASE.cam=(()=>{const x=-2400-cx,z=-(300-cy);return{t:[x,0,z],c:[x+3640,1500,z+3640]}})();
+ BASE.cam=(()=>{const P2=(e,n)=>[e-cx,-(n-cy)],[tx,tz]=P2(-1700,250),[qx,qz]=P2(2500,-1000);return{t:[tx,0,tz],c:[qx,1250,qz]}})();
  const chk=(id,v)=>{const e=document.getElementById(id);if(e&&e.checked!==v)e.click()};
  function applySettings(s){document.querySelector(`input[name=base][value=${s.base}]`).click();
   chk('o',s.objects);chk('hl',s.structures);chk('k',s.water);set('#kmin',s.kmin,'input');chk('g',s.grid);chk('sat',!!s.sat);set('#satOp',s.satOp||45,'input');chk('t',s.track);chk('beam',s.beam);chk('bsize',s.boatTrueSize);
