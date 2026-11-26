@@ -344,11 +344,8 @@ function dzcol(d){if(d>0){const t=Math.min(1,d/2.5);return[.55+.45*t,.55-.35*t,.
     {const ci=cEl.querySelector('.ci');ci.innerHTML=c.ic||'';if(c.ic3d&&window._icon3d)ci.appendChild(window._icon3d(c.ic3d))}cEl.querySelector('.ck').textContent=c.k;cEl.querySelector('h3').textContent=c.t;
     cEl.querySelector('.cb').innerHTML=c.b.map(x=>'<p>'+x+'</p>').join('')+(c.link?`<a href="${c.link[1]}" target="_blank" rel="noopener">${c.link[0]} ↗</a>`:'');
     cEl.classList.add('on')};
-   window._ctxTick=()=>{if(!document.getElementById('tut').classList.contains('off'))return showCtx(null);if(window._ctxOverride){closed[window._ctxOverride]=false;return showCtx(window._ctxOverride)}const t=ctr.target,D=cam.position.distanceTo(t);let k=null;
-    if(bay&&Math.hypot(t.x-bay[0],t.z-bay[1])<2500&&D<4000)k='bay';
-    else if(kelpXZ&&Math.hypot(t.x-kelpXZ[0],t.z-kelpXZ[1])<700&&D<1200)k='kelp';
-    else if(D>2500)k='over';
-    showCtx(k)};
+   window._ctxTick=()=>{if(!document.getElementById('tut').classList.contains('off'))return showCtx(null);if(window._ctxOverride){closed[window._ctxOverride]=false;return showCtx(window._ctxOverride)}// the card follows where the buttons take you (shown as soon as the flight starts): the Lüderitz card only at the start view
+    const F=window._focus;showCtx(F==='bay'?'bay':F==='run'?'kelp':F==='over'?'over':null)};
    document.getElementById('bBay').style.display='inline-block'}).catch(()=>{});}
  // keep near/far in proportion to the view, so the run (metres) and the bay (kilometres) both draw cleanly
  const clip=()=>{const d=cam.position.distanceTo(ctr.target);cam.near=Math.max(.1,d/3000);cam.far=Math.max(5000,d*8+9000);cam.updateProjectionMatrix()};ctr.addEventListener('change',clip);
