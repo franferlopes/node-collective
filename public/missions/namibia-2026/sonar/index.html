@@ -199,7 +199,7 @@ body:not(.ready) #bar,body:not(.ready) #helpBtn{opacity:0;pointer-events:none}
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/lines/LineSegments2.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/lines/Line2.js"></script>
 <script>
-const S=new URLSearchParams(location.search).get('run')||'2026-11-24-07-27', R='runs/'+S+'/';
+const S=new URLSearchParams(location.search).get('run')||'2026-11-27-jetty-combined', R='runs/'+S+'/';
 // NODE accent for the speed ramp: swap this one value for the brand hex
 const NODE_ACCENT='#e1ff4f', KN_MAX=3;
 // on a tall (phone) screen the same view is framed from further back so it fits the narrow width
@@ -351,7 +351,7 @@ function dzcol(d){if(d>0){const t=Math.min(1,d/2.5);return[.55+.45*t,.55-.35*t,.
     satMat.opacity=areaMat.opacity=o};
    // context cards: which place the view is on decides the text
    const CTX={
-    route:{ic3d:'boat',k:'First test · 24 Nov 2026',t:'The route',b:['ASKET launched from the slipway by the Kelp Blue office and drove loops around this bay for 10 minutes, mapping the seabed as it went. The line is its path.'],live:1},
+    route:{ic3d:'boat',k:'Two surveys · 24 & 27 Nov 2026',t:'The route',b:['ASKET launched twice from the slipway by the Kelp Blue office: a 10-minute first test on 24 November and a 34-minute survey on 27 November, criss-crossing the bay to map the seabed from different directions. Together: 44 minutes, 1.9 km driven and 17.5 million sonar points. The line is its path.'],live:1},
     dense:{ic:'<svg viewBox="0 0 32 32" width="26" height="26"><rect x="9" y="9" width="14" height="14" rx="2" fill="#59ac33"/></svg>',k:'Less dense points',t:'Soft echoes',b:['Hard things like rocks and the pier send back strong, dense echoes. These green clusters are weaker and more spread out: something that only partly reflects sound.',
      'Here they are probably algae growing on the rocks, but they could also be kelp, ropes, fish, bubbles or loose sediment. On the kelp farm, this layer is how we hope to see the kelp itself.']},
     objects:{ic3d:'globe',k:'Objects',t:'What stands out',b:['The sonar sends pulses of sound and listens for the echoes. Where echoes bunch into a compact shape that stands out from the seabed, the software marks it as a candidate object: the wireframe spheres. Everything else stays as points, like the seabed, the long rocky edges and the pier.',
@@ -654,6 +654,9 @@ function dzcol(d){if(d>0){const t=Math.min(1,d/2.5);return[.55+.45*t,.55-.35*t,.
  fetch(R+'report.json').then(r=>r.json()).then(rep=>{const rc=rep.recordings[0],d=S.slice(0,10).split('-');
   const mon=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][+d[1]-1];
   document.getElementById('ttl').textContent=`ASKET sonar · ${+d[2]} ${mon} ${d[0]}`;document.title=`ASKET Sonar ${+d[2]} ${mon}`;
+  if(rep.combined){const C=rep.combined,M=['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],day=x=>+x.date.slice(8,10)+' '+M[+x.date.slice(5,7)];
+   document.getElementById('ttl').textContent='ASKET sonar · Kelp Blue jetty';
+   document.getElementById('sub').innerHTML=`${C.readings.length} surveys (${C.readings.map(day).join(', ')}) · ${C.minutes} min<br>${Math.round(rc.track_m).toLocaleString()} m track · ${rc.points_total.toLocaleString()} points · ${rc.objects} objects`;placeLegend();return}
   document.getElementById('sub').textContent=`${rc.utc[0].slice(0,5)} to ${rc.utc[1].slice(0,5)} UTC · ${Math.round(rc.track_m)} m track · ${rc.pings.toLocaleString()} pings`;placeLegend()}).catch(()=>{});
  function currentSettings(){const r2=v=>+v.toFixed(2),q=id=>{const e=document.getElementById(id);return e?e.checked:null};
   return{style:clay?'clay':'sonar',surf:window._surf,base:document.querySelector('input[name=base]:checked').value,objects:q('o'),structures:q('hl'),water:q('k'),
