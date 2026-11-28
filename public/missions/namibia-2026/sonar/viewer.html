@@ -1,0 +1,1103 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@500;600&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<title>ASKET sonar · Namibia 2026 | NODE</title>
+<meta name="description" content="Explore NODE's first sonar survey in 3D: ASKET's run in the Kelp Blue bay in Lüderitz, Namibia, and the kelp farm in Shearwater Bay.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="NODE Engineering Club">
+<meta property="og:title" content="Our first sonar survey, in 3D">
+<meta property="og:description" content="ASKET in Lüderitz, Namibia: explore the route, the pier and rocks it mapped, and Kelp Blue's kelp farm.">
+<meta property="og:url" content="https://www.nodeengineering.club/missions/namibia-2026/sonar/">
+<meta property="og:image" content="https://www.nodeengineering.club/missions/namibia-2026/sonar/share.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="NODE: purple sonar point cloud of the pier and rocks ASKET mapped in Lüderitz, with the title Our first sonar survey, in 3D">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Our first sonar survey, in 3D">
+<meta name="twitter:description" content="ASKET in Lüderitz, Namibia: explore the route, the pier and rocks it mapped, and Kelp Blue's kelp farm.">
+<meta name="twitter:image" content="https://www.nodeengineering.club/missions/namibia-2026/sonar/share.jpg">
+<style>
+:root{--font:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;--mono:'JetBrains Mono',ui-monospace,'SFMono-Regular',Menlo,Consolas,monospace;--bg:#0d1117;--panel:rgba(20,24,32,.9);--fg:#e6e6e6;--mut:#9aa4b2}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--fg);font:13px/1.45 var(--font);overflow:hidden}
+#c{position:fixed;inset:0}
+.panel{position:fixed;background:var(--panel);border-radius:8px;padding:10px 12px}
+#info{top:12px;right:12px;width:230px;box-sizing:border-box;font-family:'Inter Tight',Inter,sans-serif}
+#info select,#siteBack{display:none!important}
+#brand{top:12px;left:12px;padding:10px 14px;color:#151515;display:block;text-decoration:none}
+#info h1{font-size:15px;margin:0 0 4px}
+.m{color:var(--mut)}
+#ctl{top:178px;left:12px;width:330px;box-sizing:border-box;overflow-y:auto}
+#ctl label{display:flex;gap:8px;align-items:center;margin:3px 0}
+#ctl .h{margin-top:6px;font-weight:600}
+#legend{top:96px;right:12px;width:230px;box-sizing:border-box}
+.bar{height:10px;border-radius:3px;background:linear-gradient(90deg,#fde725,#5ec962,#21918c,#3b528b,#440154)}
+.row{display:flex;justify-content:space-between;color:var(--mut);font-size:11px}
+#tip{position:fixed;pointer-events:none;display:none;background:#000d;color:#d6d6d6;padding:6px 8px;border-radius:5px;font-size:12px;max-width:240px}
+#c,.panel{transition:opacity .6s}
+body:not(.ready) #c,body:not(.ready) .panel,body:not(.ready) #ctx{opacity:0!important;pointer-events:none!important} /* nothing shows until the start view is set */
+#load{position:fixed;inset:0;z-index:5;display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--mut)}
+.sw{display:inline-block;width:10px;height:10px;border-radius:50%;vertical-align:middle}
+button.on{outline:2px solid #6cf}
+button.ico{width:32px;height:30px;padding:0;display:inline-flex;align-items:center;justify-content:center;border-radius:6px;border:1px solid rgba(128,128,128,.35);background:rgba(128,128,128,.12);color:var(--fg);cursor:pointer}
+button.ico:hover{background:rgba(128,128,128,.28)}
+button,select,input,textarea{font-family:var(--font)}
+#scrubv,#depthHud,#depMsg,#toolMsg,#counts,.row,#tip,#sub,#copied textarea,select{font-family:var(--mono);font-size:11.5px}
+#ctl .h,#info h1{letter-spacing:.02em}
+body.clay{--bg:#e9e8e4;--panel:rgba(250,250,248,.9);--fg:#1d1f22;--mut:#6b7078}
+body.clay .panel{box-shadow:0 1px 6px rgba(0,0,0,.12)}
+.clayonly{display:none} body.clay .clayonly{display:block} body.clay .sononly{display:none}
+#ctx{position:fixed;left:12px;top:68px;width:320px;max-height:calc(100vh - 160px);overflow-y:auto;max-width:calc(100% - 24px);box-sizing:border-box;z-index:20;background:rgba(250,250,248,.94);color:#151515;border-radius:12px;padding:16px 18px 14px;box-shadow:0 6px 28px rgba(0,0,0,.14);font-family:'Inter Tight',Inter,system-ui,sans-serif;opacity:0;transform:translateY(8px);pointer-events:none;transition:opacity .35s,transform .35s}
+#ctx.on{opacity:1;transform:none;pointer-events:auto}
+#ctx .ci{position:absolute;top:27px;right:16px;line-height:0} /* level with the title */
+#ctx .ck{font:500 10.5px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:#4d4d4d}
+#ctx h3{font-weight:600;font-size:18px;margin:3px 0 8px;letter-spacing:-.01em}
+#ctx p{margin:0 0 8px;font-size:13px;line-height:1.45;color:#2b2b2b}
+#ctx .clive{font:500 12px var(--mono);color:#151515;background:rgba(225,255,79,.35);border-radius:6px;padding:5px 8px;display:inline-block;margin-top:2px}
+#ctx a{font-weight:600;font-size:13px;color:#151515;text-decoration:none;border-bottom:2px solid #e1ff4f}
+#ctl,#hide{display:none!important}
+#bar{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);display:flex;gap:6px;padding:6px;border-radius:14px;background:rgba(250,250,248,.92);box-shadow:0 4px 22px rgba(0,0,0,.14);z-index:15;max-width:calc(100% - 24px);flex-wrap:wrap;justify-content:center;font-family:'Inter Tight',Inter,system-ui,sans-serif}
+#bar button{display:flex;align-items:center;gap:7px;border:0;border-radius:10px;padding:9px 13px;background:transparent;color:#151515;font:600 13.5px 'Inter Tight',Inter,sans-serif;cursor:pointer;white-space:nowrap;outline:none}
+#bar button:hover{background:rgba(0,0,0,.06)}
+#bar button.here{opacity:.45;cursor:default}
+#bar button.on{background:#151515;color:#e1ff4f}
+#routeHud{position:fixed;left:50%;bottom:76px;transform:translateX(-50%);font:500 12px var(--mono);color:#151515;background:rgba(250,250,248,.9);padding:5px 10px;border-radius:8px;z-index:15;display:none;white-space:nowrap}
+#helpBtn{position:fixed;left:12px;bottom:12px;width:34px;height:34px;border-radius:50%;border:0;background:rgba(250,250,248,.92);box-shadow:0 2px 10px rgba(0,0,0,.12);font:600 15px 'Inter Tight',Inter,sans-serif;color:#151515;cursor:pointer;z-index:15}
+body:not(.ready) #bar,body:not(.ready) #helpBtn,body:not(.ready) #homeBtn{opacity:0;pointer-events:none}
+#homeBtn{position:fixed;top:12px;left:12px;width:40px;height:40px;border-radius:12px;border:0;background:rgba(250,250,248,.92);box-shadow:0 2px 10px rgba(0,0,0,.12);color:#151515;cursor:pointer;z-index:15;display:flex;align-items:center;justify-content:center;transition:opacity .3s}
+#homeBtn:hover{background:#151515;color:#e1ff4f}#homeBtn.here{opacity:.35;cursor:default;pointer-events:none}
+#tag{position:fixed;z-index:14;pointer-events:none;display:none;transform:translate(-50%,-100%);font:600 12px 'Inter Tight',Inter,sans-serif;color:#e1ff4f;background:#151515;padding:5px 9px;border-radius:8px;white-space:nowrap}
+#tag:after{content:"";position:absolute;left:50%;bottom:-14px;width:1px;height:14px;background:#151515}
+@media (max-width:700px){#legend,#info{display:none}}
+#bar .sm{display:none}
+@media (max-width:700px){
+ #bar{left:8px;right:8px;transform:none;bottom:14px;flex-wrap:nowrap;gap:2px;padding:4px;max-width:none}
+ #bar button{flex:1 1 0;flex-direction:column;gap:4px;padding:8px 2px;font-size:11px;white-space:normal;line-height:1.15;text-align:center}
+ #bar .lg{display:none} #bar .sm{display:inline}
+ #routeHud{bottom:80px;font-size:10.5px}
+ #ctx{left:8px;right:8px;width:auto;top:auto;bottom:80px;max-height:34vh;padding:12px 14px 10px}
+ #ctx h3{font-size:16px;margin:2px 0 6px} #ctx p{font-size:12.5px;margin-bottom:6px}
+ #ctx .ci{top:13px;right:44px}
+ #compass{top:12px!important;bottom:auto!important}
+ #helpBtn{left:auto;right:62px;top:14px;bottom:auto}
+ #satCredit{font-size:8px!important;bottom:1px!important}
+ .tcard{padding:18px 18px 14px} .trow{padding:7px 0}
+}
+#load .lw{display:flex;flex-direction:column;align-items:center;gap:18px}
+#load .lmark{position:relative;width:64px;height:46px;color:#151515} /* the NODE mark builds in place from both sides, then breaks away to the corners */
+#load .lmark svg{position:absolute;inset:0;width:64px;height:46px}
+#load .lmark .L{clip-path:inset(0 50% 0 0)} #load .lmark .R{clip-path:inset(0 0 0 50%)}
+#load .cv{position:absolute;top:-2px;bottom:-2px;width:50%;overflow:hidden}#load .cv.l{left:0}#load .cv.r{right:0}
+#load .cv i{position:absolute;inset:0;background:var(--bg);will-change:transform}
+#load .cv.l i{animation:cvL 3.4s infinite}#load .cv.r i{animation:cvR 3.4s infinite}
+@keyframes cvL{0%{transform:translateX(0);animation-timing-function:cubic-bezier(.22,1,.36,1)}36%,62%{transform:translateX(101%);animation-timing-function:cubic-bezier(.64,0,.78,0)}100%{transform:translateX(0)}}
+@keyframes cvR{0%{transform:translateX(0);animation-timing-function:cubic-bezier(.22,1,.36,1)}36%,62%{transform:translateX(-101%);animation-timing-function:cubic-bezier(.64,0,.78,0)}100%{transform:translateX(0)}}
+#load .lt{font:500 11px var(--mono);letter-spacing:.16em;text-transform:uppercase;color:#4d4d4d}
+#load .lt::after{content:'';display:inline-block;width:1.6em;text-align:left;animation:ldots 1.4s steps(4) infinite}
+@keyframes lbL{0%{clip-path:inset(0 100% 0 0);opacity:1;animation-timing-function:cubic-bezier(.22,1,.36,1)}36%{clip-path:inset(0 50% 0 0)}62%{clip-path:inset(0 50% 0 0);opacity:1;animation-timing-function:cubic-bezier(.64,0,.78,0)}92%,100%{clip-path:inset(0 100% 0 0);opacity:1}}
+@keyframes lbR{0%{clip-path:inset(0 0 0 100%);opacity:1;animation-timing-function:cubic-bezier(.22,1,.36,1)}36%{clip-path:inset(0 0 0 50%)}62%{clip-path:inset(0 0 0 50%);opacity:1;animation-timing-function:cubic-bezier(.64,0,.78,0)}92%,100%{clip-path:inset(0 0 0 100%);opacity:1}}
+@keyframes ldots{0%{content:''}25%{content:'.'}50%{content:'..'}75%{content:'...'}}
+@media (prefers-reduced-motion:reduce){#load .cv{display:none}#load .lmark svg{animation:none}#load .lmark .L{clip-path:inset(0 50% 0 0)}#load .lmark .R{clip-path:inset(0 0 0 50%)}}
+#tut{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;background:rgba(21,21,21,.28);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);padding:16px}
+#tut.off{display:none}
+.tcard{position:relative;width:340px;max-width:100%;box-sizing:border-box;background:#fafaf8;color:#151515;border-radius:14px;padding:22px 22px 18px;box-shadow:0 10px 40px rgba(0,0,0,.18);font-family:'Inter Tight',Inter,system-ui,sans-serif}
+.tk{font:500 10.5px var(--mono);letter-spacing:.14em;color:#4d4d4d}
+.tcard h2{font-weight:600;font-size:21px;margin:4px 0 14px;letter-spacing:-.01em}
+.trow{display:flex;gap:14px;align-items:center;padding:9px 0;border-top:1px solid #e6e5e1}
+.trow svg{flex:none;color:#151515}
+.trow b{display:block;font-weight:600;font-size:14px}
+.trow span{display:block;font-size:13px;color:#4d4d4d;line-height:1.35}
+.tgo{margin-top:14px;width:100%;padding:11px;border:0;border-radius:9px;background:#151515;color:#e1ff4f;font:600 14px 'Inter Tight',Inter,sans-serif;cursor:pointer}
+.tgo:hover{background:#2a2a2a}
+.tx{position:absolute;top:12px;right:12px;border:0;background:none;color:#4d4d4d;font-size:15px;cursor:pointer;padding:4px}
+</style></head><body class="clay">
+<canvas id="c"></canvas>
+<div id="load" role="status"><div class="lw"><div class="lmark" aria-hidden="true"><svg class="L" viewBox="584.0 463.0 213.34375 153.75" fill="currentColor"><path d="M 739.324219 495.972656 C 736.917969 498.761719 735.601562 500.097656 732.421875 503.777344 C 724.433594 513.015625 711.085938 528.476562 690.652344 528.476562 C 670.21875 528.476562 656.867188 513.015625 648.882812 503.777344 C 645.976562 500.417969 644.480469 498.871094 641.980469 495.972656 C 632.667969 485.148438 615.300781 465 586 465 L 586 487.796875 C 604.855469 487.796875 616.804688 501.679688 624.714844 510.863281 C 627.1875 513.734375 628.679688 515.273438 631.628906 518.6875 C 634.046875 521.488281 637.152344 525.070312 640.980469 528.847656 L 586 528.847656 L 586 550.902344 L 640.992188 550.902344 C 637.164062 554.679688 634.058594 558.273438 631.640625 561.0625 C 628.542969 564.644531 627.152344 566.066406 624.726562 568.886719 C 616.816406 578.070312 604.855469 591.953125 586.011719 591.953125 L 586.011719 614.75 C 615.308594 614.75 632.679688 594.601562 642 583.777344 C 644.40625 580.988281 645.722656 579.652344 648.902344 575.972656 C 656.878906 566.734375 670.238281 551.273438 690.671875 551.273438 C 711.105469 551.273438 724.457031 566.734375 732.441406 575.972656 C 735.347656 579.332031 736.84375 580.878906 739.34375 583.777344 C 748.675781 594.601562 766.035156 614.75 795.332031 614.75 L 795.332031 591.953125 C 776.480469 591.953125 764.527344 578.070312 756.617188 568.886719 C 754.210938 566.097656 752.769531 564.613281 749.703125 561.0625 C 747.285156 558.261719 744.179688 554.679688 740.351562 550.902344 L 795.34375 550.902344 L 795.34375 528.847656 L 740.351562 528.847656 C 744.179688 525.070312 747.285156 521.476562 749.703125 518.6875 C 752.800781 515.105469 754.191406 513.683594 756.617188 510.863281 C 764.527344 501.679688 776.492188 487.796875 795.332031 487.796875 L 795.332031 465 C 766.011719 465 748.644531 485.148438 739.324219 495.972656 Z M 739.324219 495.972656 "/></svg><svg class="R" viewBox="584.0 463.0 213.34375 153.75" fill="currentColor"><path d="M 739.324219 495.972656 C 736.917969 498.761719 735.601562 500.097656 732.421875 503.777344 C 724.433594 513.015625 711.085938 528.476562 690.652344 528.476562 C 670.21875 528.476562 656.867188 513.015625 648.882812 503.777344 C 645.976562 500.417969 644.480469 498.871094 641.980469 495.972656 C 632.667969 485.148438 615.300781 465 586 465 L 586 487.796875 C 604.855469 487.796875 616.804688 501.679688 624.714844 510.863281 C 627.1875 513.734375 628.679688 515.273438 631.628906 518.6875 C 634.046875 521.488281 637.152344 525.070312 640.980469 528.847656 L 586 528.847656 L 586 550.902344 L 640.992188 550.902344 C 637.164062 554.679688 634.058594 558.273438 631.640625 561.0625 C 628.542969 564.644531 627.152344 566.066406 624.726562 568.886719 C 616.816406 578.070312 604.855469 591.953125 586.011719 591.953125 L 586.011719 614.75 C 615.308594 614.75 632.679688 594.601562 642 583.777344 C 644.40625 580.988281 645.722656 579.652344 648.902344 575.972656 C 656.878906 566.734375 670.238281 551.273438 690.671875 551.273438 C 711.105469 551.273438 724.457031 566.734375 732.441406 575.972656 C 735.347656 579.332031 736.84375 580.878906 739.34375 583.777344 C 748.675781 594.601562 766.035156 614.75 795.332031 614.75 L 795.332031 591.953125 C 776.480469 591.953125 764.527344 578.070312 756.617188 568.886719 C 754.210938 566.097656 752.769531 564.613281 749.703125 561.0625 C 747.285156 558.261719 744.179688 554.679688 740.351562 550.902344 L 795.34375 550.902344 L 795.34375 528.847656 L 740.351562 528.847656 C 744.179688 525.070312 747.285156 521.476562 749.703125 518.6875 C 752.800781 515.105469 754.191406 513.683594 756.617188 510.863281 C 764.527344 501.679688 776.492188 487.796875 795.332031 487.796875 L 795.332031 465 C 766.011719 465 748.644531 485.148438 739.324219 495.972656 Z M 739.324219 495.972656 "/></svg><span class="cv l"><i></i></span><span class="cv r"><i></i></span></div><div class="lt">Loading point clouds</div></div></div>
+<a id="brand" class="panel" title="NODE Engineering Club" href="https://www.nodeengineering.club/"><svg height="22" style="display:block" aria-label="NODE" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="584.0 463.0 752.4101559999999 153.75" fill="currentColor"><path d="M 739.324219 495.972656 C 736.917969 498.761719 735.601562 500.097656 732.421875 503.777344 C 724.433594 513.015625 711.085938 528.476562 690.652344 528.476562 C 670.21875 528.476562 656.867188 513.015625 648.882812 503.777344 C 645.976562 500.417969 644.480469 498.871094 641.980469 495.972656 C 632.667969 485.148438 615.300781 465 586 465 L 586 487.796875 C 604.855469 487.796875 616.804688 501.679688 624.714844 510.863281 C 627.1875 513.734375 628.679688 515.273438 631.628906 518.6875 C 634.046875 521.488281 637.152344 525.070312 640.980469 528.847656 L 586 528.847656 L 586 550.902344 L 640.992188 550.902344 C 637.164062 554.679688 634.058594 558.273438 631.640625 561.0625 C 628.542969 564.644531 627.152344 566.066406 624.726562 568.886719 C 616.816406 578.070312 604.855469 591.953125 586.011719 591.953125 L 586.011719 614.75 C 615.308594 614.75 632.679688 594.601562 642 583.777344 C 644.40625 580.988281 645.722656 579.652344 648.902344 575.972656 C 656.878906 566.734375 670.238281 551.273438 690.671875 551.273438 C 711.105469 551.273438 724.457031 566.734375 732.441406 575.972656 C 735.347656 579.332031 736.84375 580.878906 739.34375 583.777344 C 748.675781 594.601562 766.035156 614.75 795.332031 614.75 L 795.332031 591.953125 C 776.480469 591.953125 764.527344 578.070312 756.617188 568.886719 C 754.210938 566.097656 752.769531 564.613281 749.703125 561.0625 C 747.285156 558.261719 744.179688 554.679688 740.351562 550.902344 L 795.34375 550.902344 L 795.34375 528.847656 L 740.351562 528.847656 C 744.179688 525.070312 747.285156 521.476562 749.703125 518.6875 C 752.800781 515.105469 754.191406 513.683594 756.617188 510.863281 C 764.527344 501.679688 776.492188 487.796875 795.332031 487.796875 L 795.332031 465 C 766.011719 465 748.644531 485.148438 739.324219 495.972656 Z M 739.324219 495.972656 "/><path d="M 954.355469 559.949219 L 895.980469 485.105469 L 872.925781 485.105469 L 872.925781 594.644531 L 895.640625 594.644531 L 895.640625 519.8125 L 953.738281 594.644531 L 977.066406 594.644531 L 977.066406 485.105469 L 954.355469 485.105469 Z M 954.355469 559.949219 "/><path d="M 1051.78125 483.492188 C 1035.832031 483.492188 1022.238281 488.921875 1010.976562 499.769531 C 999.722656 510.628906 994.09375 524.023438 994.09375 539.96875 C 994.09375 555.917969 999.683594 569.449219 1010.878906 580.167969 C 1022.066406 590.890625 1035.703125 596.246094 1051.78125 596.246094 C 1067.855469 596.246094 1081.289062 590.859375 1092.476562 580.0625 C 1103.664062 569.28125 1109.265625 555.90625 1109.265625 539.960938 C 1109.265625 524.011719 1103.664062 510.617188 1092.476562 499.757812 C 1081.289062 488.902344 1067.71875 483.484375 1051.78125 483.484375 Z M 1076.199219 564.601562 C 1069.839844 571.101562 1061.695312 574.347656 1051.78125 574.347656 C 1041.863281 574.347656 1033.519531 571.136719 1027.15625 564.699219 C 1020.792969 558.261719 1017.613281 550.023438 1017.613281 539.96875 C 1017.613281 529.917969 1020.792969 521.476562 1027.15625 515.050781 C 1033.519531 508.613281 1041.726562 505.402344 1051.78125 505.402344 C 1061.832031 505.402344 1069.839844 508.613281 1076.199219 515.050781 C 1082.5625 521.488281 1085.746094 529.789062 1085.746094 539.96875 C 1085.746094 550.148438 1082.5625 558.09375 1076.199219 564.59375 Z M 1076.199219 564.601562 "/><path d="M 1212.984375 500.578125 C 1202.125 490.257812 1188.796875 485.09375 1172.984375 485.09375 L 1126.296875 485.09375 L 1126.296875 594.644531 L 1172.984375 594.644531 C 1188.796875 594.644531 1202.136719 589.523438 1212.984375 579.269531 C 1223.839844 569.015625 1229.261719 555.855469 1229.261719 539.769531 C 1229.261719 523.683594 1223.832031 510.894531 1212.984375 500.578125 Z M 1196.90625 563.597656 C 1191.011719 569.429688 1183.035156 572.34375 1172.984375 572.34375 L 1149.613281 572.34375 L 1149.613281 507.214844 L 1172.984375 507.214844 C 1183.035156 507.214844 1191.011719 510.128906 1196.90625 515.953125 C 1202.804688 521.785156 1205.75 529.726562 1205.75 539.769531 C 1205.75 549.8125 1202.804688 557.753906 1196.90625 563.585938 Z M 1196.90625 563.597656 "/><path d="M 1334.410156 506.28125 L 1334.410156 485.105469 L 1245.769531 485.105469 L 1245.769531 594.644531 L 1334.410156 594.644531 L 1334.410156 573.265625 L 1269.078125 573.265625 L 1269.078125 550.085938 L 1331.199219 550.085938 L 1331.199219 528.898438 L 1269.078125 528.898438 L 1269.078125 506.28125 Z M 1334.410156 506.28125 "/></svg></a>
+<div id="info" class="panel"><a id="siteBack" href="/missions/namibia-2026" style="display:none;font-size:12px;color:var(--mut);text-decoration:none;margin-bottom:6px">&larr; Namibia 2026 mission</a><h1 id="ttl">ASKET sonar</h1>
+<div class="m" id="sub"></div>
+<div id="counts" style="display:none"></div>
+<div class="m" style="display:none">x east, y north, metres from the processing reference point</div></div>
+<div id="legend" class="panel">
+<div class="sononly" style="margin-bottom:8px"><div style="margin-bottom:4px">Seabed depth</div><div class="bar"></div>
+<div class="row"><span>0 m</span><span id="dmax"></span></div></div>
+<div style="margin-bottom:4px">Objects and structures by depth</div><div style="height:10px;border-radius:3px;background:linear-gradient(90deg,#d9c2ff,#8a4dff,#3d0f80)"></div>
+<div class="row"><span>0 m</span><span>4+ m</span></div>
+<div style="margin:8px 0 4px">Less dense points</div><div style="height:10px;border-radius:3px;background:linear-gradient(90deg,rgb(26,89,38),rgb(89,172,51),rgb(153,255,64))"></div>
+<div class="row"><span>8%</span><span>sparse → dense</span><span>68%+</span></div>
+<div style="margin-top:8px;font-size:12px;line-height:1.7">
+<span class="sw" style="background:#e1ff4f"></span> route · hover or click it for speed<br>
+<span class="sw" style="background:#111;border:1.5px solid #fff;box-sizing:border-box;border-radius:50% 50% 50% 0;transform:rotate(-45deg)"></span> <span id="depLegend">deploy point (pin tool)</span></div></div>
+<div id="compass" class="panel" style="top:auto;bottom:12px;right:12px;width:auto;padding:6px;text-align:center"><div id="needle" style="font-size:22px;line-height:1">⬆</div><div style="font-size:11px">N</div></div>
+<button id="hide" class="panel" style="position:fixed;bottom:12px;left:12px;display:none;color:var(--fg);border:0;cursor:pointer">☰ Controls</button>
+<div id="ctl" class="panel">
+<div style="display:flex;justify-content:space-between;align-items:center;gap:6px">
+<div style="display:flex;gap:4px"><button class="ico" data-p="top" title="Top view, north up"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M12 7v10M9 10l3-3 3 3"/></svg></button><button class="ico" data-p="sideS" title="Side view from the south"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 15h18"/><path d="M6 15l2-4h8l2 4"/><text x="12" y="8" font-size="7" text-anchor="middle" fill="currentColor" stroke="none" font-family="Inter">S</text></svg></button><button class="ico" data-p="sideE" title="Side view from the east"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 15h18"/><path d="M6 15l2-4h8l2 4"/><text x="12" y="8" font-size="7" text-anchor="middle" fill="currentColor" stroke="none" font-family="Inter">E</text></svg></button><button class="ico" data-p="persp" title="3D view"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M12 12l8-4.5M12 12v9M12 12L4 7.5"/></svg></button><button class="ico" id="reset" title="Reset to my baseline"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 1 0 2.5-5.8"/><path d="M4 4v4h4"/></svg></button></div>
+<div style="display:flex;gap:4px;align-items:center"><button class="ico" id="bHelp" title="How to explore" style="font:600 15px 'Inter Tight',Inter,sans-serif">?</button><button id="collapse" title="Hide controls">✕</button></div></div>
+<div class="h">Style</div>
+<div id="styleRow" style="display:flex;gap:4px;margin:4px 0"><button id="stSonar" class="on">Sonar colours</button><button id="stClay">Clay model</button></div>
+<div style="display:none"><span class="m" style="font-size:12px">Clay surface:</span>
+<button data-s="smooth">Smooth</button><button data-s="grain">Grain</button><button data-s="mesh">Mesh</button></div>
+<div class="h">Layers</div>
+<label><input type="radio" name="base" value="seabed" checked> Seabed</label>
+<label><input type="radio" name="base" value="none"> No seabed</label>
+<label><input id="o" type="checkbox" checked> Candidate objects</label>
+<label><input id="hl" type="checkbox" checked> Structures above seabed <span class="m">(pillars, rocks)</span></label>
+<div style="padding-left:22px;display:none;align-items:center;gap:4px">show as <button id="sh3d" style="display:none">3D</button><button id="shSolid" style="display:none">Mesh</button><button id="shDots" class="on">Dots</button></div>
+<div id="certRow" style="padding-left:22px;display:none;align-items:center;gap:4px;margin-top:3px" title="Confirmed: only what the sonar heard on 2 or more separate visits (more than 20 s apart). All: everything, hidden sides filled in see-through.">certainty <button id="cConf" class="on">Confirmed</button><button id="cAll">All</button></div>
+<label><input id="k" type="checkbox"> Less dense point cloud <span class="m" id="kn"></span></label>
+<label style="padding-left:22px">min density <input id="kmin" type="range" min="8" max="70" value="15"> <span id="kminv">15%</span></label>
+<label><input id="g" type="checkbox" checked> 10 m grid</label>
+<div id="satRow"><label><input id="sat" type="checkbox"> Satellite view <span class="m">(at the water surface)</span></label>
+<label style="display:none">opacity <input id="satOp" type="range" min="5" max="100" value="45"> <span id="satOpv">45%</span></label>
+<div style="padding-left:22px;margin-top:4px"><button id="bBay" style="display:none">Fly to Shearwater Bay</button></div></div>
+<div class="h">Navigation track</div>
+<label><input id="t" type="checkbox" checked> Show track <span class="m">(route, START / FINISH, ASKET, beam)</span></label>
+<label><button id="play" style="width:30px">▶</button><input id="scrub" type="range" min="0" max="1000" value="0" style="flex:1"></label>
+<div id="scrubv" style="font-size:12px;min-height:16px"></div>
+<div style="display:flex;align-items:center;gap:4px;margin-top:8px"><div class="h" style="margin:0 6px 0 0">Tools</div><button class="ico" id="bSlice" title="Slice: click 2 points on the map"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M20 4L8.1 15.9M14.5 14.5L20 20M8.1 8.1L12 12"/></svg></button><button class="ico" id="bMeas" title="Measure: click 2 points on the seabed"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="8" width="20" height="8" rx="1" transform="rotate(-30 12 12)"/><path d="M7.5 13.3l-1-1.7M10.6 11.5l-1-1.7M13.6 9.8l-1-1.7M16.7 8l-1-1.7" /></svg></button><button class="ico" id="bDep" title="Deploy point: click where the vessel was launched, then drag to move"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s7-7.2 7-12a7 7 0 1 0-14 0c0 4.8 7 12 7 12z" fill="currentColor"/><circle cx="12" cy="10" r="2.5" fill="#fff" stroke="none"/></svg></button><button class="ico" id="bClr" title="Clear the tool"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+<div id="toolOpts" style="display:none;margin-top:4px">
+<label id="slwRow">Slice width ± <input id="slw" type="range" min="1" max="30" value="5"> <span id="slwv">0.5 m</span></label>
+<div id="toolMsg" class="m" style="font-size:12px"></div>
+<div id="depMsg" class="m" style="font-size:12px"></div>
+<button id="bDepX" style="display:none;margin-top:4px">Remove deploy point</button></div>
+<div class="h">Display</div>
+<label>Vertical exaggeration <input id="ex" type="range" min="0.1" max="3" step="0.1" value="2"> <span id="exv">2.0×</span></label>
+<label>Point size <input id="ps" type="range" min="0.5" max="3" step="0.25" value="0.75"></label>
+<div class="m" id="help" style="display:none"></div>
+</div>
+<div id="depthHud" class="panel" style="bottom:12px;right:64px;padding:6px 10px;font-size:12px;display:none"></div>
+<div id="bar">
+<button data-b="route"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="18" r="2"/><circle cx="19" cy="6" r="2"/><path d="M7 18h6a3 3 0 0 0 0-6H11a3 3 0 0 1 0-6h6"/></svg><span class="lg">Mission</span><span class="sm">Mission</span></button>
+<button data-b="seabed"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 16c2-2 4-2 6 0s4 2 6 0 4-2 6 0"/><path d="M3 20h18"/><path d="M3 11c2-2 4-2 6 0s4 2 6 0 4-2 6 0" opacity=".45"/></svg><span class="lg">Seabed</span><span class="sm">Seabed</span></button>
+<button data-b="objects"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><path d="M4 12h16M12 4c2.5 2.2 2.5 13.8 0 16M12 4c-2.5 2.2-2.5 13.8 0 16"/></svg><span class="lg">Objects</span><span class="sm">Objects</span></button>
+<button data-b="dense"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="7" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="17" cy="9" r="1"/><circle cx="8" cy="13" r="1"/><circle cx="15" cy="15" r="1"/><circle cx="10" cy="19" r="1"/><circle cx="19" cy="18" r="1"/></svg><span class="lg">Less dense points</span><span class="sm">Less dense</span></button>
+<button data-b="bay"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s6-6.2 6-11a6 6 0 1 0-12 0c0 4.8 6 11 6 11z"/><circle cx="12" cy="10" r="2"/></svg><span class="lg">Fly to Shearwater Bay</span><span class="sm">Shearwater</span></button>
+</div>
+<div id="routeHud"></div>
+<button id="helpBtn" title="How to explore">?</button>
+<button id="homeBtn" title="Back to the start"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11l8-7 8 7"/><path d="M6 10v10h12V10"/></svg></button>
+<div id="tag"></div>
+<div id="ctx" aria-live="polite"><button class="tx" id="ctxX" title="Close">✕</button><div class="ci" aria-hidden="true"></div><div class="ck"></div><h3></h3><div class="cb"></div></div>
+<div id="tut" role="dialog" aria-modal="true" aria-labelledby="tutT">
+<div class="tcard">
+<button class="tx" id="tutX" title="Close">✕</button>
+<div class="tk">ASKET SONAR</div>
+<h2 id="tutT">How to explore</h2>
+<div class="trow"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-2.3-5.6"/><path d="M20 4v4h-4"/></svg><div><b>Rotate</b><span id="tRot">Drag, or press and swipe with two fingers</span></div></div>
+<div class="trow"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M3 12h18"/><path d="M9 6l3-3 3 3M9 18l3 3 3-3M6 9l-3 3 3 3M18 9l3 3-3 3"/></svg><div><b>Move</b><span id="tMove">Swipe sideways with two fingers, or Shift + drag</span></div></div>
+<div class="trow"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21M10.5 7.5v6M7.5 10.5h6"/></svg><div><b>Zoom</b><span id="tZoom">The buttons below fly you to each place; there, pinch, scroll or swipe</span></div></div>
+<div class="trow"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7c2-1.5 4-1.5 6 0s4 1.5 6 0 4-1.5 6 0"/><path d="M12 11v9M8.5 16.5L12 20l3.5-3.5"/></svg><div><b>Go underwater</b><span>Keep zooming into the seabed</span></div></div>
+<div class="trow"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg><div><b>Fly to a spot</b><span id="tFly">Click a pin, or double-click inside a place</span></div></div>
+<button class="tgo" id="tutGo">Start exploring</button>
+</div></div>
+<div id="tip"></div>
+<script>
+// welcome tutorial: shown every time the viewer opens; ? in the panel opens it again
+(()=>{if(matchMedia('(pointer:coarse)').matches){const T=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
+  T('tRot','Drag with one finger');T('tMove','Drag with two fingers');T('tZoom','The buttons below fly you to each place; there, pinch');T('tFly','Tap a pin, or double-tap inside a place')}})();
+(()=>{const t=document.getElementById('tut'),close=()=>t.classList.add('off');
+ document.getElementById('tutGo').onclick=close;document.getElementById('tutX').onclick=close;
+ t.addEventListener('click',e=>{if(e.target===t)close()});addEventListener('keydown',e=>{if(e.key==='Escape')close()});
+ document.getElementById('bHelp').onclick=()=>t.classList.remove('off')})();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/lines/LineSegmentsGeometry.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/lines/LineGeometry.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/lines/LineMaterial.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/lines/LineSegments2.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/lines/Line2.js"></script>
+<script>
+const S=new URLSearchParams(location.search).get('run')||'2026-11-27-jetty-combined', R='runs/'+S+'/';
+// NODE accent for the speed ramp: swap this one value for the brand hex
+const NODE_ACCENT='#e1ff4f', KN_MAX=3;
+// on a tall (phone) screen the same view is framed from further back so it fits the narrow width
+function fitView(t,c){const a=innerWidth/innerHeight;if(a>=1)return [t,c];const f=Math.min(2,.95/a),c2=c.map((v,i)=>t[i]+(v-t[i])*f);
+ // and slide the view toward the camera so the subject sits in the open space above the card and the buttons
+ const dx=t[0]-c2[0],dz=t[2]-c2[2],L=Math.hypot(dx,dz)||1,d=Math.hypot(dx,c2[1]-t[1],dz)*.16;
+ return [[t[0]-dx/L*d,t[1],t[2]-dz/L*d],[c2[0]-dx/L*d,c2[1],c2[2]-dz/L*d]]}
+// route speed ramp: dim accent (slow) -> full accent (fast)
+const hex=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)/255), ACC=hex(NODE_ACCENT), SLOW=hex('#4a5214');
+const VIR=[[253,231,37],[94,201,98],[33,145,140],[59,82,139],[68,1,84]];
+function vir(t){t=Math.min(1,Math.max(0,t))*(VIR.length-1);const i=Math.min(VIR.length-2,Math.floor(t)),f=t-i;return VIR[i].map((c,k)=>(c+(VIR[i+1][k]-c)*f)/255)}
+async function ply(url){const b=await (await fetch(url)).arrayBuffer();const u=new Uint8Array(b);
+ const hdr=new TextDecoder().decode(u.slice(0,1000));const n=+hdr.match(/element vertex (\d+)/)[1];const off=hdr.indexOf('end_header\n')+11;
+ const dv=new DataView(b,off),P=new Float32Array(n*3);for(let i=0;i<n;i++){const o=i*19;P[3*i]=dv.getFloat32(o,true);P[3*i+1]=dv.getFloat32(o+4,true);P[3*i+2]=dv.getFloat32(o+8,true)}return P}
+async function csv(url){const t=(await (await fetch(url)).text()).trim().split('\n');const h=t[0].split(',');return t.slice(1).map(l=>{const v=l.split(',');return Object.fromEntries(h.map((k,i)=>[k,v[i]]))})}
+
+const r=new THREE.WebGLRenderer({canvas:document.getElementById('c'),antialias:true});r.setPixelRatio(Math.min(devicePixelRatio,1.5)); // capped: retina at full 2x made moving around lag
+const scene=new THREE.Scene();scene.background=new THREE.Color(0xe9e8e4); // start in clay (the baseline), no dark flash while loading
+const cam=new THREE.PerspectiveCamera(50,1,0.1,5000);const ctr=new THREE.OrbitControls(cam,r.domElement);
+const world=new THREE.Group();scene.add(world);
+const DMAX=3.0;document.getElementById('dmax').textContent=DMAX+'+ m';
+let cx=30,cy=15;const mats=[];
+function layer(P,colour,size,cols){const n=P.length/3,pos=new Float32Array(n*3),col=cols||new Float32Array(n*3);
+ for(let i=0;i<n;i++){pos[3*i]=P[3*i]-cx;pos[3*i+1]=P[3*i+2];pos[3*i+2]=-(P[3*i+1]-cy);if(!cols)col.set(colour||vir(-P[3*i+2]/DMAX),3*i)}
+ const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('color',new THREE.BufferAttribute(col,3));
+ const m=new THREE.PointsMaterial({size,vertexColors:true,sizeAttenuation:false});m.userData.base=size;mats.push(m);
+ const D=P.dz||new Float32Array(n);g.setAttribute('dz',new THREE.BufferAttribute(D,1));g.setAttribute('tk',new THREE.BufferAttribute(new Float32Array(n),1));g.setAttribute('dn',new THREE.BufferAttribute(new Float32Array(n).fill(1),1));m.transparent=true;
+ m.customProgramCacheKey=()=>P.dz?'with-dz':'plain';
+ m.onBeforeCompile=s=>{s.uniforms.zcut=zcut;s.uniforms.thr=thr;s.uniforms.side=side;Object.assign(s.uniforms,SL);Object.assign(s.uniforms,XR);
+  s.fragmentShader='varying float vA;\n'+s.fragmentShader.replace('#include <color_fragment>','#include <color_fragment>\ndiffuseColor.a*=vA;');
+  s.vertexShader='uniform float bk;uniform float gA;uniform float dmin;attribute float tk;attribute float dn;varying float vA;uniform float zcut;uniform float thr;uniform float side;uniform vec4 slAD;uniform float slW;uniform float slL;uniform float slOn;attribute float dz;\n'+s.vertexShader.replace('#include <begin_vertex>',
+  '#include <begin_vertex>\nvA=(tk>bk?0.3:1.0)*gA;bool hide=position.y< -zcut||dn<dmin;'+
+  'if(slOn>0.5){vec2 v=position.xz-slAD.xy;float al=dot(v,slAD.zw);float pe=abs(v.x*slAD.w-v.y*slAD.z);if(pe>slW||al<0.0||al>slL)hide=true;}'+(P.dz?'if(side>0.5&&side<1.5&&dz<thr)hide=true;if(side>1.5&&side<2.5&&dz>-thr)hide=true;if(side>2.5&&abs(dz)<thr)hide=true;':'')+'if(hide)transformed.y=1e6;')};
+ const p=new THREE.Points(g,m);world.add(p);return p}
+const zcut={value:18},thr={value:.8},side={value:0};const XR={bk:{value:1e9},gA:{value:1},dmin:{value:0}};window._XR=XR;
+const SL={slAD:{value:new THREE.Vector4(0,0,1,0)},slW:{value:.5},slL:{value:0},slOn:{value:0}};
+function dzcol(d){if(d>0){const t=Math.min(1,d/2.5);return[.55+.45*t,.55-.35*t,.55-.45*t]}const t=Math.min(1,-d/4);return[.55-.45*t,.55-.25*t,.55+.45*t]}
+(async()=>{
+ const [REP,cloud,seabed,water,objp,track,objs,dzb]=await Promise.all([fetch(R+'report.json').then(r=>r.json()),ply(R+S+'_cloud.ply'),ply(R+S+'_seabed.ply'),ply(R+S+'_water.ply'),ply(R+S+'_objects.ply'),csv(R+S+'_track.csv'),csv(R+S+'_objects.csv'),fetch(R+S+'_cloud_dz.bin').then(r=>r.arrayBuffer())]);
+ cloud.dz=new Float32Array(dzb);
+ {const la=REP.home[0],lo=REP.home[1],m=111320*Math.cos(la*Math.PI/180);let se=0,sn=0;track.forEach(p=>{se+=(p.lon-lo)*m;sn+=(p.lat-la)*111320});cx=se/track.length;cy=sn/track.length}
+ const K=new Float32Array(await (await fetch(R+S+'_kelp.bin')).arrayBuffer()); // x,y,z,F,height above seabed
+ let kelpLayer=null;
+ function buildKelp(){if(kelpLayer){world.remove(kelpLayer);kelpLayer.geometry.dispose()}
+  const fmin=+document.getElementById('kmin').value/100,pts=[],cols=[];
+  for(let i=0;i<K.length;i+=5){const F=K[i+3];if(F<fmin)continue;pts.push(K[i],K[i+1],K[i+2]);const t=Math.min(1,(F-.08)/.6);cols.push(.1+.5*t,.35+.65*t,.15+.1*t)}
+  kelpLayer=layer(new Float32Array(pts),null,2.5,new Float32Array(cols));kelpLayer.material.userData.base=2.5;
+  kelpLayer.visible=document.getElementById('k').checked;window._kelpL=kelpLayer;
+  document.getElementById('kn').textContent=(pts.length/3)+' blocks'}
+ document.getElementById('kmin').oninput=e=>{document.getElementById('kminv').textContent=e.target.value+'%';buildKelp()};
+ document.getElementById('k').onchange=e=>{if(kelpLayer)kelpLayer.visible=e.target.checked;if(window._Lw)window._Lw.visible=e.target.checked};
+ buildKelp();
+ {const rc=(REP.recordings||[])[0]||{},n=(v,d)=>(v??d).toLocaleString(); // totals from report.json, so the slimmed web copy shows the real counts
+ document.getElementById('counts').innerHTML=`Everything: ${n(rc.points_strong_underwater,cloud.length/3)} pts<br>Seabed: ${n(rc.points_seabed,seabed.length/3)} pts<br>Water column: ${n(rc.points_water_column,water.length/3)} pts · ${objs.length} objects`}
+ const hex2=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)/255),lerp=(a,b,t)=>a.map((v,i)=>v+(b[i]-v)*t),PL=hex2('#d9c2ff'),PM=hex2('#8a4dff'),PD=hex2('#3d0f80');
+ const purple=d=>{const t=Math.min(1,Math.max(0,d/4));return t<.5?lerp(PL,PM,t*2):lerp(PM,PD,(t-.5)*2)};
+ // water column (Lakshmi's standout echoes) is folded into the kelp / water-column toggle, drawn light green
+ const L={cloud:layer(cloud,null,1),seabed:layer(seabed,null,1),water:layer(water,[.6,.95,.45],2),obj:layer(objp,[1,1,1],3)};window._mk=(u,c,sz)=>ply(u).then(P=>layer(P,c,sz));window._layerFn=layer;window._RS=R+S;window._Lsb=L.seabed;
+ L.cloud.visible=false;L.water.visible=false;L.seabed.visible=false; // shown by setStyle only in sonar-colours mode
+ // structures standing more than 0.8 m above the seabed (pillars, rocks): purple by depth
+ // keep only dense clusters (0.5 m blocks with >= 8 such points): pillars and rocks, not scattered noise
+ // 1) FIND structures from their high part (dense 0.5 m blocks > 1 m above the seabed)
+ // 2) SHOW their whole column: every return in that footprint from just above the seabed up to the surface
+ const k2=(x,y)=>Math.floor(x/.5)+','+Math.floor(y/.5);
+ const dilate=set=>{const out=new Set();for(const s of set){const [a,b]=s.split(',').map(Number);for(let i=-1;i<=1;i++)for(let j=-1;j<=1;j++)out.add((a+i)+','+(b+j))}return out};
+ const column=(foot,minDz)=>{const hp=[];for(let i=0;i<cloud.dz.length;i++)if(cloud.dz[i]>minDz&&foot.has(k2(cloud[3*i],cloud[3*i+1])))hp.push(cloud[3*i],cloud[3*i+1],cloud[3*i+2]);return hp};
+ {const cnt=new Map(),key=i=>Math.floor(cloud[3*i]/.5)+','+Math.floor(cloud[3*i+1]/.5)+','+Math.floor(cloud[3*i+2]/.5);
+  for(let i=0;i<cloud.dz.length;i++)if(cloud.dz[i]>1.0){const k=key(i);cnt.set(k,(cnt.get(k)||0)+1)}
+  const foot=new Set();for(const [k,c] of cnt)if(c>=8){const [a,b]=k.split(',');foot.add(a+','+b)}
+  const hp=column(dilate(foot),0.15),hc=[];for(let i=0;i<hp.length;i+=3)hc.push(...purple(-hp[i+2]));
+  L.hl=layer(new Float32Array(hp),null,2,new Float32Array(hc));window._hlN=hp.length/3;
+  window._structFoot=dilate(foot)}
+ const structMesh=new THREE.Group();world.add(structMesh); // filled by structSurface() once the seabed grid is loaded
+ // candidate objects as rounded lumps (size and depth from the object list); the 3 'below seabed: echo' ones are see-through
+ const objLumps=new THREE.Group();world.add(objLumps);
+ objs.forEach(o=>{const echo=o.note.includes('below'),h=Math.max(.15,(+o.bottom_m-+o.top_m)/2),rr=Math.max(.15,+o.size_m/2);
+  const m=new THREE.Mesh(new THREE.SphereGeometry(1,24,16),new THREE.MeshStandardMaterial({color:echo?0x9a9a9a:new THREE.Color(...purple(+o.depth_m)),roughness:.8,transparent:echo,opacity:echo?.35:1}));
+  m.scale.set(rr,h,rr);m.position.set(+o.east_m-cx,-+o.depth_m,-(+o.north_m-cy));objLumps.add(m)});
+ const struct3d=new THREE.Group();struct3d.visible=false;world.add(struct3d); // carved 3D mesh from tools/struct3d.py, if the run has one
+ let shMode='dots'; // 3D takes over once its file loads; the old height-grid mesh is no longer offered
+ function showAs(md){shMode=md;[['sh3d','3d'],['shSolid','mesh'],['shDots','dots']].forEach(([id,v])=>document.getElementById(id).classList.toggle('on',md==v));
+  const hl=document.getElementById('hl').checked,ob=document.getElementById('o').checked;
+  structMesh.visible=hl&&md=='mesh';struct3d.visible=hl&&md=='3d';if(window._has3dConf)document.getElementById('certRow').style.display=md=='3d'?'flex':'none';L.hl.visible=hl&&md=='dots';objLumps.visible=false;if(L.obj)L.obj.visible=ob&&md=='dots'}
+ window._showAs=()=>showAs(shMode);
+ document.getElementById('sh3d').onclick=()=>showAs('3d');document.getElementById('shSolid').onclick=()=>showAs('mesh');document.getElementById('shDots').onclick=()=>showAs('dots');
+ // candidate objects: Lakshmi's object points + the rest of their column down to the seabed
+ {const foot=new Set();for(let i=0;i<objp.length;i+=3)foot.add(k2(objp[i],objp[i+1]));
+  const ext=column(dilate(foot),0.15);window._objExt=ext.length/3;
+  const all=new Float32Array(objp.length+ext.length);all.set(objp);all.set(ext,objp.length);
+  world.remove(L.obj);L.obj=layer(all,[1,1,1],2.5);window._objAll=all}
+ document.getElementById('hl').onchange=()=>window._showAs();
+ // track (in world, flat at surface)
+ const lat0=REP.home[0],lon0=REP.home[1],ml=111320,mo=111320*Math.cos(lat0*Math.PI/180);
+ const tp=[],tc=[],TE=track.map(p=>(p.lon-lon0)*mo),TN=track.map(p=>(p.lat-lat0)*ml),TS=track.map(p=>+p.utc_s);
+ const spdAt=i=>{const a=Math.max(0,i-10),b=Math.min(track.length-1,i+10);return Math.hypot(TE[b]-TE[a],TN[b]-TN[a])/Math.max(TS[b]-TS[a],1e-3)};
+ // one ramp: dim grey (stopped) -> fluorescent accent (fast). Scale 0 to KN_MAX knots.
+ const spdCol=v=>{const t=Math.min(1,v*1.944/KN_MAX),g=Math.pow(t,0.8);return SLOW.map((c,k)=>c+(ACC[k]-c)*g)};
+ window._Lw=L.water;window._Lhl=()=>L.hl;window._tp=tp;
+ track.forEach((p,i)=>{if(i%5)return;tp.push(TE[i]-cx,0.05,-(TN[i]-cy))});
+ // route: a little thicker (2.5 px), dashed, in the START / FINISH colour, on top of the points
+ const tgeo=new THREE.LineGeometry();tgeo.setPositions(tp);
+ const tmat=new THREE.LineMaterial({color:NODE_ACCENT,linewidth:2.4,dashSize:2.2,gapSize:0.9,transparent:true,opacity:1,depthTest:true,depthWrite:false});  // at the surface: above all sonar data, hidden only by ASKET
+ tmat.dashed=true;tmat.defines.USE_DASH='';tmat.needsUpdate=true;
+ const tl=new THREE.Line2(tgeo,tmat);tl.computeLineDistances();tl.renderOrder=30;scene.add(tl);window._tmat=tmat;tmat.resolution.set(innerWidth,innerHeight);
+ const dgeo=new THREE.LineGeometry();dgeo.setPositions(tp);const dmat=tmat.clone();dmat.dashed=true;dmat.defines.USE_DASH='';dmat.uniforms.resolution.value=tmat.uniforms.resolution.value;
+ const tld=new THREE.Line2(dgeo,dmat);tld.computeLineDistances();tld.renderOrder=31;tld.visible=false;scene.add(tld);window._tld=tld;
+ window._routeProgress=k=>{const on=document.body.classList.contains('routeOn');tmat.opacity=on?0.14:1;tld.visible=on;dgeo.instanceCount=Math.max(0,k)};
+ // scale grid (10 m) at the surface + north arrow
+ const grid=new THREE.GridHelper(200,20,0x3a4250,0x232a35);grid.position.set(0,0.12,0);grid.material.transparent=true;grid.material.depthWrite=false;grid.renderOrder=6;scene.add(grid);
+ document.getElementById('g').onchange=e=>grid.visible=e.target.checked;
+ // satellite image (Esri World Imagery, saved per run by tools/sat_tiles.py), a see-through sheet at the water surface
+ // the run's own (sharper) image marks its pixels in the stencil, the wide area image skips them, so the two never stack into a darker square
+ const satMat=new THREE.MeshBasicMaterial({transparent:true,opacity:.45,depthWrite:false,side:THREE.DoubleSide,stencilWrite:true,stencilRef:1,stencilFunc:THREE.AlwaysStencilFunc,stencilZPass:THREE.ReplaceStencilOp});
+ const satPlane=new THREE.Mesh(new THREE.PlaneGeometry(1,1),satMat);satPlane.rotation.x=-Math.PI/2;satPlane.visible=false;satPlane.renderOrder=3;scene.add(satPlane);
+ const satCredit=document.createElement('div');satCredit.id='satCredit';satCredit.style.cssText='position:fixed;left:10px;bottom:6px;font-size:10px;opacity:.7;display:none;pointer-events:none';document.body.appendChild(satCredit);
+ fetch(R+S+'_sat.json').then(r=>{if(!r.ok)throw 0;return r.json()}).then(m=>{
+  new THREE.TextureLoader().load(R+S+'_sat.jpg',t=>{t.anisotropy=r.capabilities.getMaxAnisotropy();satMat.map=t;satMat.needsUpdate=true});
+  satPlane.scale.set(m.e-m.w,m.n-m.s,1);satPlane.position.set((m.w+m.e)/2-cx,0,-((m.s+m.n)/2-cy));
+  satCredit.textContent=m.credit+' · zoom '+m.zoom}).catch(()=>{});
+ // wider area (jetty to Shearwater Bay, tools/area_sat.py), a sheet just under the run's own image
+ const areaMat=new THREE.MeshBasicMaterial({transparent:true,opacity:.45,depthWrite:false,side:THREE.DoubleSide,stencilWrite:true,stencilRef:1,stencilFunc:THREE.NotEqualStencilFunc,stencilZPass:THREE.KeepStencilOp});
+ const areaPlane=new THREE.Mesh(new THREE.PlaneGeometry(1,1),areaMat);areaPlane.rotation.x=-Math.PI/2;areaPlane.visible=false;areaPlane.renderOrder=4;scene.add(areaPlane);
+ const places=new THREE.Group();places.visible=false;scene.add(places);let bay=null,kelpXZ=null;window._places=places;window._satPlanes=[satPlane,areaPlane];
+ {const la0=REP.home[0],lo0=REP.home[1],mlat=111320,mlon=111320*Math.cos(la0*Math.PI/180);
+  const P=(lat,lon)=>[(lon-lo0)*mlon-cx,-((lat-la0)*mlat-cy)];
+  fetch('area_sat.json').then(r=>{if(!r.ok)throw 0;return r.json()}).then(m=>{
+   new THREE.TextureLoader().load('area_sat.jpg',t=>{t.anisotropy=r.capabilities.getMaxAnisotropy();areaMat.map=t;areaMat.needsUpdate=true});
+   const [x0,z0]=P(m.n,m.w),[x1,z1]=P(m.s,m.e);areaPlane.scale.set(x1-x0,z1-z0,1);areaPlane.position.set((x0+x1)/2,-0.05,(z0+z1)/2);
+   // place labels: minimal pin (thin black stick, small ball on top), white name in Inter Tight (NODE brand), lime caption in JetBrains Mono, no outlines
+   const drawPlace=p=>{const c=document.createElement('canvas');c.width=1024;c.height=256;const g=c.getContext('2d');
+    if(p.pin===false){ // area name (a desert, a region): spaced capitals, no pin, centred on the spot
+     if(p.caps===false){g.font='600 60px "Inter Tight",Inter,Helvetica,Arial';g.fillStyle='#fff';const lf=p.side==='left';g.textAlign=lf?'right':'center';g.fillText(p.name,lf?930:512,148)} // landmark: plain name, no pin; side 'left' = ends at the spot
+     else{g.font='500 54px "Inter Tight",Inter,Helvetica,Arial';if('letterSpacing' in g)g.letterSpacing='14px';g.fillStyle='rgba(255,255,255,.92)';g.textAlign='center';g.fillText(p.name.toUpperCase(),512,148)}
+     const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),depthTest:false,transparent:true,sizeAttenuation:false}));
+     const h=.1*(+p.size||1)*(innerWidth<innerHeight?.72:1);sp.scale.set(h*4,h,1);sp.center.set(p.side==='left'?1:.5,.5);sp.renderOrder=12;const [x,z]=P(p.lat,p.lon);sp.position.set(x,0.3,z);sp.userData={near:+p.near||0,name:p.name};places.add(sp);return [x,z]}
+    const L=p.side==='left',px=L?994:30; // side 'left': text to the left of the pin (when two places line up)
+    g.strokeStyle='#111';g.lineWidth=5;g.lineCap='round';g.beginPath();g.moveTo(px,56);g.lineTo(px,250);g.stroke();
+    g.beginPath();g.arc(px,40,15,0,7);g.fillStyle='#111';g.fill();g.textAlign=L?'right':'left';
+    g.font='600 64px "Inter Tight",Inter,Helvetica,Arial';g.fillStyle='#fff';g.fillText(p.name,L?958:66,96);
+    g.font='700 34px "JetBrains Mono",ui-monospace,monospace';if('letterSpacing' in g)g.letterSpacing='4px';g.fillStyle=NODE_ACCENT;if(p.sub)g.fillText(p.sub.toUpperCase(),L?956:68,146);
+    const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),depthTest:false,transparent:true,sizeAttenuation:false}));
+    const h=.1*(+p.size||1)*(innerWidth<innerHeight?.72:1);sp.scale.set(h*4,h,1);
+    sp.center.set(px/1024,6/256);sp.renderOrder=12;const [x,z]=P(p.lat,p.lon);sp.position.set(x,0.3,z);sp.userData={near:+p.near||0,name:p.name};places.add(sp);return [x,z]};
+   Promise.all([document.fonts.load('600 64px "Inter Tight"'),document.fonts.load('700 34px "JetBrains Mono"')]).catch(()=>{})
+    .then(()=>m.places.forEach(p=>{const xz=drawPlace(p);if(/shearwater/i.test(p.name)){bay=xz;window._bayXZ=xz}if(/kelp blue/i.test(p.name))kelpXZ=xz}));
+   // fixed size on screen, set per place ("size" in area_sat.json); "near" fades a label out when zoomed in closer than that
+   window._placesTick=()=>{if(!places.visible)return;const D=cam.position.distanceTo(ctr.target);
+    places.children.forEach(sp=>{const n=sp.userData.near;sp.material.opacity=n&&D<n?Math.max(0,(D-n*.5)/(n*.5)):1})};
+   // satellite fades with height: 70% high up, 50% at ~200 m, 10% at ~20 m, gone at the water surface (and underwater)
+   const FADE=[[0.3,0],[1.3,.15],[2.3,.65],[3.3,.85]];
+   window._satTick=()=>{if(!areaPlane.visible)return;const h=cam.position.y,L=Math.log10(Math.max(h,1e-3));let o=L>=3.3?.7:0;
+    for(let i=0;i<3;i++)if(L>=FADE[i][0]&&L<FADE[i+1][0]){const u=(L-FADE[i][0])/(FADE[i+1][0]-FADE[i][0]);o=FADE[i][1]+u*(FADE[i+1][1]-FADE[i][1])}
+    satMat.opacity=areaMat.opacity=o*(window._satMul??1)};
+   // context cards: which place the view is on decides the text
+   const CTX={
+    route:{ic3d:'boat',k:'Two surveys · 24 & 27 Nov 2026',t:'The route',b:['ASKET launched twice from the slipway by the Kelp Blue office: a 10-minute first test on 24 November and a 34-minute survey on 27 November, criss-crossing the bay to map the seabed from different directions. Together: 44 minutes, 1.9 km driven and 17.5 million sonar points. The line is its path.'],live:1},
+    dense:{ic:'<svg viewBox="0 0 32 32" width="26" height="26"><rect x="9" y="9" width="14" height="14" rx="2" fill="#59ac33"/></svg>',k:'Less dense points',t:'Soft echoes',b:['Hard things like rocks and the pier send back strong, dense echoes. These green clusters are weaker and more spread out: something that only partly reflects sound.',
+     'Here they are probably algae growing on the rocks, but they could also be kelp, ropes, fish, bubbles or loose sediment. On the kelp farm, this layer is how we hope to see the kelp itself.']},
+    objects:{ic3d:'globe',k:'Objects',t:'What stands out',b:['The sonar sends pulses of sound and listens for the echoes. Where echoes bunch into a compact shape that stands out from the seabed, the software marks it as a candidate object: the wireframe spheres. Everything else stays as points, like the seabed, the long rocky edges and the pier.',
+     'This sonar\'s sound bounces off the seabed surface and does not go into the sand, so it cannot see buried things. The grey spheres below the seabed are most likely echoes of echoes, sound that bounced twice, not real buried objects.']},
+    seabed:{k:'Seabed',t:'The grey mesh',b:['This grey surface is the seabed, mapped with sound. ASKET carries a Cerulean Omniscan 3D sonar that sends pulses sideways under the boat. Where the echoes hit the bottom, the software lays down millions of points and joins them into this mesh.',
+     'Here the bay is about 1.5 to 4 m deep. The bumps and ridges are rocks and the base of the pier columns.']},
+    over:{k:'Namibia 2026',t:'ASKET in Lüderitz',b:['Choose a button below to start: the mission route, what the sonar mapped (seabed, objects and less dense points) and Kelp Blue\'s kelp farm.']},
+    kelp:{k:'First test · 24 Nov 2026',t:'Kelp Blue Trading',b:['ASKET\'s first time in the water with its sonar. We launched from the slipway next to the Kelp Blue office and drove loops around this small bay for 10 minutes, until a propeller stopped and we brought the boat back in.',
+     'In those 10 minutes the sonar logged over 2 million points: a seabed 1 to 2.5 m deep, the columns of the pier, the rocks around the bay and softer clusters on them that are probably algae.',
+     'We were going about 1.5 knots, too fast for a sharp image. Next time we survey below 1 knot.']},
+    bay:{k:'Kelp farm',t:'Shearwater Bay',b:['Home of Kelp Blue\'s kelp farm, about 6 km west of Lüderitz. Kelp Blue grows giant kelp offshore, a home for marine life.',
+     'For now you only see satellite imagery. Tomorrow, 27 November, we take ASKET out to survey the farm with sonar and map the kelp and the structures that hold it.'],link:['kelp.blue','https://kelp.blue']}};
+   const cEl=document.getElementById('ctx'),closed={};let cur;
+   document.getElementById('ctxX').onclick=()=>{if(cur===window._ctxOverride){window._ctxOverride=null;cur=undefined}else{closed[cur]=true;cEl.classList.remove('on')}};
+   const showCtx=k=>{if(k===cur)return;cur=k;if(!k||closed[k]){cEl.classList.remove('on');return}const c=CTX[k];
+    {const ci=cEl.querySelector('.ci');ci.innerHTML=c.ic||'';if(c.ic3d&&window._icon3d)ci.appendChild(window._icon3d(c.ic3d))}cEl.querySelector('.ck').textContent=c.k;cEl.querySelector('h3').textContent=c.t;
+    cEl.querySelector('.cb').innerHTML=c.b.map(x=>'<p>'+x+'</p>').join('')+(c.live?'<div class="clive" id="ctxLive"></div>':'')+(c.link?`<a href="${c.link[1]}" target="_blank" rel="noopener">${c.link[0]} ↗</a>`:'');
+    cEl.classList.add('on')};
+   window._ctxTick=()=>{if(!document.getElementById('tut').classList.contains('off'))return showCtx(null);if(window._ctxOverride){closed[window._ctxOverride]=false;return showCtx(window._ctxOverride)}// the card follows where the buttons take you (shown as soon as the flight starts): the Lüderitz card only at the start view
+    const F=window._focus;showCtx(F==='bay'?'bay':F==='run'?'kelp':F==='over'?'over':null)};
+   document.getElementById('bBay').style.display='inline-block'}).catch(()=>{});}
+ // keep near/far in proportion to the view, so the run (metres) and the bay (kilometres) both draw cleanly
+ const clip=()=>{const d=cam.position.distanceTo(ctr.target);cam.near=Math.max(.1,d/3000);cam.far=Math.max(5000,d*8+9000);cam.updateProjectionMatrix()};ctr.addEventListener('change',clip);
+ let atBay=false,runView=null;
+ const fly=(t1,c1,ms=2600)=>{const t0=ctr.target.clone(),c0=cam.position.clone(),T=new THREE.Vector3(...t1),C=new THREE.Vector3(...c1),st=performance.now();
+  const step=now=>{let u=Math.min(1,(now-st)/ms);u=u<.5?4*u*u*u:1-Math.pow(-2*u+2,3)/2;ctr.target.lerpVectors(t0,T,u);cam.position.lerpVectors(c0,C,u);ctr.update();if(u<1)requestAnimationFrame(step)};requestAnimationFrame(step)};
+ document.getElementById('bBay').onclick=()=>{const b=document.getElementById('bBay');
+  if(!atBay&&bay){window._setUnder(false,true);runView={t:ctr.target.toArray(),c:cam.position.toArray()};if(!document.getElementById('sat').checked){document.getElementById('sat').checked=true;satOn()}
+   window._ctxOverride=null;window._focusPrev=window._focus;window._focus='bay';window._focusHold=performance.now()+2800;fly(...fitView([bay[0],0,bay[1]+250],[bay[0]+150,1500,bay[1]+1650]));b.textContent='Back to the run';atBay=true;window._syncBayBtn&&window._syncBayBtn()}
+  else if(runView){window._focus=window._focusPrev||'run';window._focusHold=performance.now()+2800;fly(runView.t,runView.c);b.textContent='Fly to Shearwater Bay';atBay=false;window._syncBayBtn&&window._syncBayBtn()}};
+ // tap or click a pin: fly there (also the easy way back from the bay)
+ window._bayGo=()=>{if(!atBay)document.getElementById('bBay').click()};
+ window._resetBay=()=>{atBay=false;document.getElementById('bBay').textContent='Fly to Shearwater Bay';window._syncBayBtn&&window._syncBayBtn()};
+ window._kelpGo=()=>{atBay=false;document.getElementById('bBay').textContent='Fly to Shearwater Bay';window._syncBayBtn&&window._syncBayBtn();window._toRun&&window._toRun(true)};
+ const satOn=()=>{const on=document.getElementById('sat').checked;satPlane.visible=on;areaPlane.visible=on;places.visible=on;satCredit.style.display=on?'block':'none'};
+ document.getElementById('sat').onchange=satOn;
+ document.getElementById('satOp').oninput=e=>{satMat.opacity=areaMat.opacity=e.target.value/100;document.getElementById('satOpv').textContent=e.target.value+'%'};
+ const tgrp=new THREE.Group();tgrp.add(tl);if(window._tld)tgrp.add(window._tld);scene.add(tgrp);
+ try{await document.fonts.load('600 52px Inter')}catch(_){}
+ // START / FINISH: labelled circles drawn to scale (3 m across), always facing the camera
+ const badge=(x,z,txt,fill)=>{const c=document.createElement('canvas');c.width=c.height=256;const g=c.getContext('2d');
+  g.beginPath();g.arc(128,128,120,0,7);g.fillStyle=fill;g.fill();g.lineWidth=8;g.strokeStyle='#fff';g.stroke();
+  g.fillStyle='#000';g.font='600 52px Inter,Helvetica,Arial';g.textAlign='center';g.textBaseline='middle';g.fillText(txt,128,132);
+  const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),depthTest:false}));sp.renderOrder=11;
+  sp.scale.set(3,3,1);sp.position.set(x,1.8,z);tgrp.add(sp)};
+ badge(tp[0],tp[2],'START',NODE_ACCENT);badge(tp[tp.length-3],tp[tp.length-1],'FINISH',NODE_ACCENT);
+ // ---- route readout: hover/click the route, or scrub along it
+ const RI=[];for(let i=0;i<track.length;i+=5)RI.push(i);
+ const utcStr=s=>new Date(s*1000).toISOString().slice(11,19);
+ const info=k=>{const i=RI[k],kn=spdAt(i)*1.944;return{kn,txt:`<b>${kn.toFixed(1)} kn</b> (${spdAt(i).toFixed(2)} m/s) · ${utcStr(TS[i])} UTC · ${Math.round(TS[i]-TS[0])} s into the run`+(kn>=1.2&&kn<=1.6?' · <span style="color:#3ddc84">in target</span>':'')}};
+ const mk=new THREE.Mesh(new THREE.SphereGeometry(.7,16,12),new THREE.MeshBasicMaterial({color:NODE_ACCENT,depthTest:false}));mk.renderOrder=12;mk.visible=false;tgrp.add(mk);
+ const scrub=document.getElementById('scrub'),scrubv=document.getElementById('scrubv');scrub.max=RI.length-1;
+ // ASKET hull (repo: src/description/meshes/hull_visual.obj, ROS axes x fwd, y left, z up, metres)
+ const boat=new THREE.Group();boat.visible=false;scene.add(boat);let boatScale=3;
+ new THREE.OBJLoader().load('asket_hull.obj',o=>{o.traverse(c=>{if(c.isMesh){c.material=new THREE.MeshStandardMaterial({color:0xf2f2ef,roughness:.6,metalness:.05,transparent:true,opacity:1});c.renderOrder=40}});
+  o.rotation.x=-Math.PI/2;o.position.set(.053,-.0135,0);boat.add(o);
+  const e=new THREE.LineSegments(new THREE.EdgesGeometry(o.children[0].geometry,30),new THREE.LineBasicMaterial({color:NODE_ACCENT,transparent:true}));e.renderOrder=41;e.rotation.x=-Math.PI/2;e.position.copy(o.position);boat.add(e)});
+ // heading of travel at each route point (keeps the last heading while nearly stopped)
+ const HD=[];{let last=0;RI.forEach(i=>{const a=Math.max(0,i-15),b=Math.min(track.length-1,i+15),de=TE[b]-TE[a],dn=TN[b]-TN[a];if(Math.hypot(de,dn)>.6)last=Math.atan2(de,dn);HD.push(last)})}
+ boat.scale.setScalar(3); // ASKET drawn 3x real size so it reads on the map
+ // ---- sonar beam: starboard fan, 6° to 56° below horizontal (24 Nov estimate), each ray stops at the seabed
+ const gbuf=await (await fetch(R+S+'_bedgrid.bin')).arrayBuffer(),[bx0,by0,bc,BW,BH]=new Float32Array(gbuf,0,5),BZ=new Float32Array(gbuf,20);
+ {const F=Float32Array.from(BZ),good=BZ.filter(v=>!isNaN(v)).sort((a,b)=>a-b),med=good[good.length>>1];
+  for(let pass=0;pass<60;pass++){let left=0;const src=Float32Array.from(F);
+   for(let j=0;j<BH;j++)for(let i=0;i<BW;i++){const k=j*BW+i;if(!isNaN(src[k]))continue;let sm=0,c=0;
+    for(let dj=-1;dj<=1;dj++)for(let di=-1;di<=1;di++){const a=i+di,b=j+dj;if(a<0||b<0||a>=BW||b>=BH)continue;const v=src[b*BW+a];if(!isNaN(v)){sm+=v;c++}}
+    if(c)F[k]=sm/c;else left++}if(!left)break}
+  for(let k=0;k<F.length;k++)if(isNaN(F[k]))F[k]=med;window._BF=F}
+ const BF=window._BF;
+ const bedAt=(e,n)=>{const i=Math.floor((e-bx0)/bc),j=Math.floor((n-by0)/bc);if(i<0||j<0||i>=BW||j>=BH)return NaN;return BF[j*BW+i]};
+ const NR=26,A0=6,A1=56,MAXR=17.4,MD=0.3;
+ const fanPos=new Float32Array((NR+1)*3),fanIdx=[];for(let i=1;i<NR;i++)fanIdx.push(0,i,i+1);
+ const fanG=new THREE.BufferGeometry();fanG.setAttribute('position',new THREE.BufferAttribute(fanPos,3));fanG.setIndex(fanIdx);
+ const fan=new THREE.Mesh(fanG,new THREE.MeshBasicMaterial({color:NODE_ACCENT,transparent:true,opacity:.16,side:THREE.DoubleSide,depthWrite:false}));
+ const footG=new THREE.BufferGeometry();footG.setAttribute('position',new THREE.BufferAttribute(new Float32Array(NR*3),3));
+ const foot=new THREE.Line(footG,new THREE.LineBasicMaterial({color:NODE_ACCENT}));
+ const edgeG=new THREE.BufferGeometry();edgeG.setAttribute('position',new THREE.BufferAttribute(new Float32Array(12),3));
+ const edges=new THREE.LineSegments(edgeG,new THREE.LineBasicMaterial({color:NODE_ACCENT,transparent:true,opacity:.6}));
+ [fan,foot,edges].forEach(o=>{o.visible=false;o.renderOrder=9;world.add(o)});
+ const footAt=(k,aDeg)=>{const i=RI[k],h=HD[k],re=Math.cos(h),rn=-Math.sin(h),E0=TE[i],N0=TN[i],a=aDeg*Math.PI/180,ch=Math.cos(a),sh=Math.sin(a);
+  for(let t=0.25;t<=MAXR;t+=0.25){const e=E0+re*t*ch,n=N0+rn*t*ch,z=-MD-t*sh,b=bedAt(e,n);if(!isNaN(b)&&z<=b)return[e,n,b]}
+  return[E0+re*MAXR*ch,N0+rn*MAXR*ch,-MD-MAXR*sh]};
+
+ function updateFan(k){const tOn=document.getElementById('t').checked;[fan,foot,edges].forEach(o=>o.visible=tOn);
+  const i=RI[k],h=HD[k],re=Math.cos(h),rn=-Math.sin(h),E0=TE[i],N0=TN[i];  // starboard = right of travel
+  const put=(arr,j,e,n,z)=>{arr[3*j]=e-cx;arr[3*j+1]=z;arr[3*j+2]=-(n-cy)};
+  put(fanPos,0,E0,N0,-MD);const fp=footG.attributes.position.array,ep=edgeG.attributes.position.array;
+  for(let r=0;r<NR;r++){const a=(A0+(A1-A0)*r/(NR-1))*Math.PI/180,ch=Math.cos(a),sh=Math.sin(a);let s=MAXR,hit=[E0+re*s*ch,N0+rn*s*ch,-MD-s*sh];
+   for(let t=0.05;t<=MAXR;t+=0.05){const e=E0+re*t*ch,n=N0+rn*t*ch,z=-MD-t*sh,b=bedAt(e,n);if(!isNaN(b)&&z<=b){hit=[e,n,b];break}}
+   put(fanPos,r+1,...hit);put(fp,r,...hit);
+   if(r==0){put(ep,0,E0,N0,-MD);put(ep,1,...hit)}if(r==NR-1){put(ep,2,E0,N0,-MD);put(ep,3,...hit)}}
+  fanG.attributes.position.needsUpdate=true;footG.attributes.position.needsUpdate=true;edgeG.attributes.position.needsUpdate=true;fanG.computeBoundingSphere()}
+ function goTo(k){k=Math.max(0,Math.min(RI.length-1,k|0));scrub.value=k;
+  boat.position.set(tp[3*k],0,tp[3*k+2]);boat.rotation.y=Math.PI/2-HD[k];boat.visible=document.getElementById('t').checked;updateFan(k);window._routeProgress&&window._routeProgress(k);scrubv.innerHTML=info(k).txt+` · heading ${Math.round((HD[k]*180/Math.PI+360)%360)}°`}
+ scrub.oninput=()=>goTo(+scrub.value);
+ setTimeout(()=>goTo(+scrub.value||0),0);
+ let playing=null;document.getElementById('play').onclick=e=>{if(playing){clearInterval(playing);playing=null;e.target.textContent='▶';return}
+  e.target.textContent='❚❚';playing=setInterval(()=>{const k=+scrub.value+1;if(k>=RI.length){clearInterval(playing);playing=null;e.target.textContent='▶';return}goTo(k)},80)}; // one fix (0.5 s) per 80 ms: about 6x real speed, the 10 min run in ~1.5 min
+ const sv=new THREE.Vector3();
+ function nearRoute(x,y){if(!tgrp.visible)return -1;let best=-1,bd=10;for(let k=0;k<RI.length;k++){sv.set(tp[3*k],tp[3*k+1],tp[3*k+2]).project(cam);
+  if(sv.z>1)continue;const d=Math.hypot((sv.x+1)/2*innerWidth-x,(1-sv.y)/2*innerHeight-y);if(d<bd){bd=d;best=k}}return best}
+ r.domElement.addEventListener('pointermove',e=>{window._rh=false;if(e.buttons)return;const k=nearRoute(e.clientX,e.clientY);if(k<0)return;window._rh=true;
+  tip.style.display='block';tip.style.left=e.clientX+12+'px';tip.style.top=e.clientY+12+'px';tip.innerHTML=info(k).txt});
+ r.domElement.addEventListener('click',e=>{if(mode||performance.now()-(window._justDragged||0)<300)return;const k=nearRoute(e.clientX,e.clientY);if(k>=0)goTo(k)});
+ const home={visible:true,material:{color:{set(){}}}}; // old 'home' marker removed; see deploy point
+ // object hover rings
+ const og=new THREE.Group();scene.add(og);
+ const rings=objs.map(o=>{const echo=o.note.includes('below');const m=new THREE.Mesh(new THREE.SphereGeometry(Math.max(.5,o.size_m/2),16,12),
+  new THREE.MeshBasicMaterial({color:echo?0x888888:0xffffff,wireframe:true,transparent:true,opacity:echo?.3:.6}));m.userData=o;og.add(m);return m});
+ const ex=document.getElementById('ex');
+ function applyEx(){const e=+ex.value;document.getElementById('exv').textContent=e.toFixed(1)+'×';world.scale.y=e;rings.forEach(m=>{const o=m.userData;m.position.set(+o.east_m-cx,-o.depth_m*e,-(+o.north_m-cy))})}
+ ex.oninput=applyEx;applyEx();
+ document.querySelectorAll('input[name=base]').forEach(el=>el.onchange=()=>{const v=document.querySelector('input[name=base]:checked').value;L.cloud.visible=v=='cloud';L.seabed.visible=v=='seabed'});
+ window._og=og;document.getElementById('o').onchange=e=>{og.visible=e.target.checked;window._showAs()};
+ // reveal: the pier, rocks and objects fade in as you come down (the satellite fades out): hidden above ~400 m, full below ~80 m
+ rings.forEach(m=>m.userData.op=m.material.opacity);
+ window._revealTick=()=>{const h=Math.max(cam.position.y,1),r=Math.min(1,Math.max(0,(Math.log10(400)-Math.log10(h))/(Math.log10(400)-Math.log10(80))));
+  [L.hl,L.obj].forEach(l=>{if(!l)return;const g=l.geometry,n=g.attributes.position.count;
+   if(!g.index){const ix=new Uint32Array(n);for(let i=0;i<n;i++)ix[i]=i;for(let i=n-1;i>0;i--){const j=Math.random()*(i+1)|0,t=ix[i];ix[i]=ix[j];ix[j]=t}g.setIndex(new THREE.BufferAttribute(ix,1))}
+   l.material.visible=r>0;g.setDrawRange(0,Math.round(n*r))}); // solid points revealed in random order (see-through points made the 100 to 400 m band lag)
+  rings.forEach(m=>{m.material.visible=r>0;m.material.opacity=m.userData.op*r})};
+ document.getElementById('t').onchange=e=>{const v=e.target.checked;tgrp.visible=v;boat.visible=v;[fan,foot,edges].forEach(o=>o.visible=v)};
+ document.getElementById('ps').oninput=e=>mats.forEach(m=>m.size=m.userData.base*+e.target.value);
+ const ray=new THREE.Raycaster(),mv=new THREE.Vector2(),tip=document.getElementById('tip');
+ addEventListener('pointermove',e=>{mv.set(e.clientX/innerWidth*2-1,-e.clientY/innerHeight*2+1);ray.setFromCamera(mv,cam);
+  const h=og.visible?ray.intersectObjects(rings):[];if(h.length){const o=h[0].object.userData;tip.style.display='block';tip.style.left=e.clientX+12+'px';tip.style.top=e.clientY+12+'px';
+  tip.innerHTML=`<b>Object ${o.id}</b><br>${o.depth_m} m deep · ${o.size_m} m · ${o.passes} pass(es)<br>${o.note}`}else if(!window._rh)tip.style.display='none'});
+ const set=(sel,v,ev)=>{const e=document.querySelector(sel);e.value=v;e.dispatchEvent(new Event(ev))};
+ // camera presets (work for any run: framed on the middle of the data)
+ const CAM={top:{t:[0,-2,0],c:[0,95,0.01]},sideS:{t:[0,-3,0],c:[0,1,95]},sideE:{t:[0,-3,0],c:[95,1,0]},persp:{t:[0,-4,0],c:[0,55,65]}};
+ const camTo=v=>{ctr.target.set(...v.t);cam.position.set(...v.c);ctr.update()};
+ window._camEN=(te,tn,ce,cn,h)=>camTo({t:[te-cx,0,-(tn-cy)],c:[ce-cx,h,-(cn-cy)]}); // console helper: target and camera by east/north metres
+ window._lookAtEN=(e,n,d=9,h=6)=>{const x=e-cx,z=-(n-cy),y=-1.5*world.scale.y;camTo({t:[x,y,z],c:[x+d*.7,y+h,z+d*.7]})}; // console helper: frame a spot by east/north metres
+ document.querySelectorAll('button[data-p]').forEach(b=>b.onclick=()=>{window._setUnder(/^side/.test(b.dataset.p),true);camTo(CAM[b.dataset.p])});
+ // ---- tools: slice + measure (two clicks on the map, picked on the water surface plane)
+ const msg=document.getElementById('toolMsg'),plane=new THREE.Plane(new THREE.Vector3(0,1,0),0),pick=new THREE.Vector3();
+ let mode=null,pts=[],down=null;const marks=new THREE.Group();scene.add(marks);
+ const mark=p=>{const m=new THREE.Mesh(new THREE.SphereGeometry(.5,12,8),new THREE.MeshBasicMaterial({color:0x00e5ff}));m.position.copy(p);marks.add(m)};
+ const line=(a,b,c)=>{const g=new THREE.BufferGeometry().setFromPoints([a,b]);marks.add(new THREE.Line(g,new THREE.LineBasicMaterial({color:c})))};
+ const toE=p=>(p.x+cx).toFixed(1),toN=p=>(-p.z+cy).toFixed(1);
+ const opts=document.getElementById('toolOpts'),showOpts=(on,slice,dep)=>{opts.style.display=on?'block':'none';document.getElementById('slwRow').style.display=slice?'flex':'none';document.getElementById('depMsg').style.display=dep?'block':'none';document.getElementById('bDepX').style.display=dep&&deploy?'inline-block':'none'};
+ function startTool(m){mode=m;pts=[];marks.clear();showOpts(true,m=='slice',false);msg.textContent=(m=='slice'?'Slice':'Measure')+': click the first point on the seabed'}
+ // pick a point ON the seabed surface (falls back to the water surface where there is no seabed data)
+ function pickBed(x,y){mv.set(x/innerWidth*2-1,-y/innerHeight*2+1);ray.setFromCamera(mv,cam);
+  if(window._bedPick){const h=ray.intersectObject(window._bedPick);if(h.length)return h[0].point.clone()}
+  return ray.ray.intersectPlane(plane,pick)?pick.clone():null}
+ // ---- deploy point: where the vessel was launched. Click the map to set it; remembered per run in this browser
+ let deploy=null;const depSprite=(()=>{const c=document.createElement('canvas');c.width=256;c.height=340;const g=c.getContext('2d');
+  g.beginPath();g.arc(128,120,112,Math.PI*0.82,Math.PI*0.18);g.lineTo(128,334);g.closePath();g.fillStyle='#111';g.fill();
+  g.lineWidth=6;g.strokeStyle='rgba(255,255,255,.85)';g.stroke();
+  g.fillStyle='#fff';g.font='600 46px Inter,Helvetica,Arial';g.textAlign='center';g.textBaseline='middle';g.fillText('DEPLOY',128,122);
+  const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),depthTest:false}));sp.center.set(.5,0);sp.renderOrder=31;sp.scale.set(2.6,2.6*340/256,1);sp.visible=false;scene.add(sp);return sp})();
+ function setDeploy(E,N,save){const dm=document.getElementById('depMsg');
+  if(E==null){deploy=null;depSprite.visible=false;dm.textContent='No deploy point set';try{localStorage.removeItem('deploy:'+S)}catch(_){};return}
+  deploy={e:+E.toFixed(2),n:+N.toFixed(2)};depSprite.position.set(E-cx,0,-(N-cy));depSprite.visible=true;
+  const la=lat0+N/ml,lo=lon0+E/mo;dm.innerHTML=`Deploy point: ${E.toFixed(1)} E, ${N.toFixed(1)} N · ${la.toFixed(6)}, ${lo.toFixed(6)}<br><span style="font-family:var(--font)">Drag the DEPLOY marker to move it</span>`;
+  if(save)try{localStorage.setItem('deploy:'+S,JSON.stringify(deploy))}catch(_){}}
+ document.getElementById('bDep').onclick=()=>{mode='deploy';pts=[];showOpts(true,false,true);msg.textContent=deploy?'Click the map to place it again, or drag the pin':'Click the map where the vessel was launched'};
+ document.getElementById('bDepX').onclick=()=>{setDeploy(null);mode=null;showOpts(false)};
+ // a run with deploy.json has a fixed launch point: always shown, no pin tool, cannot be moved or removed
+ const FIXED_DEP=await fetch(R+'deploy.json').then(r=>r.ok?r.json():null).catch(()=>null);
+ if(FIXED_DEP){setDeploy(FIXED_DEP.e,FIXED_DEP.n,false);document.getElementById('bDep').style.display='none';document.getElementById('depLegend').textContent='deploy point (launch site)'}
+ else try{const d=JSON.parse(localStorage.getItem('deploy:'+S)||'null');if(d)setDeploy(d.e,d.n,false);else setDeploy(null)}catch(_){setDeploy(null)}
+ window._getDeploy=()=>deploy;window._setDeploy=FIXED_DEP?()=>{}:setDeploy;
+ // drag the DEPLOY marker to move it (saved when you let go)
+ let dragDep=false;const onDep=e=>{if(!depSprite.visible||FIXED_DEP)return false;mv.set(e.clientX/innerWidth*2-1,-e.clientY/innerHeight*2+1);ray.setFromCamera(mv,cam);return ray.intersectObject(depSprite).length>0};
+ r.domElement.addEventListener('pointerdown',e=>{if(e.button===0&&onDep(e)){dragDep=true;ctr.enabled=false;r.domElement.style.cursor='grabbing'}},true);
+ addEventListener('pointermove',e=>{if(dragDep){const p=pickBed(e.clientX,e.clientY);if(p)setDeploy(p.x+cx,-p.z+cy,false)}else if(!e.buttons)r.domElement.style.cursor=onDep(e)?'grab':''});
+ addEventListener('pointerup',e=>{if(!dragDep)return;{const p=pickBed(e.clientX,e.clientY);if(p)setDeploy(p.x+cx,-p.z+cy,false)}dragDep=false;ctr.enabled=true;r.domElement.style.cursor='';window._justDragged=performance.now();if(deploy)setDeploy(deploy.e,deploy.n,true)});
+ document.getElementById('bSlice').onclick=()=>{SL.slOn.value=0;startTool('slice')};
+ document.getElementById('bMeas').onclick=()=>startTool('measure');
+ document.getElementById('bClr').onclick=()=>{mode=null;pts=[];marks.clear();SL.slOn.value=0;msg.textContent='';showOpts(false);
+  tgrp.visible=document.getElementById('t').checked;og.visible=document.getElementById('o').checked;home.visible=true};
+ const slw=document.getElementById('slw');slw.oninput=()=>{SL.slW.value=slw.value/10;document.getElementById('slwv').textContent=(slw.value/10).toFixed(1)+' m'};
+ r.domElement.addEventListener('pointerdown',e=>down=[e.clientX,e.clientY]);
+ r.domElement.addEventListener('pointerup',e=>{if(!mode||!down||Math.hypot(e.clientX-down[0],e.clientY-down[1])>4||e.button!==0)return;
+  const p=pickBed(e.clientX,e.clientY);if(!p)return;
+  if(mode=='deploy'){setDeploy(p.x+cx,-p.z+cy,true);mode=null;msg.textContent='';showOpts(true,false,true);return}
+  pts.push(p);mark(p);
+  if(pts.length==1){msg.textContent='Now click the second point';return}
+  const [a,b]=pts,d=Math.hypot(b.x-a.x,b.z-a.z),da=-a.y/world.scale.y,db=-b.y/world.scale.y;
+  if(mode=='measure'){line(a,b,0x00e5ff);msg.innerHTML=`Distance <b>${d.toFixed(1)} m</b> along the seabed map · depth ${da.toFixed(1)} m to ${db.toFixed(1)} m · from (${toE(a)} E, ${toN(a)} N) to (${toE(b)} E, ${toN(b)} N)`}
+  else{const ux=(b.x-a.x)/d,uz=(b.z-a.z)/d;SL.slAD.value.set(a.x,a.z,ux,uz);SL.slL.value=d;SL.slOn.value=1;line(a,b,0x00e5ff);
+   const mid=a.clone().add(b).multiplyScalar(.5);const dist=Math.max(d*1.1,15);
+   window._setUnder(true,true);ctr.target.set(mid.x,-1.5*world.scale.y,mid.z);cam.position.set(mid.x-uz*dist,-1.5*world.scale.y,mid.z+ux*dist);ctr.update();
+   tgrp.visible=false;og.visible=false;home.visible=false;marks.children.filter(c=>c.isMesh).forEach(c=>c.visible=false);
+   msg.innerHTML=`Slice <b>${d.toFixed(1)} m</b> long, ±${SL.slW.value.toFixed(1)} m wide. Looking at it from the side. Rotate freely, or Clear to go back`}
+  mode=null});
+ // collapse controls
+ document.getElementById('collapse').onclick=()=>{document.getElementById('ctl').style.display='none';document.getElementById('hide').style.display='block'};
+ document.getElementById('hide').onclick=()=>{document.getElementById('ctl').style.display='block';document.getElementById('hide').style.display='none'};
+ // ---- clay model: shaded seabed surface + only kelp (green) and objects (purple by depth) in colour
+ async function bedGeom(url){const gb=await (await fetch(url)).arrayBuffer(),[gx0,gy0,gc,GW,GH]=new Float32Array(gb,0,5),GZ=new Float32Array(gb,20);
+  const vpos=new Float32Array(GW*GH*3),idx=[];
+  for(let j=0;j<GH;j++)for(let i=0;i<GW;i++){const k=j*GW+i,z=GZ[k];vpos[3*k]=gx0+(i+.5)*gc-cx;vpos[3*k+1]=isNaN(z)?0:z;vpos[3*k+2]=-(gy0+(j+.5)*gc-cy)}
+  const ok=k=>!isNaN(GZ[k]);
+  for(let j=0;j<GH-1;j++)for(let i=0;i<GW-1;i++){const a=j*GW+i,b=a+1,c=a+GW,d=c+1;
+   if(ok(a)&&ok(c)&&ok(b))idx.push(a,c,b);if(ok(b)&&ok(c)&&ok(d))idx.push(b,c,d)}
+  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(vpos,3));g.setIndex(idx);g.computeVertexNormals();return g}
+ const [gSmooth,gFine]=await Promise.all([bedGeom(R+S+'_bedgrid.bin'),bedGeom(R+S+'_bedgrid_fine.bin')]);
+ const clayMat=o=>new THREE.MeshStandardMaterial(Object.assign({color:0xf4f3f0,roughness:.95,metalness:0,side:THREE.DoubleSide},o));
+ const bedSmooth=new THREE.Mesh(gSmooth,clayMat({})),
+  bedGrain=new THREE.Mesh(gFine,clayMat({flatShading:true})),
+  bedMeshFill=new THREE.Mesh(gFine,clayMat({flatShading:true,transparent:true,opacity:.45,depthWrite:true})),
+  bedWire=new THREE.Mesh(gFine,new THREE.MeshBasicMaterial({color:0x6f737a,wireframe:true,transparent:true,opacity:.28}));
+ window._bedMats=[[bedMeshFill.material,.45],[bedWire.material,.28]];const bedMesh=new THREE.Group();bedMesh.add(bedSmooth,bedGrain,bedMeshFill,bedWire);bedMesh.visible=false;world.add(bedMesh);
+ function setSurf(v){v='mesh'; // one curated look (26 Nov): mesh only
+ bedSmooth.visible=v=='smooth';bedGrain.visible=v=='grain';bedMeshFill.visible=bedWire.visible=v=='mesh';
+  document.querySelectorAll('button[data-s]').forEach(b=>b.classList.toggle('on',b.dataset.s==v))}
+ document.querySelectorAll('button[data-s]').forEach(b=>b.onclick=()=>setSurf(b.dataset.s));setSurf('mesh');window._surf='mesh';
+ document.querySelectorAll('button[data-s]').forEach(b=>b.addEventListener('click',()=>window._surf=b.dataset.s));
+ window._bedPick=bedSmooth;
+ // ---- structures as a surface, the same way as the seabed: a 0.2 m height grid (aligned with the fine seabed grid),
+ // structure cells at the top of their returns, a one-cell skirt at seabed level so they rise out of the bed; same smooth / grain / mesh looks
+ {const gb=await (await fetch(R+S+'_bedgrid_fine.bin')).arrayBuffer(),[gx0,gy0,gc,GW,GH]=new Float32Array(gb,0,5),GZ=new Float32Array(gb,20);
+  const foot=window._structFoot,top=new Float32Array(GW*GH).fill(NaN),buf=new Map();
+  for(let i=0;i<cloud.dz.length;i++){if(!(cloud.dz[i]>0.15))continue;const x=cloud[3*i],y=cloud[3*i+1];if(!foot.has(k2(x,y)))continue;
+   const ci=Math.floor((x-gx0)/gc),cj=Math.floor((y-gy0)/gc);if(ci<0||cj<0||ci>=GW||cj>=GH)continue;const k=cj*GW+ci;let a=buf.get(k);if(!a)buf.set(k,a=[]);a.push(cloud[3*i+2])}
+  for(const [k,a] of buf)if(a.length>=2){a.sort((u,v)=>u-v);top[k]=a[Math.floor(a.length*.9)]}
+  const N8=[[-1,-1],[0,-1],[1,-1],[-1,0],[1,0],[-1,1],[0,1],[1,1]];
+  const each=(k,f)=>{const i=k%GW,j=(k-i)/GW;for(const [a,b] of N8){const ii=i+a,jj=j+b;if(ii>=0&&jj>=0&&ii<GW&&jj<GH)f(jj*GW+ii)}};
+  // fill pin-holes, drop lonely cells, then one smoothing pass (like the seabed's smooth look)
+  for(let pass=0;pass<2;pass++){const add=[];for(const k of buf.keys())each(k,n=>{if(isNaN(top[n])){let s=0,c=0;each(n,m=>{if(!isNaN(top[m])){s+=top[m];c++}});if(c>=5)add.push([n,s/c])}});add.forEach(([n,v])=>{if(isNaN(top[n])){top[n]=v;buf.set(n,[v])}})}
+  for(const k of [...buf.keys()]){if(isNaN(top[k]))continue;let c=0;each(k,n=>{if(!isNaN(top[n]))c++});if(c<2){top[k]=NaN;buf.delete(k)}}
+  {const t2=top.slice();for(const k of buf.keys()){if(isNaN(top[k]))continue;let s=top[k]*2,w=2;each(k,n=>{if(!isNaN(top[n])){s+=top[n];w++}});t2[k]=s/w}top.set(t2)}
+  // skirt: empty neighbours sit just under the seabed so the structure grows out of it
+  const Z=top.slice(),isS=new Uint8Array(GW*GH);for(let k=0;k<Z.length;k++)if(!isNaN(top[k]))isS[k]=1;
+  for(let k=0;k<Z.length;k++)if(isS[k])each(k,n=>{if(!isS[n]&&isNaN(Z[n])&&!isNaN(GZ[n]))Z[n]=GZ[n]-.03});
+  const vpos=new Float32Array(GW*GH*3),vcol=new Float32Array(GW*GH*3),idx=[];
+  for(let j=0;j<GH;j++)for(let i=0;i<GW;i++){const k=j*GW+i,z=isNaN(Z[k])?0:Z[k];vpos[3*k]=gx0+(i+.5)*gc-cx;vpos[3*k+1]=z;vpos[3*k+2]=-(gy0+(j+.5)*gc-cy);vcol.set(purple(-z),3*k)}
+  const ok=k=>!isNaN(Z[k]);
+  for(let j=0;j<GH-1;j++)for(let i=0;i<GW-1;i++){const a=j*GW+i,b=a+1,c=a+GW,d=c+1;if(!(isS[a]||isS[b]||isS[c]||isS[d]))continue;
+   if(ok(a)&&ok(c)&&ok(b))idx.push(a,c,b);if(ok(b)&&ok(c)&&ok(d))idx.push(b,c,d)}
+  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(vpos,3));g.setAttribute('color',new THREE.BufferAttribute(vcol,3));g.setIndex(idx);g.computeVertexNormals();
+  const sm=o=>new THREE.MeshStandardMaterial(Object.assign({vertexColors:true,roughness:.9,metalness:0,side:THREE.DoubleSide},o));
+  const sSmooth=new THREE.Mesh(g,sm({})),sGrain=new THREE.Mesh(g,sm({flatShading:true})),sFill=new THREE.Mesh(g,sm({flatShading:true,transparent:true,opacity:.55})),
+   sWire=new THREE.Mesh(g,new THREE.MeshBasicMaterial({color:0x5a2fb0,wireframe:true,transparent:true,opacity:.35}));
+  structMesh.add(sSmooth,sGrain,sFill,sWire);window._structParts={smooth:[sSmooth],grain:[sGrain],mesh:[sFill,sWire]};window._structCells=buf.size;
+  const ss=v=>{for(const [m,arr] of Object.entries(window._structParts))arr.forEach(o=>o.visible=m===v)};ss(window._surf||'mesh');
+  document.querySelectorAll('button[data-s]').forEach(b=>b.addEventListener('click',()=>ss(b.dataset.s)))}
+ // ---- carved 3D structures: seen surfaces solid, hidden sides (sonar shadow, filled in) see-through
+ // two versions from tools/struct3d.py: All (_struct3d.bin) and Confirmed, heard on 2+ separate visits (_struct3d_conf.bin)
+ const load3d=async(file,showHidden)=>{const r=await fetch(R+S+file);if(!r.ok)return null;const b=await r.arrayBuffer(),[nv,nf]=new Int32Array(b,0,2);
+  const src=new Float32Array(b,8,nv*3),conf=new Float32Array(b,8+nv*24,nv),F=new Uint32Array(b,8+nv*28,nf*3);
+  const pos=new Float32Array(nv*3),col=new Float32Array(nv*3);
+  for(let i=0;i<nv;i++){pos[3*i]=src[3*i]-cx;pos[3*i+1]=src[3*i+2];pos[3*i+2]=-(src[3*i+1]-cy);col.set(purple(-src[3*i+2]),3*i)}
+  const seen=[],hid=[];for(let t=0;t<nf;t++){const a=F[3*t],b2=F[3*t+1],c=F[3*t+2];(!showHidden||Math.min(conf[a],conf[b2],conf[c])>0?seen:hid).push(a,b2,c)}
+  const geo=ix=>{const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('color',new THREE.BufferAttribute(col,3));g.setIndex(ix);g.computeVertexNormals();return g};
+  const gS=geo(seen),sm=o=>new THREE.MeshStandardMaterial(Object.assign({vertexColors:true,roughness:.85,metalness:0,side:THREE.DoubleSide},o));
+  const grp=new THREE.Group();
+  const cSmooth=new THREE.Mesh(gS,sm({})),cGrain=new THREE.Mesh(gS,sm({flatShading:true})),cFill=new THREE.Mesh(gS,sm({flatShading:true,transparent:true,opacity:.6})),
+   cWire=new THREE.Mesh(gS,new THREE.MeshBasicMaterial({color:0x5a2fb0,wireframe:true,transparent:true,opacity:.3}));
+  grp.add(cSmooth,cGrain,cFill,cWire);if(hid.length)grp.add(new THREE.Mesh(geo(hid),sm({transparent:true,opacity:.22,depthWrite:false})));
+  const parts={smooth:[cSmooth],grain:[cGrain],mesh:[cFill,cWire]},s3=v=>{for(const [m,arr] of Object.entries(parts))arr.forEach(o=>o.visible=m===v)};s3(window._surf||'mesh');
+  document.querySelectorAll('button[data-s]').forEach(bt=>bt.addEventListener('click',()=>s3(bt.dataset.s)));
+  grp.userData={nv,nf,seen:seen.length/3,hidden:hid.length/3};struct3d.add(grp);return grp};
+ const USE_3D=false; // 26 Nov: structures shown as dots only; set true to bring back the 3D option (tools/struct3d.py files)
+ if(USE_3D)try{const [gAll,gConf]=await Promise.all([load3d('_struct3d.bin',true),load3d('_struct3d_conf.bin',false)]);
+  if(gAll){window._has3dConf=!!gConf;
+   const cert=c=>{if(gConf){gConf.visible=c;gAll.visible=!c}document.getElementById('cConf').classList.toggle('on',c);document.getElementById('cAll').classList.toggle('on',!c)};
+   document.getElementById('cConf').onclick=()=>cert(true);document.getElementById('cAll').onclick=()=>cert(false);cert(!!gConf);
+   window._struct3d={all:gAll.userData,confirmed:gConf&&gConf.userData};document.getElementById('sh3d').style.display='';showAs('3d')}}catch(e){console.warn('3D structures',e)}
+ // depth under the mouse (from the seabed surface), throttled
+ const hud=document.getElementById('depthHud');let hudT=0;
+ r.domElement.addEventListener('pointermove',e=>{if(e.buttons)return;const now=performance.now();if(now-hudT<80)return;hudT=now;
+  mv.set(e.clientX/innerWidth*2-1,-e.clientY/innerHeight*2+1);ray.setFromCamera(mv,cam);const h=ray.intersectObject(bedSmooth);
+  if(h.length){const p=h[0].point;hud.style.display='block';hud.innerHTML=`Seabed here: <b>${(-p.y/world.scale.y).toFixed(2)} m</b> deep · (${(p.x+cx).toFixed(1)} E, ${(-p.z+cy).toFixed(1)} N)`}else hud.style.display='none'});
+ const hemi=new THREE.HemisphereLight(0xffffff,0x8a8d92,.62),sun=new THREE.DirectionalLight(0xffffff,.72);sun.position.set(-60,22,35);
+ scene.add(hemi,sun);
+ const grid2=new THREE.GridHelper(200,20,0xb9bbbe,0xd3d4d6);grid2.position.y=.12;grid2.material.transparent=true;grid2.material.depthWrite=false;grid2.renderOrder=6;grid2.visible=false;scene.add(grid2);
+ // alternative colours for clay mode
+ const objG=L.obj.geometry,objSon=objG.attributes.color.array.slice(),objClay=new Float32Array(objSon.length);
+ const OA=window._objAll;for(let i=0;i<objClay.length/3;i++)objClay.set(purple(-OA[3*i+2]),3*i);
+ let clay=false;
+ function setStyle(c){clay=c;document.body.classList.toggle('clay',c);
+  document.getElementById('stClay').classList.toggle('on',c);document.getElementById('stSonar').classList.toggle('on',!c);
+  scene.background=new THREE.Color(c?0xe9e8e4:0x0d1117);
+  const base=document.querySelector('input[name=base]:checked').value;bedMesh.visible=c&&base=='seabed';L.seabed.visible=!c&&base=='seabed';L.cloud.visible=!c&&base=='cloud';
+  const gOn=document.getElementById('g').checked;grid.visible=gOn&&!c;grid2.visible=gOn&&c;
+  objG.setAttribute('color',new THREE.BufferAttribute(objClay,3));
+  tmat.color.set(NODE_ACCENT);
+  rings.forEach(m=>{const o=m.userData;m.material.color.setRGB(...(o.note.includes('below')?[.53,.53,.53]:purple(+o.depth_m)))});
+  home.material.color.set(c?0x2b2e33:0xffffff)}
+ document.getElementById('stClay').onclick=()=>setStyle(true);document.getElementById('stSonar').onclick=()=>setStyle(false);
+ document.querySelectorAll('input[name=base]').forEach(el=>el.addEventListener('change',()=>{if(clay)setStyle(true)}));
+ document.getElementById('g').addEventListener('change',()=>setStyle(clay));
+ // ---- baseline: Reset applies BASE; "Copy my settings" captures the current state so it can become the new BASE
+ // Francisco's baseline (24 Nov 2026)
+ const BASE={style:'clay',surf:'mesh',base:'seabed',objects:false,structures:true,water:false,kmin:15,grid:true,sat:true,satOp:45,track:false,beam:false,boatTrueSize:false,ex:2,ps:0.75,slw:0.5,cam:{t:[-9.55,-0.78,1.61],c:[71.39,35.53,6.61]}};
+ // start (and reset) on an overview of Luderitz: the Kelp Blue pin in front, Shearwater Bay behind
+ window._overT=null;BASE.cam=(()=>{const P2=(e,n)=>[e-cx,-(n-cy)],[tx,tz]=P2(-1700,250),[qx,qz]=P2(2500,-1000);return{t:[tx,0,tz],c:[qx,1250,qz]}})();window._overT=BASE.cam.t;
+ const chk=(id,v)=>{const e=document.getElementById(id);if(e&&e.checked!==v)e.click()};
+ function applySettings(s){document.querySelector(`input[name=base][value=${s.base}]`).click();
+  chk('o',s.objects);chk('hl',s.structures);chk('k',s.water);set('#kmin',s.kmin,'input');chk('g',s.grid);chk('sat',!!s.sat);set('#satOp',s.satOp||45,'input');chk('t',s.track);chk('beam',s.beam);chk('bsize',s.boatTrueSize);
+  set('#ex',s.ex,'input');set('#ps',s.ps,'input');set('#slw',Math.round(s.slw*10),'input');
+  setSurf('mesh');window._surf='mesh';setStyle(s.style=='clay');{const [ft,fc]=fitView(s.cam.t,s.cam.c);camTo({t:ft,c:fc})}if(s.deploy)window._setDeploy(s.deploy.e,s.deploy.n,true);window._showAs()}
+ // run picker (runs.json lists the processed runs, newest first)
+ fetch('runs.json').then(r=>r.json()).then(list=>{if(!list.length)return;const sel=document.createElement('select');sel.style.marginTop='4px';
+  list.forEach(x=>{const o=document.createElement('option');o.value=x;o.textContent=x;if(x==S)o.selected=true;sel.appendChild(o)});
+  sel.onchange=()=>location.search='?run='+sel.value;document.getElementById('info').appendChild(sel)}).catch(()=>{});
+ // header from the run's report.json
+ fetch(R+'report.json').then(r=>r.json()).then(rep=>{const rc=rep.recordings[0],d=S.slice(0,10).split('-');
+  const mon=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][+d[1]-1];
+  document.getElementById('ttl').textContent=`ASKET sonar · ${+d[2]} ${mon} ${d[0]}`;document.title=`ASKET Sonar ${+d[2]} ${mon}`;
+  if(rep.combined){const C=rep.combined,M=['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],day=x=>+x.date.slice(8,10)+' '+M[+x.date.slice(5,7)];
+   document.getElementById('ttl').textContent='ASKET sonar · '+(rep.place||'Kelp Blue jetty')+('');
+   document.getElementById('sub').innerHTML=`${C.readings.length} surveys (${C.readings.slice().sort((a,b)=>a.date<b.date?-1:1).map(day).join(', ')}) · ${C.minutes} min<br>${Math.round(rc.track_m).toLocaleString()} m track · ${rc.points_total.toLocaleString()} points · ${rc.objects} objects`;placeLegend();return}
+  document.getElementById('sub').textContent=`${rc.utc[0].slice(0,5)} to ${rc.utc[1].slice(0,5)} UTC · ${Math.round(rc.track_m)} m track · ${rc.pings.toLocaleString()} pings`;placeLegend()}).catch(()=>{});
+ function currentSettings(){const r2=v=>+v.toFixed(2),q=id=>{const e=document.getElementById(id);return e?e.checked:null};
+  return{style:clay?'clay':'sonar',surf:window._surf,base:document.querySelector('input[name=base]:checked').value,objects:q('o'),structures:q('hl'),water:q('k'),
+   kmin:+document.getElementById('kmin').value,grid:q('g'),sat:q('sat'),satOp:+document.getElementById('satOp').value,track:q('t'),beam:q('beam'),boatTrueSize:q('bsize'),ex:+document.getElementById('ex').value,
+   ps:+document.getElementById('ps').value,slw:+document.getElementById('slw').value/10,cam:{t:ctr.target.toArray().map(r2),c:cam.position.toArray().map(r2)},deploy:window._getDeploy()}}
+ document.getElementById('reset').onclick=()=>{applySettings(BASE);window._focus='over'};
+ window._currentSettings=currentSettings; // console: copy(JSON.stringify(_currentSettings())) to update BASE
+ applySettings(BASE);window._focus='over';window._overCam=BASE.cam;
+ document.getElementById('load').remove();requestAnimationFrame(()=>requestAnimationFrame(()=>document.body.classList.add('ready'))); // fade in once the start view has rendered
+})().catch(e=>{document.getElementById('load').textContent='Could not load: '+e;document.body.classList.add('ready')});
+cam.position.set(0,60,70);ctr.target.set(0,-6,0);ctr.update();
+// ---- navigation: zoom to the spot under the mouse, double-click to fly there, stay above water unless asked
+ctr.enableDamping=true; // OrbitControls zoom stays on for touch pinch; the wheel is handled below
+ctr.dampingFactor=0.12;ctr.screenSpacePanning=false;
+const SURF_Y=1.2;let under=false;
+// what is under the mouse: seabed, then satellite sheets, then the water surface, then the plane through the orbit target
+function spotAt(x,y){const m=new THREE.Vector2(x/innerWidth*2-1,-y/innerHeight*2+1),rc=new THREE.Raycaster();rc.setFromCamera(m,cam);
+ if(window._bedPick){const h=rc.intersectObject(window._bedPick);if(h.length)return h[0].point}
+ const sp=(window._satPlanes||[]).filter(o=>o.visible);if(sp.length){const h=rc.intersectObjects(sp);if(h.length)return h[0].point}
+ const p=new THREE.Vector3();if(rc.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0,1,0),0),p)&&p.distanceTo(cam.position)<cam.far)return p;
+ const dir=new THREE.Vector3();cam.getWorldDirection(dir);return rc.ray.intersectPlane(new THREE.Plane().setFromNormalAndCoplanarPoint(dir,ctr.target),p)?p:null}
+const keepAbove=()=>{}; // no blocker: rotate or zoom under the surface freely (25 Nov)
+ctr.addEventListener('change',keepAbove);
+// smooth wheel / trackpad zoom: queue the amount, ease it in over a few frames
+let zq=0,zp=null;
+let pivot=null,pivotT=0;
+addEventListener('wheel',e=>{if(e.target!==r.domElement)return;e.preventDefault();e.stopPropagation();
+ // free map everywhere (28 Nov review); was: overview locked. you travel with the buttons, not by zooming
+ // trackpad two-finger swipe (not pinch, not a mouse wheel) close in: rotate around the spot under the fingers
+ const pad=!e.ctrlKey&&((e.wheelDeltaY?e.wheelDeltaY===-3*e.deltaY:e.deltaMode===0&&!Number.isInteger(e.deltaY))||e.deltaX!==0);
+ // two-finger swipe: sideways moves the map along the ground (forward/back falls through to zoom below)
+ const ax=Math.abs(e.deltaX),ay=Math.abs(e.deltaY);
+ if(pad&&e.deltaX&&ax*2>ay){const right=new THREE.Vector3().setFromMatrixColumn(cam.matrix,0);right.y=0;right.normalize();
+  const m=e.deltaX*cam.position.distanceTo(ctr.target)*2*Math.tan(cam.fov*Math.PI/360)/innerHeight;
+  cam.position.addScaledVector(right,m);ctr.target.addScaledVector(right,m);ctr.update();clearTimeout(window._rcT);window._rcT=setTimeout(recenter,300);if(ax>ay*2)return} // mostly sideways: move only
+ let d=e.deltaY*(e.deltaMode===1?16:e.deltaMode===2?400:1);d=Math.max(-120,Math.min(120,d));
+ const k=e.ctrlKey?0.012:0.0022; // ctrlKey = trackpad pinch
+ const p=spotAt(e.clientX,e.clientY);if(!p)return;zp=p.clone();zq+=d*k},{passive:false,capture:true}); // window capture runs before OrbitControls' own wheel zoom
+// rotate camera and orbit target together around a point (yaw about the vertical, pitch about the camera's right axis)
+const _q=new THREE.Quaternion(),_ax=new THREE.Vector3(),_up=new THREE.Vector3(0,1,0);
+function orbitAround(p,yaw,pitch){
+ const c=cam.position.clone().sub(p),t=ctr.target.clone().sub(p);
+ _q.setFromAxisAngle(_up,yaw);c.applyQuaternion(_q);t.applyQuaternion(_q);
+ _ax.subVectors(t,c).cross(_up).normalize();
+ if(_ax.lengthSq()>0){const c2=c.clone().applyQuaternion(_q.setFromAxisAngle(_ax,pitch)),t2=t.clone().applyQuaternion(_q);
+  const v=t2.clone().sub(c2).normalize(),polar=Math.acos(Math.max(-1,Math.min(1,-v.y)));if(polar>0.02&&polar<Math.min(Math.PI-0.02,ctr.maxPolarAngle)){c.copy(c2);t.copy(t2)}}
+ cam.position.copy(c.add(p));ctr.target.copy(t.add(p));ctr.update()}
+function zoomStep(){if(!zp)return;if(Math.abs(zq)<1e-4){zq=0;zp=null;recenter();return}
+ const step=zq*0.28;zq-=step;let f=Math.exp(step);
+ if(f<1&&cam.position.distanceTo(zp)*f<0.6)f=Math.min(1,0.6/cam.position.distanceTo(zp)); // never fly through the spot
+ if(f>1&&window._overT&&cam.position.distanceTo(ctr.target)>1500){const k=Math.min(.15,(f-1)*2.5),dx=(window._overT[0]-ctr.target.x)*k,dz=(window._overT[2]-ctr.target.z)*k;cam.position.x+=dx;cam.position.z+=dz;ctr.target.x+=dx;ctr.target.z+=dz}
+ if(f>1&&cam.position.distanceTo(ctr.target)*f>9000)f=1; // drift keeps working at the zoom-out limit
+ {const F=window._focusInfo&&window._focusInfo();if(F&&F.k!=='over'&&f>1&&cam.position.distanceTo(ctr.target)*f>F.max)f=Math.max(1,F.max/cam.position.distanceTo(ctr.target))} // never further out than the view the button took you to
+ cam.position.sub(zp).multiplyScalar(f).add(zp);ctr.target.sub(zp).multiplyScalar(f).add(zp);
+ ctr.update()}
+// glide the camera somewhere (used by double-click and the underwater button)
+function glide(t1,c1,ms=900){const t0=ctr.target.clone(),c0=cam.position.clone(),st=performance.now();
+ const step=now=>{let u=Math.min(1,(now-st)/ms);u=1-Math.pow(1-u,3);ctr.target.lerpVectors(t0,t1,u);cam.position.lerpVectors(c0,c1,u);ctr.update();if(u<1)requestAnimationFrame(step)};requestAnimationFrame(step)}
+// small 3D icons for the cards (slowly turning): the object globe, and the ASKET hull in the viewer's colours
+{const cv=document.createElement('canvas'),PX=Math.round(30*Math.min(devicePixelRatio||1,2));cv.style.width=cv.style.height='30px';
+ const R2=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true});R2.setPixelRatio(1);R2.setSize(PX,PX,false);
+ const S2=new THREE.Scene(),C2=new THREE.PerspectiveCamera(28,1,.01,100);C2.position.set(0,2.4,3.9);C2.lookAt(0,0,0);
+ S2.add(new THREE.AmbientLight(0xffffff,.3));const dl=new THREE.DirectionalLight(0xffffff,1.1);dl.position.set(3,3,1);S2.add(dl);
+ const globe=new THREE.Group(),gm=new THREE.LineBasicMaterial({color:0x8a4dff}),ring=(r,y)=>{const pts=[];for(let i=0;i<=64;i++){const a=i/64*Math.PI*2;pts.push(new THREE.Vector3(Math.cos(a)*r,y,Math.sin(a)*r))}return new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),gm)};
+ for(let i=0;i<4;i++){const m=ring(.75,0);m.rotation.z=Math.PI/2;m.rotation.y=i*Math.PI/4;const g=new THREE.Group();g.add(m);g.rotation.y=i*Math.PI/4;globe.add(g)} // meridians
+ [-.45,0,.45].forEach(y=>globe.add(ring(Math.sqrt(.75*.75-y*y),y))); // latitude rings
+ const hull=new THREE.Group();
+ new THREE.OBJLoader().load('asket_hull.obj',o=>{o.traverse(c=>{if(c.isMesh)c.material=new THREE.MeshStandardMaterial({color:0xf2f2ef,roughness:.6,metalness:.05})});o.rotation.x=-Math.PI/2;
+  const g=new THREE.Group();g.add(o);const m=o.children[0];if(m){const e=new THREE.LineSegments(new THREE.EdgesGeometry(m.geometry,30),new THREE.LineBasicMaterial({color:0xc8e63c}));e.rotation.x=-Math.PI/2;g.add(e)}
+  const b=new THREE.Box3().setFromObject(g),c=b.getCenter(new THREE.Vector3()),sz=b.getSize(new THREE.Vector3()),k=2.3/Math.max(sz.x,sz.y,sz.z);
+  g.position.sub(c);hull.add(g);hull.scale.setScalar(k)});
+ let raf=0;const loop=()=>{if(!cv.isConnected){raf=0;return}raf=requestAnimationFrame(loop);const t=performance.now()/1000;globe.rotation.y=t*.45;hull.rotation.y=t*.45;R2.render(S2,C2)};
+ window._icon3d=k=>{S2.remove(globe,hull);S2.add(k==='globe'?globe:hull);if(!raf)requestAnimationFrame(()=>{if(!raf)loop()});return cv}}
+// guided areas: each button or pin sets an area; you can orbit and zoom there, panning stays inside it,
+// and zooming out past its limit glides back to the overview
+{const FOCUS={over:{r:4500,max:9000},run:{r:70,max:260},bay:{r:900,max:3600}};
+ const far=(t,c)=>{const [a,b]=fitView(t,c);return Math.hypot(b[0]-a[0],b[1]-a[1],b[2]-a[2])*1.02};
+ const maxFor=k=>k==='run'?2.5*far((window._RV||{t:[-9.55,-0.78,1.61]}).t,(window._RV||{c:[71.39,35.53,6.61]}).c):k==='bay'&&window._bayXZ?far([window._bayXZ[0],0,window._bayXZ[1]+250],[window._bayXZ[0]+150,1500,window._bayXZ[1]+1650]):FOCUS[k].max;
+ const centre=k=>k==='run'?[-9.55,1.61]:k==='bay'?window._bayXZ:window._overT&&[window._overT[0],window._overT[2]];
+ window._focusInfo=()=>{const k=window._focus;return k&&FOCUS[k]?{k,c:centre(k),...FOCUS[k],max:maxFor(k)}:null};
+ window._focusTick=()=>{return;const ov=window._focus==='over';ctr.enableZoom=!ov;ctr.enablePan=!ov;
+  if(ov){ctr.mouseButtons={LEFT:THREE.MOUSE.ROTATE,MIDDLE:THREE.MOUSE.ROTATE,RIGHT:THREE.MOUSE.ROTATE};ctr.touches={ONE:THREE.TOUCH.ROTATE,TWO:THREE.TOUCH.ROTATE};window._wasOver=true}
+  else if(window._wasOver){window._wasOver=false;applyButtons()} // back to the normal orbit / zoom gestures in an area
+  const f=window._focusInfo();if(!f||!f.c||performance.now()<(window._focusHold||0))return;
+  const dx=ctr.target.x-f.c[0],dz=ctr.target.z-f.c[1],d=Math.hypot(dx,dz);if(d>f.r){const k=(d-f.r)/d;ctr.target.x-=dx*k;ctr.target.z-=dz*k;cam.position.x-=dx*k;cam.position.z-=dz*k}
+  const v=cam.position.clone().sub(ctr.target),L=v.length();
+  if(L>f.max*1.001){ // pinching or dragging out past the limit (touch goes through the controls, not the wheel)
+   cam.position.copy(ctr.target).add(v.multiplyScalar(f.max/L))}};
+ window._goOverview=()=>{const o=window._overCam;if(!o)return;window._resetBay&&window._resetBay();window._ctxOverride=null;window._focus='over';window._focusHold=performance.now()+2000;
+  const [t,c]=fitView(o.t,o.c);glide(new THREE.Vector3(...t),new THREE.Vector3(...c),1900)}}
+// bottom bar: three views of the run plus the flight to Shearwater Bay; each opens its explanation in the card
+{const RUN_VIEW={t:[-9.55,-0.78,1.61],c:[71.39,35.53,6.61]},V=(a)=>new THREE.Vector3(...a);
+ window._RUNV=RUN_VIEW;const toRun=(force)=>{window._focus='run';if(force||cam.position.y>250){window._focusHold=performance.now()+1900;window._setUnder&&window._setUnder(false,true);const [t,c]=fitView((window._RV||RUN_VIEW).t,(window._RV||RUN_VIEW).c);glide(V(t),V(c),1800);return true}return false};window._toRun=toRun;
+ const btn=k=>document.querySelector(`#bar [data-b="${k}"]`),chk=(id,v)=>{const e=document.getElementById(id);if(e.checked!==v)e.click()};
+ const hud=document.getElementById('routeHud'),play=document.getElementById('play'),scrub=document.getElementById('scrub'),sv=document.getElementById('scrubv');
+ const isPlaying=()=>play.textContent!=='▶';
+ const TOG=['route','seabed','objects','dense'],offOthers=k=>TOG.forEach(o=>{if(o!==k&&btn(o).classList.contains('on'))btn(o).click()}); // one button at a time
+ const set=(k,on)=>{if(on)offOthers(k);btn(k).classList.toggle('on',on);if(on)window._ctxOverride=k;else if(window._ctxOverride===k)window._ctxOverride=null};
+ btn('route').onclick=()=>{const on=!btn('route').classList.contains('on');set('route',on);chk('t',on);hud.style.display='none';document.body.classList.toggle('routeOn',on);window._routeProgress&&window._routeProgress(on?0:1e9);
+  if(on){const flew=toRun();scrub.value=0;scrub.dispatchEvent(new Event('input'));setTimeout(()=>{if(!isPlaying()&&btn('route').classList.contains('on'))play.click()},flew?1900:100)}else if(isPlaying())play.click()};
+ btn('dense').onclick=()=>{const on=!btn('dense').classList.contains('on');set('dense',on);chk('k',on);if(on)toRun()};
+ btn('objects').onclick=()=>{const on=!btn('objects').classList.contains('on');set('objects',on);chk('o',on);if(on)toRun()};
+ window._syncBayBtn=()=>{const back=/back/i.test(document.getElementById('bBay').textContent);btn('bay').querySelector('.lg').textContent=back?'Back to the run':'Fly to Shearwater Bay';btn('bay').querySelector('.sm').textContent=back?'Back':'Shearwater'};
+ btn('bay').onclick=()=>{offOthers(null);document.getElementById('bBay').click()}; // the route replay belongs to the run, not the bay
+ // Overview: back to the start view from anywhere (stops the route, clears the explanation)
+ const HB=document.getElementById('homeBtn');HB.onclick=()=>{offOthers(null);window._goOverview&&window._goOverview()};
+ const placeHB=()=>{const b=document.getElementById('brand').getBoundingClientRect();HB.style.left=(b.right+8)+'px';HB.style.top=b.top+'px';HB.style.height=b.height+'px';HB.style.width=b.height+'px'};placeHB();addEventListener('resize',placeHB);setTimeout(placeHB,800);
+ setInterval(()=>HB.classList.toggle('here',window._focus==='over'),300);
+ btn('seabed').onclick=()=>{const on=!btn('seabed').classList.contains('on');set('seabed',on);chk('hl',!on);if(on)toRun()};
+ // floating label on the layer the active button explains
+ {const tag=document.getElementById('tag'),TXT={seabed:'Seabed',objects:'Object',dense:'Less dense points'},P={},tmp=new THREE.Vector3();
+  const nearest=(pos,obj,T)=>{let best=null,bd=1e9;for(let i=0;i<pos.length;i+=3){tmp.set(pos[i],pos[i+1],pos[i+2]);obj.localToWorld(tmp);const d=(tmp.x-T.x)**2+(tmp.z-T.z)**2;if(d<bd){bd=d;best=tmp.clone()}}return best};
+  const where=k=>{if(P[k])return P[k];const T=V(RUN_VIEW.t);
+   if(k==='seabed')P[k]=T.clone();
+   else if(k==='objects'&&window._og){let best=null,bd=1e9;window._og.traverse(o=>{if(!o.isMesh&&!o.isLineSegments)return;o.getWorldPosition(tmp);const d=(tmp.x-T.x)**2+(tmp.z-T.z)**2;if(d<bd){bd=d;best=tmp.clone()}});P[k]=best}
+   else if(k==='dense'&&window._kelpL)P[k]=nearest(window._kelpL.geometry.attributes.position.array,window._kelpL,T);
+   return P[k]};
+  const tick=()=>{requestAnimationFrame(tick);const k=TOG.find(o=>o!=='route'&&btn(o).classList.contains('on'));const w=k&&where(k);
+   if(!w||window._focus!=='run'){tag.style.display='none';return}tmp.copy(w).project(cam);
+   if(tmp.z>1||Math.abs(tmp.x)>1||Math.abs(tmp.y)>1){tag.style.display='none';return}
+   tag.textContent=TXT[k];tag.style.left=((tmp.x+1)/2*innerWidth)+'px';tag.style.top=((1-tmp.y)/2*innerHeight-14)+'px';tag.style.display='block'};tick()}
+ document.getElementById('helpBtn').onclick=()=>document.getElementById('bHelp').click();
+ setInterval(()=>{const el=document.getElementById('ctxLive');if(!el||!btn('route').classList.contains('on'))return;const t=sv.textContent.split(' · ');el.textContent=(t[0]||'').replace(/ \(.*?\)/,'')+' · '+(t[1]||'')},150) /* live speed and time in the route card */}
+function dblFly(X,Y){if(window._focus==='over')return;const p=spotAt(X,Y);if(!p)return;
+ {const F=window._focusInfo&&window._focusInfo();if(F&&F.c&&F.k!=='over'){const dx=p.x-F.c[0],dz=p.z-F.c[1],d=Math.hypot(dx,dz);if(d>F.r){p.x=F.c[0]+dx/d*F.r;p.z=F.c[1]+dz/d*F.r}}}
+ const B=window._bayXZ;if(B&&Math.hypot(p.x-B[0],p.z-B[1])<1500)p.set(B[0],0,B[1]); // near Shearwater Bay: go to the farm itself, the only spot with data there
+ const off=cam.position.clone().sub(ctr.target),d=off.length(),nd=Math.max(6,d*0.45);off.multiplyScalar(nd/d);
+ const c=p.clone().add(off);glide(p.clone(),c)}
+r.domElement.addEventListener('dblclick',e=>dblFly(e.clientX,e.clientY));
+{let down=null,lastTap=null;const rc=new THREE.Raycaster(),m2=new THREE.Vector2();
+ r.domElement.addEventListener('pointerdown',e=>{down={x:e.clientX,y:e.clientY,t:performance.now()}});
+ r.domElement.addEventListener('pointerup',e=>{if(!down)return;const moved=Math.hypot(e.clientX-down.x,e.clientY-down.y),quick=performance.now()-down.t<350;down=null;if(moved>8||!quick)return;
+  // a tap or click on a pin flies there
+  const pl=window._places;if(pl&&pl.visible){m2.set(e.clientX/innerWidth*2-1,-e.clientY/innerHeight*2+1);rc.setFromCamera(m2,cam);
+   const h=rc.intersectObjects(pl.children.filter(o=>/Shearwater|Kelp Blue/.test(o.userData.name||'')&&o.material.opacity>.3));
+   if(h.length){lastTap=null;/Shearwater/.test(h[0].object.userData.name)?window._bayGo():window._kelpGo();return}}
+  // double-tap on a touch screen = double-click
+  if(e.pointerType==='touch'){const now=performance.now();if(lastTap&&now-lastTap.t<330&&Math.hypot(e.clientX-lastTap.x,e.clientY-lastTap.y)<30){lastTap=null;dblFly(e.clientX,e.clientY)}else lastTap={x:e.clientX,y:e.clientY,t:now}}})}
+// above water / underwater
+const bU=document.getElementById('bUnder')||{}; // button removed 25 Nov (zoom/rotate under freely)
+window._setUnder=(v,quiet)=>{under=v;bU.textContent=v?'Back above water':'Look underwater';
+ if(!quiet){const t=ctr.target.clone(),h=new THREE.Vector3(cam.position.x-t.x,0,cam.position.z-t.z),hd=Math.max(12,Math.min(80,h.length()));
+  if(h.length()<1e-3)h.set(0,0,1);h.normalize();
+  if(v){const ud=Math.max(10,Math.min(30,hd));t.y=Math.min(t.y,-5);glide(t,new THREE.Vector3(t.x+h.x*ud,-0.8,t.z+h.z*ud),1100)}
+  else glide(t,new THREE.Vector3(t.x+h.x*hd,Math.max(18,hd*0.8),t.z+h.z*hd),1100)}};
+window._setUnder(false,true);
+// height-aware controls: the pivot is always the spot in the middle of the screen; high up (satellite scale)
+// orbit style slides the map on drag, tilt is limited so the ground stays in view, rotation slows a little
+let style='orbit',high=false,dragging=false;
+function applyButtons(){const pan=style==='map'||high;
+ ctr.mouseButtons=pan?{LEFT:THREE.MOUSE.PAN,MIDDLE:THREE.MOUSE.DOLLY,RIGHT:THREE.MOUSE.ROTATE}:{LEFT:THREE.MOUSE.ROTATE,MIDDLE:THREE.MOUSE.DOLLY,RIGHT:THREE.MOUSE.ROTATE}; // two-finger press rotates, Shift+drag moves
+ ctr.touches=pan?{ONE:THREE.TOUCH.PAN,TWO:THREE.TOUCH.DOLLY_ROTATE}:{ONE:THREE.TOUCH.ROTATE,TWO:THREE.TOUCH.DOLLY_PAN}}
+function adapt(){const d=cam.position.distanceTo(ctr.target);
+ const h=high?d>220:d>320;if(h!==high&&!dragging){high=h;applyButtons()}
+ const k=Math.min(1,Math.max(0,Math.log(d/120)/Math.log(1500/120)));
+ ctr.maxPolarAngle=Math.PI*(1-0.645*k);ctr.rotateSpeed=1-0.35*k; // free close in, limited tilt only at satellite height
+ const u=cam.position.y<0;if(u!==under){under=u;bU.textContent=u?'Back above water':'Look underwater'}}
+function recenter(){if(dragging)return;const p=spotAt(innerWidth/2,innerHeight/2);if(!p)return;const d=p.distanceTo(cam.position);if(d<0.5||d>20000)return;ctr.target.copy(p);ctr.update()}
+ctr.addEventListener('start',()=>{dragging=true});
+ctr.addEventListener('end',()=>{dragging=false;setTimeout(recenter,450)}); // after the glide of the drag settles
+// mouse styles: Map (drag moves the map, right-drag rotates) or Orbit (drag rotates, right-drag moves the map)
+const help=document.getElementById('help');
+function mouseStyle(m){
+ style=m;applyButtons();
+ if(m==='map'){
+  help.textContent='Drag to move · right-drag (or Shift+drag) to rotate · scroll or pinch to zoom where the mouse is (zoom into the seabed to go underwater) · double-click to fly there'}
+ else{
+  help.textContent='Drag or two-finger press-and-swipe to rotate (high up, drag slides the map) · two-finger swipe sideways or Shift+drag to move · swipe forward/back, scroll or pinch to zoom where the mouse is (zoom into the seabed to go underwater) · double-click to fly there'}
+}
+mouseStyle('orbit'); // the curated controls (25 Nov); Map style kept in code only
+function placeLegend(){const i=document.getElementById('info').getBoundingClientRect(),l=document.getElementById('legend');if(i.height)l.style.top=Math.round(i.bottom+8)+'px'}
+function rs(){placeLegend();r.setSize(innerWidth,innerHeight);cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix();if(window._tmat)window._tmat.resolution.set(innerWidth,innerHeight)}addEventListener('resize',rs);rs();
+const needle=document.getElementById('needle');
+function stack(){const i=document.getElementById('info').getBoundingClientRect(),c=document.getElementById('ctl'),t=Math.round(i.bottom+10);
+ c.style.top=t+'px';c.style.maxHeight=(innerHeight-t-12)+'px'}
+new ResizeObserver(stack).observe(document.getElementById('info'));addEventListener('resize',stack);stack();
+(function loop(){requestAnimationFrame(loop);if(window.frameElement&&window.frameElement.classList.contains('off')&&!(Date.now()>(window._flyFrom||0)&&Date.now()<(window._flyUntil||0)))return;zoomStep();adapt();ctr.update();if(window._placesTick)window._placesTick();if(window._satTick)window._satTick();if(window._ctxTick)window._ctxTick();if(window._revealTick)window._revealTick();if(window._focusTick)window._focusTick();needle.style.transform=`rotate(${ctr.getAzimuthalAngle()*180/Math.PI}deg)`;r.render(scene,cam)})();
+</script><script>// on the NODE website: back link, clay model only (no sonar-colours option)
+if(location.pathname.startsWith('/missions/')){document.getElementById('brand').href='/';document.getElementById('styleRow').style.display='none'}</script>
+<!-- Experience UI (28 Nov): missions breadcrumb, one explanation column with layer toggles and scales, replay timeline, Analytics placeholder. Injected into index.html by tools/apply_xp.py -->
+<style>
+#bar,#ctx,#legend,#info,#homeBtn,#helpBtn,#tut,#tag,#routeHud,#xpMode,#compass{display:none!important}
+#brand{background:transparent!important;box-shadow:none!important;backdrop-filter:none!important;padding:6px 4px!important;color:#151515;transition:color .2s}
+#brand:hover{color:#e1ff4f}
+#xpMis{box-shadow:none;background:rgba(0,0,0,.05);flex-wrap:nowrap;margin:0 0 14px;width:max-content;max-width:100%}#xpMis #xpClose{display:none!important}#xpMis button{padding:7px 9px;font-size:13px}
+#xpImg{display:none;margin:0 0 14px;border-radius:12px;overflow:hidden}#xpImg img{width:100%;display:block}
+#xpCol{padding-bottom:0}
+#xpMore{position:sticky;bottom:0;margin:0 -20px;padding:28px 20px 12px;background:linear-gradient(rgba(250,250,248,0),rgba(250,250,248,.97) 55%);text-align:center;font:600 12px 'JetBrains Mono',monospace;letter-spacing:.05em;text-transform:uppercase;color:#151515;cursor:pointer}
+#xpMore.gone{visibility:hidden}
+button:focus,input:focus,button:focus-visible,input:focus-visible,.xpPill button,.xpPill button.on{outline:none!important;-webkit-tap-highlight-color:transparent}
+.xpPill button.on{box-shadow:none!important;border:0!important}
+#depthHud{bottom:24px!important;right:14px!important}
+#xpBR{position:fixed;right:14px;bottom:62px;z-index:15;display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+body:not(.ready) #xpBR{opacity:0}
+#xpGlobe{width:46px;height:46px;cursor:pointer}
+#xpBase{position:relative}
+#xpBaseBtn{border:0;border-radius:10px;background:rgba(250,250,248,.94);box-shadow:0 2px 10px rgba(0,0,0,.12);font:600 12.5px 'Inter Tight',Inter,sans-serif;padding:7px 11px;cursor:pointer;color:#151515}
+#xpBaseMenu{display:none;position:absolute;right:0;bottom:38px;background:rgba(250,250,248,.97);box-shadow:0 4px 18px rgba(0,0,0,.15);border-radius:12px;padding:10px 12px;font:500 13.5px 'Inter Tight',Inter,sans-serif;white-space:nowrap}
+#xpBase.open #xpBaseMenu{display:block}#xpBaseMenu .op{display:flex;gap:8px;align-items:center;margin:0 0 8px 24px;font:500 11.5px 'JetBrains Mono',monospace;color:#6b7078}#xpBaseMenu .op input{width:110px;accent-color:#151515}#xpBaseMenu .op.dis{opacity:.45}#xpBaseMenu label{display:flex;gap:8px;align-items:center;padding:4px 0}#xpBaseMenu .dis{opacity:.45}
+#satCredit{left:auto!important;right:14px!important;bottom:2px!important;text-align:right}
+#xpTop{position:fixed;top:12px;left:12px;right:12px;display:flex;gap:8px;align-items:center;z-index:16;pointer-events:none}
+#xpTop>*{pointer-events:auto}
+#brand{position:static!important}
+.xpPill{display:flex;gap:2px;padding:4px;border-radius:12px;background:rgba(250,250,248,.94);box-shadow:0 2px 10px rgba(0,0,0,.12)}
+.xpPill button{border:0;background:transparent;border-radius:9px;padding:8px 12px;font:600 13.5px 'Inter Tight',Inter,sans-serif;color:#151515;cursor:pointer;white-space:nowrap}
+.xpPill button:hover{background:rgba(0,0,0,.06)}
+.xpPill button.on{background:#151515;color:#e1ff4f}
+#xpMis:not(.open) [data-m],#xpMis:not(.open) .sep,#xpMis:not(.open) #xpClose{display:none}#xpMis.open #xpOpen{display:none}
+#xpClose{color:#6b7078!important}
+.xpPill .sep{align-self:center;color:#9a9a9a;font:600 13px 'Inter Tight',Inter,sans-serif;padding:0 2px}
+#xpMode{margin-left:auto}
+#xpCol{position:fixed;top:72px;left:12px;max-height:calc(100vh - 84px);width:380px;max-width:calc(100% - 24px);box-sizing:border-box;overflow-y:auto;z-index:15;background:rgba(250,250,248,.95);color:#151515;border-radius:16px;box-shadow:0 4px 22px rgba(0,0,0,.14);padding:20px 20px 16px;font:400 15.5px/1.5 'Inter Tight',Inter,sans-serif;transition:opacity .4s}
+body:not(.ready) #xpCol,body:not(.ready) #xpTop{opacity:0;pointer-events:none}
+#xpCol .k{font:600 12px 'JetBrains Mono',monospace;letter-spacing:.04em;text-transform:uppercase;color:#6b7078}
+#xpCol h2{font:700 24px/1.15 'Inter Tight',Inter,sans-serif;margin:6px 0 4px}
+#xpCol .st{font:500 12.5px 'JetBrains Mono',monospace;color:#6b7078;margin-bottom:12px}
+#xpCol p{margin:0 0 10px}
+#xpCol .sec{font:700 12px 'JetBrains Mono',monospace;letter-spacing:.06em;text-transform:uppercase;margin:18px 0 8px;padding-top:14px;border-top:1px solid rgba(0,0,0,.09)}
+.xpL{display:grid;grid-template-columns:22px 1fr;gap:2px 8px;padding:8px 0;cursor:pointer}
+.xpL input{margin:3px 0 0;width:16px;height:16px;accent-color:#151515;cursor:pointer}
+.xpL b{font-weight:650}.xpL .d{grid-column:2;font-size:13.5px;color:#4b4f55;line-height:1.4}
+.xpL .sc{grid-column:2;height:8px;border-radius:4px;margin-top:6px}
+.xpL .sl{grid-column:2;display:flex;justify-content:space-between;font:500 11px 'JetBrains Mono',monospace;color:#6b7078}
+.sw{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+#xpRep{display:flex;gap:8px;align-items:center}
+.xpSeg{display:inline-flex;background:rgba(0,0,0,.06);border-radius:8px;padding:2px}.xpSeg button{border:0;background:transparent;border-radius:6px;padding:4px 9px;font:600 11.5px 'Inter Tight',Inter,sans-serif;cursor:pointer;color:#151515}.xpSeg button.on{background:#151515;color:#e1ff4f}
+#xpRep button{border:0;border-radius:10px;background:#151515;color:#e1ff4f;font:600 13px 'Inter Tight',Inter,sans-serif;padding:8px 12px;cursor:pointer;white-space:nowrap}
+#xpRep button.ghost{background:rgba(0,0,0,.07);color:#151515}
+#xpT{flex:1;accent-color:#151515}
+#xpTime{font:500 12px 'JetBrains Mono',monospace;color:#6b7078;margin-top:6px;min-height:16px}
+#xpAna{position:fixed;inset:0;z-index:40;background:#e9e8e4;display:none;align-items:center;justify-content:center;flex-direction:column;gap:18px;text-align:center;font:400 16px 'Inter Tight',Inter,sans-serif;color:#151515;padding:24px}
+#xpAna.on{display:flex}
+body.ana #xpTop{z-index:45}body.ana #xpMis{visibility:hidden}
+#xpAna svg{width:min(260px,60vw);height:auto}
+#xpAna .uc{font:700 13px 'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase;background:#151515;color:#e1ff4f;padding:8px 14px;border-radius:10px}
+#xpAna button{border:0;border-radius:10px;background:rgba(0,0,0,.08);font:600 14px 'Inter Tight',Inter,sans-serif;padding:10px 16px;cursor:pointer}
+@media (max-width:700px){
+ #xpTop{flex-wrap:wrap;gap:6px}#xpMode{margin-left:0}
+ .xpPill button{padding:7px 9px;font-size:12.5px}
+ #xpCol{top:auto;bottom:8px;left:8px;right:8px;width:auto;max-height:46vh;padding:14px 16px;font-size:14.5px}
+ #xpCol h2{font-size:20px}
+}
+</style>
+<div id="xpTop">
+ <div class="xpPill" id="xpMis"><button id="xpOpen" class="on">Explore missions →</button><button data-m="over">Namibia 2026</button><span class="sep">›</span><button data-m="jetty">Kelp Blue jetty</button><button data-m="bay">Shearwater Bay</button><button id="xpClose" title="Collapse">‹</button></div>
+ <div class="xpPill" id="xpMode"><button class="on" data-x="exp">Experience</button><button data-x="ana">Analytics</button></div>
+</div>
+<div id="xpCol">
+ <div id="xpNav"></div><div id="xpImg"></div>
+ <div class="k" id="xpK"></div><h2 id="xpH"></h2><div class="st" id="xpSt"></div><div id="xpB"></div>
+ <div id="xpRepW"><div class="sec">Mission replay</div>
+  <div id="xpRep"><button id="xpPlay">▶ Play</button><input id="xpT" type="range" min="0" max="100" value="0"><button class="ghost" id="xpEnd" title="Jump to the end">End</button></div>
+  <div id="xpTime"></div></div>
+ <div id="xpLayW"><div class="sec">Sonar layers</div><div id="xpLay"></div></div>
+ <div id="xpMore">↓ Sonar layers</div>
+</div>
+<div id="xpBR"><svg id="xpGlobe" viewBox="-25 -25 50 50"><circle r="21" fill="rgba(250,250,248,.55)" stroke="#151515" stroke-width="1.6"/><ellipse id="gEq" rx="21" ry="21" fill="none" stroke="#151515" stroke-width="1.1" opacity=".55"/><ellipse id="gMer" rx="8" ry="21" fill="none" stroke="#151515" stroke-width="1.1" opacity=".55"/><circle id="gN" r="3.2" fill="#e1ff4f" stroke="#151515" stroke-width="1.2"/><text id="gNt" font-size="7" font-weight="700" text-anchor="middle" fill="#151515" font-family="Inter Tight,Inter,sans-serif">N</text></svg>
+<div id="xpBase"><div id="xpBaseMenu"><label><input type="checkbox" id="xpSat" checked> Satellite</label><div class="op"><span>opacity</span><input type="range" id="xpSatOp" min="0" max="150" value="100"><span id="xpSatOpv">100 %</span></div><label class="dis"><input type="checkbox" disabled> Drone imagery (soon)</label><div class="op dis"><span>opacity</span><input type="range" disabled min="0" max="100" value="100"><span>100 %</span></div></div><button id="xpBaseBtn">Base map</button></div></div>
+<div id="xpAna"><div id="xpAnaLogo"></div><div class="uc">Analytics · under construction</div>
+ <div style="max-width:420px;color:#4b4f55">Free tools to explore and analyse the sonar data are on their way.</div></div>
+<script>
+(()=>{
+const $=id=>document.getElementById(id),q=new URLSearchParams(location.search);
+const RUNS={jetty:'2026-11-27-jetty-combined',bay:'2026-11-28-shearwater'};
+const S=q.get('run')||RUNS.jetty,HERE=S===RUNS.bay?'bay':'jetty';
+const chk=(id,v)=>{const e=$(id);if(e&&e.checked!==v)e.click()};
+const TXT={
+ over:{k:'Namibia 2026',h:'ASKET in Lüderitz',b:['NODE took ASKET, our autonomous survey boat, to Lüderitz to map the seabed and Kelp Blue\'s kelp farm with sonar.','Pick a mission at the top: the Kelp Blue jetty, where we tested the system, or Shearwater Bay, where the kelp farm is. You can move the map freely at any time.']},
+ jetty:{k:'Two surveys · 24 & 27 Nov 2026',h:'Kelp Blue jetty',b:['ASKET launched from the slipway by the Kelp Blue office: a 10-minute first test on 24 November and a 34-minute survey on 27 November, criss-crossing the bay to map the seabed from different directions.','The bay is 1.5 to 4 m deep. The sonar picked up the pier columns, the rocks around the bay and softer echoes on them that are probably algae. Press Play to watch the mission, or switch the layers below.']},
+ bay:{k:'Kelp farm survey · 28 Nov 2026',h:'Shearwater Bay',b:['Kelp Blue grows giant kelp offshore here, about 6 km west of Lüderitz. ASKET surveyed part of the farm for 17 minutes.','ASKET mapped about 9,500 m² of seabed here: flat, about 11 m deep.','We are still cleaning this data to remove the echoes between the netting and the seabed, so the structures shown here are a first look. The next step is to check what we see against the knowledge of the Kelp Blue team and divers who work on the farm\'s anchors and structures.']}};
+const LAY={
+ seabed:{n:'Seabed',sw:'#9a9b98',d:'The bottom, mapped with sound: millions of echoes joined into a surface.',on:()=>document.querySelector('input[name=base][value=seabed]').checked,set:v=>document.querySelector(`input[name=base][value=${v?'seabed':'none'}]`).click()},
+ str:{zslider:1,n:'Structures',sw:'#8a4dff',d:'Anything standing out above the seabed: pier columns, rocks, farm structures. Coloured by depth.',sc:'linear-gradient(90deg,#d9c2ff,#8a4dff,#3d0f80)',sl:['0 m','4+ m'],on:()=>$('hl').checked,set:v=>chk('hl',v)},
+ dens:{only:'jetty',slider:1,n:'Density',sw:'#59ac33',d:'Soft echoes in the water: kelp, algae, ropes or fish. Brighter green means the sonar heard that spot more often.',sc:'linear-gradient(90deg,#1f4d16,#59ac33,#c8f26a)',sl:['8 % sparse','dense 68 %+'],on:()=>$('k').checked,set:v=>chk('k',v)},
+ route:{n:'Route',sw:'#e1ff4f',d:'The path ASKET drove.',on:()=>$('t').checked,set:v=>chk('t',v)}};
+let NT=null;const XL={};
+// density layer from a blocks file (x,y,z,F,h), purple: light = sparse, deep = dense; rebuilt when its slider moves
+async function binLayer(key,url){const K=new Float32Array(await (await fetch(url)).arrayBuffer());const st={K,min:key==='below'?.35:.15,obj:null,vis:true};
+ st.build=()=>{if(st.obj){world.remove(st.obj);st.obj.geometry.dispose()}const pts=[],cols=[];for(let i=0;i<K.length;i+=5){const F=K[i+3];if(F<st.min)continue;pts.push(K[i],K[i+1],K[i+2]);const t=Math.min(1,(F-.08)/.6);cols.push(.85-.55*t,.76-.66*t,1-.5*t)}
+  st.obj=window._layerFn(new Float32Array(pts),null,2.5,new Float32Array(cols));st.obj.material.userData.base=2.5;st.obj.visible=st.vis};
+ st.build();XL[key]=st;return st}
+async function depthLayer(key,url,maxd){const K=new Float32Array(await (await fetch(url)).arrayBuffer());const pts=[],cols=[];
+ const PL=[.85,.76,1],PM=[.54,.3,1],PD=[.24,.06,.5],lerp=(a,b,t)=>a.map((v,i)=>v+(b[i]-v)*t);
+ const dns=[];for(let i=0;i<K.length;i+=5){pts.push(K[i],K[i+1],K[i+2]);dns.push(Math.min(1,Math.max(0,(K[i+3]-.15)/.75)));const t=Math.min(1,Math.max(0,-K[i+2]/maxd));cols.push(...(t<.5?lerp(PL,PM,t*2):lerp(PM,PD,(t-.5)*2)))}
+ const o=window._layerFn(new Float32Array(pts),null,2.5,new Float32Array(cols));o.material.userData.base=2.5;const D=o.geometry.attributes.dn;D.array.set(dns);D.needsUpdate=true;o.userData.dnOK=1;XL[key]={obj:o,vis:true};return XL[key]}
+async function plyLayer(key,url,col,size){const o=await window._mk(url,col,size);XL[key]={obj:o,vis:true};return XL[key]}
+if(HERE==='bay'){LAY.str.only='jetty';
+ const xl=(k,n,sw,d,load,extra)=>Object.assign({n,sw,d,only:'bay',on:()=>!!(XL[k]&&XL[k].vis&&XL[k].obj),set:async v=>{if(!XL[k]&&v)await load();if(XL[k]){XL[k].vis=v;if(XL[k].obj)XL[k].obj.visible=v}}},extra||{});
+ const RS=()=>window._RS;
+ const add={str2:xl('str2','Structures','#8a4dff','Anything standing out above the seabed: the farm\'s anchors and blocks near the bottom, and the kelp and lines rising toward the surface. Coloured by depth.',()=>depthLayer('str2',RS()+'_struct.bin',12),{sc:'linear-gradient(90deg,#d9c2ff,#8a4dff,#3d0f80)',sl:['0 m','12 m'],zslider:1})};
+ const order={};Object.entries(LAY).forEach(([k,v])=>{order[k]=v;if(k==='seabed')Object.assign(order,add)});Object.keys(LAY).forEach(k=>delete LAY[k]);Object.assign(LAY,order);
+}
+
+let place;
+function setPlace(p){place=p;document.querySelectorAll('#xpMis button').forEach(b=>b.classList.toggle('on',b.dataset.m===p));
+ const T=TXT[p];$('xpK').textContent=T.k;$('xpH').textContent=T.h;$('xpB').innerHTML=T.b.map(x=>'<p>'+x+'</p>').join('');
+ const here=p===HERE;$('xpRepW').style.display=here?'':'none';$('xpLayW').style.display=here?'':'none';$('xpSt').style.display=here?'':'none'}
+function buildLayers(){$('xpLay').innerHTML='';
+ Object.entries(LAY).forEach(([k,L])=>{if(L.only&&L.only!==HERE)return;const el=document.createElement('label');el.className='xpL';
+  L.el=el;el.innerHTML=`<input type="checkbox"><span><span class="sw" style="background:${L.sw}"></span><b>${L.n}</b></span><span class="d">${L.d}</span>`+(L.sc?`<span class="sc" style="background:${L.sc}"></span><span class="sl"><span>${L.sl[0]}</span><span>${L.sl[1]}</span></span>`:'');
+  const box=el.querySelector('input');box.checked=L.on();box.onchange=()=>L.set(box.checked);L.box=box;$('xpLay').appendChild(el);
+  if(L.bslider){const w=document.createElement('div');w.style.cssText='margin:-2px 0 8px 30px;font:500 12px JetBrains Mono,monospace;color:#6b7078;display:flex;gap:8px;align-items:center';
+   const v0=L.bslider==='below'?35:15;w.innerHTML='<span>min density</span><input type="range" min="15" max="85" value="'+v0+'" style="flex:1;accent-color:#151515"><span>'+v0+' %</span>';const r=w.querySelector('input'),lab=w.lastChild;
+   r.oninput=async()=>{lab.textContent=r.value+' %';if(!L.on())await L.set(true);const st=XL[L.bslider];if(st&&st.build){st.min=r.value/100;st.build();if(TK)TK(st.obj)}};$('xpLay').appendChild(w)}
+  if(L.dslider){const w=document.createElement('div');w.style.cssText='margin:-2px 0 8px 30px;font:500 12px JetBrains Mono,monospace;color:#6b7078;display:flex;gap:8px;align-items:center;flex-wrap:wrap';
+   w.innerHTML='<span>colour by</span><span class="xpSeg"><button class="on" data-c="depth">Depth</button><button data-c="dens">Density</button></span>';$('xpLay').appendChild(w);
+   const v=document.createElement('div');v.style.cssText=w.style.cssText;v.innerHTML='<span>min density</span><input type="range" min="0" max="95" value="0" style="flex:1;accent-color:#151515"><span>0 %</span>';
+   const r=v.querySelector('input'),lab=v.lastChild;r.oninput=()=>{lab.textContent=r.value+' %';ensureDn();window._XR.dmin.value=r.value/100;if(!L.on())L.set(true)};$('xpLay').appendChild(v);
+   w.querySelectorAll('button').forEach(b=>b.onclick=()=>{w.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));colourBy(b.dataset.c,el)})}
+  if(L.zslider){const w=document.createElement('div');w.style.cssText='margin:-2px 0 8px 30px;font:500 12px JetBrains Mono,monospace;color:#6b7078;display:flex;gap:8px;align-items:center';
+   const mx=HERE==='bay'?12:5;w.innerHTML='<span>show down to</span><input type="range" min="0.5" max="'+mx+'" step="0.1" value="'+mx+'" style="flex:1;accent-color:#151515"><span>'+mx+' m</span>';const r=w.querySelector('input'),lab=w.lastChild;
+   r.oninput=()=>{lab.textContent=(+r.value).toFixed(1)+' m';zcut.value=(+r.value>=mx?18:+r.value)*(window.world?world.scale.y:1);if(!L.on())L.set(true)};$('xpLay').appendChild(w)}
+  if(L.slider){const km=$('kmin');km.max=90;const w=document.createElement('div');w.style.cssText='margin:-2px 0 8px 30px;font:500 12px JetBrains Mono,monospace;color:#6b7078;display:flex;gap:8px;align-items:center';
+   w.innerHTML='<span>min density</span><input type="range" min="15" max="85" value="'+km.value+'" style="flex:1;accent-color:#151515"><span id="xpKv">'+km.value+' %</span>';
+   const r=w.querySelector('input');r.oninput=()=>{km.value=r.value;km.dispatchEvent(new Event('input'));$('xpKv').textContent=r.value+' %';if(!L.on())L.set(true)};$('xpLay').appendChild(w)}});
+ setInterval(()=>Object.values(LAY).forEach(L=>{if(L.box&&L.box.checked!==L.on())L.box.checked=L.on()}),400)}
+function go(p){if(p==='over'){if(playing())play.click();setPlace('over');window._focus='fly';window._resetBay&&window._resetBay();const [t,c]=overView(),T3=v=>home(new THREE.Vector3(...v));
+  const S={t:home(ctr.target),c:home(cam.position)},E={t:T3(t),c:T3(c)},Mc=[(S.c[0]+E.c[0])/2,(S.c[1]+E.c[1])/2,Math.max(S.c[2],E.c[2])];
+  steer(S,E,3300,Date.now(),u=>bez(S.c,Mc,E.c,u),()=>{window._focus='over'});return}
+ if(p!==HERE){if(window.parent!==window){if(playing())play.click();window._focus='over';window.parent.postMessage({sonarFlyReq:{to:p,S:{t:home(ctr.target),c:home(cam.position)}}},'*')}else location.href=location.pathname+'?run='+RUNS[p]+'&at=run';return}
+ window._toRun&&window._toRun(true);setPlace(p);autoPlay(1900)}
+document.querySelectorAll('#xpMis button').forEach(b=>b.onclick=()=>go(b.dataset.m));
+// one continuous flight between missions: out with ease-in here, in with ease-out in the other viewer
+const E={in:t=>t*t*t,out:t=>1-Math.pow(1-t,3)};
+function tween(T,C,ms,e,done){const t0=ctr.target.clone(),c0=cam.position.clone(),T3=new THREE.Vector3(...T),C3=new THREE.Vector3(...C),st=performance.now();
+ const step=now=>{const u=Math.min(1,(now-st)/ms),k=e(u);ctr.target.lerpVectors(t0,T3,k);cam.position.lerpVectors(c0,C3,k);ctr.update();if(u<1)requestAnimationFrame(step);else done&&done()};requestAnimationFrame(step)}
+function overView(){const o=window._overCam;return fitView(o.t,o.c)}
+const CENT={jetty:[26.3,1.4],bay:[-5583.7,516.5]};
+function transit(from,to){const a=CENT[from],b=CENT[to],dx=b[0]-a[0],dy=b[1]-a[1],D=Math.hypot(dx,dy),ux=-dx/D,uy=-dy/D;
+ let me=a[0]+dx*.55,mn=a[1]+dy*.55;if(to==='bay')mn+=.16*D;
+ const W=(e,n,h)=>[e-cx,h,-(n-cy)];return [W(me,mn,0),W(me+ux*.2*D,mn+uy*.2*D,.24*D)]}
+function runView(){const v=window._RV||window._RUNV;return fitView(v.t,v.c)}
+const home=v=>[v.x+cx,-v.z+cy,v.y],world3=a=>new THREE.Vector3(a[0]-cx,a[2],-(a[1]-cy));
+const sstep=x=>x<=0?0:x>=1?1:x*x*x*(x*(x*6-15)+10);   // smootherstep: gentle start and end, no surge in the middle
+function bez(a,m,b,u){return a.map((v,i)=>(1-u)*(1-u)*v+2*u*(1-u)*m[i]+u*u*b[i])}
+function fly(F){const {S,t0,T,to}=F;
+ // land facing the way we came: keep the arrival distance and height, but put the camera on the approach side (never fly over the target)
+ const E0=F.E,ox=E0.c[0]-E0.t[0],oy=E0.c[1]-E0.t[1],L=Math.hypot(ox,oy),bx=S.c[0]-E0.t[0],by=S.c[1]-E0.t[1],bl=Math.hypot(bx,by)||1;
+ const E={t:E0.t,c:[E0.t[0]+bx/bl*L,E0.t[1]+by/bl*L,E0.c[2]]};F.E=E;
+ const D=Math.hypot(E.t[0]-S.t[0],E.t[1]-S.t[1]),north=to==='bay'?.18*D:0;
+ const Mt=[(S.t[0]+E.t[0])/2,(S.t[1]+E.t[1])/2+north,0],Mc=[(S.c[0]+E.c[0])/2,(S.c[1]+E.c[1])/2+north,Math.max(S.c[2],E.c[2])+.3*D];
+ if(to===HERE){window._flyFrom=t0+T*.38;window._flyUntil=t0+T+400}else{window._flyFrom=t0-1000;window._flyUntil=t0+T*.5+350}window._focus='fly';setPlace(to);
+ steer(S,E,T,t0,u=>bez(S.c,Mc,E.c,u),()=>{if(to===HERE){window._focus='run';setPlace(HERE);autoPlay(0)}})}
+// camera along its path; the view turns its heading and tilt toward the destination (never slides under the camera)
+function steer(S,E,T,t0,camAt,done){const v0=S.t.map((v,i)=>v-S.c[i]),d0=Math.hypot(...v0),y0=Math.atan2(v0[0],v0[1]),p0=Math.asin(v0[2]/d0);
+ const w0=E.t.map((v,i)=>v-S.c[i]),turn=Math.abs(Math.atan2(Math.sin(Math.atan2(w0[0],w0[1])-y0),Math.cos(Math.atan2(w0[0],w0[1])-y0)))*180/Math.PI,TW=.45+.3*Math.min(1,turn/150);
+ const step=()=>{const tau=(Date.now()-t0)/T,u=sstep(tau),ut=sstep(Math.min(1,tau/TW)),c=camAt(u),w=E.t.map((v,i)=>v-c[i]),d1=Math.hypot(...w)||1;
+  const y1=Math.atan2(w[0],w[1]),p1=Math.asin(Math.max(-1,Math.min(1,w[2]/d1))),yw=y0+Math.atan2(Math.sin(y1-y0),Math.cos(y1-y0))*ut,pt=p0+(p1-p0)*ut,d=d0+(d1-d0)*ut;
+  const t=[c[0]+d*Math.sin(yw)*Math.cos(pt),c[1]+d*Math.cos(yw)*Math.cos(pt),c[2]+d*Math.sin(pt)];
+  cam.position.copy(world3(c));ctr.target.copy(world3(tau>=1?E.t:t));ctr.update();if(tau<1)requestAnimationFrame(step);else done&&done()};requestAnimationFrame(step)}
+addEventListener('message',e=>{const d=e.data||{};if(d.sonarFly)fly(d.sonarFly);
+ if(d.sonarJump){const [t,c]=d.from?transit(d.from,HERE):overView();ctr.target.set(...t);cam.position.set(...c);ctr.update();window._focus='over';setPlace(HERE)}
+ if(d.sonarEnter){setPlace(HERE);window._focus='run';const [t,c]=runView();tween(t,c,1650,E.out,()=>autoPlay(0))}});
+const readyPing=setInterval(()=>{if(document.body.classList.contains('ready')&&window._prepDone&&window.parent!==window){window.parent.postMessage({sonarReady:HERE},'*');clearInterval(readyPing)}},300);
+// density of the structure points: farm blocks carry it; at the jetty it is counted per 0.3 m cube
+function strObj(){return HERE==='bay'?(XL.str2&&XL.str2.obj):(window._Lhl&&window._Lhl())}
+function ensureDn(){const o=strObj();if(!o||o.userData.dnOK)return;const P=o.geometry.attributes.position.array,M=new Map(),k=i=>Math.floor(P[i]/.3)+','+Math.floor(P[i+1]/.3)+','+Math.floor(P[i+2]/.3);
+ for(let i=0;i<P.length;i+=3){const q=k(i);M.set(q,(M.get(q)||0)+1)}const cnt=[...M.values()].sort((a,b)=>a-b),p98=Math.max(2,cnt[Math.floor(cnt.length*.98)]);
+ const D=o.geometry.attributes.dn;for(let i=0,j=0;i<P.length;i+=3,j++)D.array[j]=Math.min(1,Math.log1p(M.get(k(i))-1)/Math.log1p(p98-1));D.needsUpdate=true;o.userData.dnOK=1}
+function colourBy(mode,el){const o=strObj();if(!o)return;ensureDn();const C=o.geometry.attributes.color;if(!o.userData.c0)o.userData.c0=C.array.slice();
+ if(mode==='depth')C.array.set(o.userData.c0);else{const D=o.geometry.attributes.dn.array,PL=[.85,.76,1],PM=[.54,.3,1],PD=[.24,.06,.5],lr=(a,b,t)=>a.map((v,i)=>v+(b[i]-v)*t);
+  for(let j=0;j<D.length;j++){const t=D[j],c=t<.5?lr(PL,PM,t*2):lr(PM,PD,(t-.5)*2);C.array[3*j]=c[0];C.array[3*j+1]=c[1];C.array[3*j+2]=c[2]}}
+ C.needsUpdate=true;const sl=el.querySelectorAll('.sl span');if(sl.length)[sl[0].textContent,sl[1].textContent]=mode==='depth'?(HERE==='bay'?['0 m','12 m']:['0 m','4+ m']):['sparse','dense']}
+// scan reveal: each point gets the replay step when the sonar first passed within range of it
+let TK=null,NTk=false;
+function stamp(){const tp=window._tp;if(!tp||!tp.length)return false;const RANGE=HERE==='bay'?30:11,C=1;
+ let x0=1e9,z0=1e9,x1=-1e9,z1=-1e9;for(let i=0;i<tp.length;i+=3){x0=Math.min(x0,tp[i]);x1=Math.max(x1,tp[i]);z0=Math.min(z0,tp[i+2]);z1=Math.max(z1,tp[i+2])}
+ x0-=RANGE;z0-=RANGE;const W=Math.ceil((x1+RANGE-x0)/C)+1,H=Math.ceil((z1+RANGE-z0)/C)+1,G=new Float32Array(W*H).fill(1e9),r=Math.ceil(RANGE/C);
+ for(let k=0;k<tp.length/3;k++){const cx=Math.floor((tp[3*k]-x0)/C),cz=Math.floor((tp[3*k+2]-z0)/C);
+  for(let dz=-r;dz<=r;dz++)for(let dx=-r;dx<=r;dx++){if(dx*dx+dz*dz>r*r)continue;const X=cx+dx,Z=cz+dz;if(X<0||Z<0||X>=W||Z>=H)continue;const i=Z*W+X;if(G[i]>k)G[i]=k}}
+ TK=(obj)=>{if(!obj||!obj.geometry||obj.userData.tk)return;const P=obj.geometry.attributes.position.array,T=obj.geometry.attributes.tk;if(!T)return;
+  for(let i=0,j=0;i<P.length;i+=3,j++){const X=Math.floor((P[i]-x0)/C),Z=Math.floor((P[i+2]-z0)/C);T.array[j]=(X<0||Z<0||X>=W||Z>=H)?1e9:G[Z*W+X]}T.needsUpdate=true;obj.userData.tk=1};return true}
+function scanMode(on){const XR=window._XR;if(!XR)return;if(on&&!TK&&!stamp())return;
+ if(on){[window._Lsb,window._Lhl&&window._Lhl(),window._kelpL,NT,...Object.values(XL).map(x=>x.obj)].forEach(o=>TK&&TK(o));const sb=window._Lsb;if(sb&&!sb.userData.grey){const c=sb.geometry.attributes.color;for(let i=0;i<c.array.length;i+=3){c.array[i]=.6;c.array[i+1]=.61;c.array[i+2]=.6}c.needsUpdate=true;sb.userData.grey=1}}
+ if(window._Lsb)window._Lsb.visible=on&&LAY.seabed.on();
+ (window._bedMats||[]).forEach(([m,b])=>{m.opacity=on?b*.3:b});
+ if(!on)XR.bk.value=1e9}
+setInterval(()=>{const XR=window._XR;if(!XR)return;const sc=document.body.classList.contains('routeOn')&&+scrub.value<+scrub.max;
+ if(sc){if(!window._scanOn){window._scanOn=true;scanMode(true)}XR.bk.value=+scrub.value}else if(window._scanOn){window._scanOn=false;scanMode(false)}
+ if(NT&&!NT.userData.tk&&TK)TK(NT);if(TK)Object.values(XL).forEach(x=>{if(x.obj&&!x.obj.userData.tk)TK(x.obj)});
+ const d=cam.position.distanceTo(ctr.target);XR.gA.value=Math.max(.35,Math.min(1,1-(d-120)/700))},120);
+// replay: drives the viewer's own player (hidden) and the route
+const play=$('play'),scrub=$('scrub'),T=$('xpT'),playing=()=>play.textContent!=='▶';
+function routeOn(){if(!$('t').checked)chk('t',true);if(!document.body.classList.contains('routeOn')){document.body.classList.add('routeOn');window._routeProgress&&window._routeProgress(+scrub.value)}}
+$('xpPlay').onclick=()=>{routeOn();if(!playing()){if(+scrub.value>=+scrub.max-1){scrub.value=0;scrub.dispatchEvent(new Event('input'))}const far=window._toRun&&window._toRun();setTimeout(()=>{if(!playing())play.click()},far?1900:50)}else play.click()};
+function allOn(){Object.entries(LAY).forEach(([k,L])=>{if(L.only&&L.only!==HERE)return;if(!L.on())L.set(true)})}
+function autoPlay(ms){allOn();routeOn();scrub.value=0;scrub.dispatchEvent(new Event('input'));setTimeout(()=>{if(!playing())play.click()},ms)}
+$('xpEnd').onclick=()=>{routeOn();if(playing())play.click();scrub.value=scrub.max;scrub.dispatchEvent(new Event('input'))};
+T.oninput=()=>{routeOn();scrub.value=Math.round(T.value/1000*scrub.max);scrub.dispatchEvent(new Event('input'))};
+setInterval(()=>{if(document.activeElement!==T)T.value=scrub.max>0?Math.round(scrub.value/scrub.max*1000):0;T.max=1000;
+ $('xpPlay').textContent=playing()?'❚❚ Pause':'▶ Play';const t=($('scrubv').textContent||'').split(' · ');$('xpTime').textContent=document.body.classList.contains('routeOn')?(t.slice(0,2).join(' · ')):''},150);
+// Analytics placeholder
+$('xpAnaLogo').innerHTML=$('brand').innerHTML;
+document.querySelectorAll('#xpMode button').forEach(b=>b.onclick=()=>{const a=b.dataset.x==='ana';$('xpAna').classList.toggle('on',a);document.body.classList.toggle('ana',a);document.querySelectorAll('#xpMode button').forEach(x=>x.classList.toggle('on',x===b))});
+$('xpNav').appendChild($('xpMis'));$('xpMis').classList.add('open');
+// scroll hint
+const col=$('xpCol'),more=$('xpMore');col.addEventListener('scroll',()=>more.classList.toggle('gone',col.scrollTop+col.clientHeight>=col.scrollHeight-8));
+more.onclick=()=>$('xpLayW').scrollIntoView({behavior:'smooth',block:'start'});setInterval(()=>more.classList.toggle('gone',col.scrollHeight<=col.clientHeight+8||col.scrollTop+col.clientHeight>=col.scrollHeight-8),600);
+// base map menu
+$('xpBaseBtn').onclick=()=>$('xpBase').classList.toggle('open');$('xpSat').onchange=e=>chk('sat',e.target.checked);$('xpSatOp').oninput=e=>{window._satMul=e.target.value/100;$('xpSatOpv').textContent=e.target.value+' %';if(!$('xpSat').checked){$('xpSat').checked=true;chk('sat',true)}};
+// globe compass: azimuth and tilt of the view; click = north up
+(function gl(){requestAnimationFrame(gl);if(typeof cam==='undefined')return;const v=cam.position.clone().sub(ctr.target),L=v.length()||1,pol=Math.acos(Math.max(-1,Math.min(1,v.y/L))),az=Math.atan2(v.x,v.z);
+ const ry=21*Math.cos(pol);$('gEq').setAttribute('ry',Math.abs(ry).toFixed(2));const nx=-21*Math.sin(az),ny=ry*Math.cos(az)*-1;
+ $('gN').setAttribute('cx',nx.toFixed(2));$('gN').setAttribute('cy',ny.toFixed(2));$('gNt').setAttribute('x',nx.toFixed(2));$('gNt').setAttribute('y',(ny-5).toFixed(2));
+ $('gMer').setAttribute('rx',Math.abs(21*Math.sin(az)).toFixed(2))})();
+$('xpGlobe').onclick=()=>{const c=$('compass');c&&c.click()};
+// start: when the scene is ready
+// one-time costs while the loader still covers the scene: scan stamps, grey seabed points, GPU upload
+function prep(){try{if(!TK)stamp();[window._Lsb,window._Lhl&&window._Lhl(),window._kelpL].forEach(o=>TK&&TK(o));const sb=window._Lsb;
+ if(sb&&!sb.userData.grey){const c=sb.geometry.attributes.color;for(let i=0;i<c.array.length;i+=3){c.array[i]=.6;c.array[i+1]=.61;c.array[i+2]=.6}c.needsUpdate=true;sb.userData.grey=1}
+ if(sb&&window._XR){const was=sb.visible;sb.visible=true;window._XR.gA.value=0;requestAnimationFrame(()=>requestAnimationFrame(()=>{sb.visible=was;window._prepDone=true}))}else window._prepDone=true}catch(_){window._prepDone=true}}
+const wait=setInterval(()=>{if(!document.body.classList.contains('ready'))return;clearInterval(wait);prep();
+ $('xpTop').prepend($('brand'));try{$('tut').classList.add('off')}catch(_){}
+ chk('o',false);if(HERE==='bay')chk('hl',false);
+ fetch('runs/'+S+'/report.json').then(r=>r.json()).then(rep=>{const rc=rep.recordings[0],C=rep.combined;
+  const min=C?C.minutes:Math.round(((+rc.utc[1].slice(0,2))*60+(+rc.utc[1].slice(3,5)))-((+rc.utc[0].slice(0,2))*60+(+rc.utc[0].slice(3,5))));
+  $('xpSt').textContent=`${C?C.readings.length+' recordings · ':''}${min} min · ${(rc.track_m/1000).toFixed(1)} km · ${(rc.points_total/1e6).toFixed(1)} M points`}).catch(()=>{});
+ buildLayers();
+ if(HERE!=='jetty'&&window._Lsb){const b=new THREE.Box3();window._Lsb.updateWorldMatrix(true,false);b.setFromObject(window._Lsb);const c=b.getCenter(new THREE.Vector3()),z=b.getSize(new THREE.Vector3()),R=Math.max(z.x,z.z)/2;
+  window._RV={t:[c.x,c.y,c.z],c:[c.x+R*.95,c.y+R*.7,c.z+R*.65]}}
+ {const [t,c]=runView();window.parent!==window&&window.parent.postMessage({sonarView:{k:HERE,t:home(new THREE.Vector3(...t)),c:home(new THREE.Vector3(...c))}},'*')}
+ if(q.get('at')==='run'){setPlace(HERE);$('xpMis').classList.add('open');setTimeout(()=>{window._toRun&&window._toRun(true);autoPlay(2100)},300)}else setPlace('over');
+ setInterval(()=>{if(window._focus==='over'&&place!=='over')setPlace('over')},500)},200);
+})();
+</script>
+
+</body></html>
