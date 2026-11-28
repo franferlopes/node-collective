@@ -910,8 +910,9 @@ body.ana #xpTop{z-index:45}body.ana #xpMis{visibility:hidden}
 #xpAna svg{width:min(260px,60vw);height:auto}
 #xpAna .uc{font:700 13px 'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase;background:#151515;color:#e1ff4f;padding:8px 14px;border-radius:10px}
 #xpAna button{border:0;border-radius:10px;background:rgba(0,0,0,.08);font:600 14px 'Inter Tight',Inter,sans-serif;padding:10px 16px;cursor:pointer}
-#xpGrab{display:none}
+#xpGrab{display:none}#xpCap{display:none}
 @media (max-width:700px){
+ #xpCap{display:block}
  #xpTop{top:10px;left:10px;right:10px}#brand svg{height:25px!important}
  /* bottom sheet: peek (nav, title, replay) or open (everything); drag the handle or tap it */
  #xpCol{top:auto!important;bottom:8px;left:8px;right:8px;width:auto;height:var(--sheet,36vh)!important;max-height:none!important;padding:0 14px 10px;font-size:14.5px;transition:height .35s cubic-bezier(.2,.8,.2,1);border-radius:18px}
@@ -927,13 +928,15 @@ body.ana #xpTop{z-index:45}body.ana #xpMis{visibility:hidden}
  /* phone: no titles or headings, just the text, the replay and the layers */
  #xpK,#xpH,#xpSt{display:none!important}#xpCol .sec{font-size:0;letter-spacing:0;margin:12px 0 8px;padding-top:10px}
  #xpMore{margin:0 -14px;padding:22px 14px 8px}#xpMore.gone{display:none}
- #xpLay{display:flex;flex-wrap:wrap;gap:6px}
- #xpLay>.xpL{display:inline-flex;align-items:center;gap:0;padding:7px 12px;border-radius:999px;background:rgba(0,0,0,.06);font-size:13px;position:relative}
+ #xpLay{display:flex;flex-wrap:wrap;gap:5px}
+ #xpLay>.xpL{display:inline-flex;align-items:center;gap:0;padding:7px 9px;border-radius:999px;background:rgba(0,0,0,.06);font-size:12.5px;position:relative;flex:1 1 auto;justify-content:center;white-space:nowrap;min-width:0}
+ #xpLay>.xpL .sw{width:9px;height:9px;margin-right:5px}
+ #xpCap{order:1;width:100%;font-size:12.5px;line-height:1.35;color:#4b4f55;margin:4px 2px 0;min-height:17px}
  #xpLay>.xpL .d,#xpLay>.xpL .sc,#xpLay>.xpL .sl{display:none}
  #xpLay>.xpL input{position:absolute;opacity:0;pointer-events:none}
  #xpLay>.xpL b{font-weight:600}
  #xpLay>.xpL:has(input:checked){background:#151515;color:#e1ff4f}
- #xpLay>div:not(.xpL){order:2;width:100%;margin:6px 0 0!important}
+ #xpLay>div:not(.xpL):not(#xpCap){order:2;width:100%;margin:6px 0 0!important}
 }
 </style>
 <div id="xpTop">
@@ -991,10 +994,11 @@ let place;
 function setPlace(p){place=p;window._sheetFit&&window._sheetFit();document.querySelectorAll('#xpMis button').forEach(b=>b.classList.toggle('on',b.dataset.m===p));
  const T=TXT[p];$('xpK').textContent=T.k;$('xpH').textContent=T.h;$('xpB').innerHTML=T.b.map(x=>'<p>'+x+'</p>').join('');
  const here=p===HERE;$('xpRepW').style.display=here?'':'none';$('xpLayW').style.display=here?'':'none';$('xpSt').style.display=here?'':'none'}
+const SHORT={seabed:'The bottom, mapped with sound.',str:'What stands out above the seabed, coloured by depth.',str2:'Anchors, blocks and kelp rising above the seabed, coloured by depth.',dens:'Soft echoes in the water: kelp, algae or fish. Brighter means heard more often.',route:'The path ASKET drove.'};
 function buildLayers(){$('xpLay').innerHTML='';
  Object.entries(LAY).forEach(([k,L])=>{if(L.only&&L.only!==HERE)return;const el=document.createElement('label');el.className='xpL';
   L.el=el;el.innerHTML=`<input type="checkbox"><span><span class="sw" style="background:${L.sw}"></span><b>${L.n}</b></span><span class="d">${L.d}</span>`+(L.sc?`<span class="sc" style="background:${L.sc}"></span><span class="sl"><span>${L.sl[0]}</span><span>${L.sl[1]}</span></span>`:'');
-  const box=el.querySelector('input');box.checked=L.on();box.onchange=()=>L.set(box.checked);L.box=box;$('xpLay').appendChild(el);
+  const box=el.querySelector('input');box.checked=L.on();box.onchange=()=>{L.set(box.checked);const c=$('xpCap');if(c)c.innerHTML='<b>'+L.n+'</b> · '+(SHORT[k]||'')};L.box=box;$('xpLay').appendChild(el);
   if(L.bslider){const w=document.createElement('div');w.style.cssText='margin:-2px 0 8px 30px;font:500 12px JetBrains Mono,monospace;color:#6b7078;display:flex;gap:8px;align-items:center';
    const v0=L.bslider==='below'?35:15;w.innerHTML='<span>min density</span><input type="range" min="15" max="85" value="'+v0+'" style="flex:1;accent-color:#151515"><span>'+v0+' %</span>';const r=w.querySelector('input'),lab=w.lastChild;
    r.oninput=async()=>{lab.textContent=r.value+' %';if(!L.on())await L.set(true);const st=XL[L.bslider];if(st&&st.build){st.min=r.value/100;st.build();if(TK)TK(st.obj)}};$('xpLay').appendChild(w)}
@@ -1009,6 +1013,7 @@ function buildLayers(){$('xpLay').innerHTML='';
   if(L.slider){const km=$('kmin');km.max=90;const w=document.createElement('div');w.style.cssText='margin:-2px 0 8px 30px;font:500 12px JetBrains Mono,monospace;color:#6b7078;display:flex;gap:8px;align-items:center';
    w.innerHTML='<span>min density</span><input type="range" min="15" max="85" value="'+km.value+'" style="flex:1;accent-color:#151515"><span id="xpKv">'+km.value+' %</span>';
    const r=w.querySelector('input');r.oninput=()=>{km.value=r.value;km.dispatchEvent(new Event('input'));$('xpKv').textContent=r.value+' %';if(!L.on())L.set(true)};$('xpLay').appendChild(w)}});
+ {const c=document.createElement('div');c.id='xpCap';c.textContent='Tap a layer to switch it on or off.';$('xpLay').appendChild(c)}
  setInterval(()=>Object.values(LAY).forEach(L=>{if(L.box&&L.box.checked!==L.on())L.box.checked=L.on()}),400)}
 function go(p){if(p==='over'){if(playing())play.click();setPlace('over');window._focus='fly';window._resetBay&&window._resetBay();const [t,c]=overView(),T3=v=>home(new THREE.Vector3(...v));
   const S={t:home(ctr.target),c:home(cam.position)},E={t:T3(t),c:T3(c)},Mc=[(S.c[0]+E.c[0])/2,(S.c[1]+E.c[1])/2,Math.max(S.c[2],E.c[2])];
@@ -1096,7 +1101,7 @@ const col=$('xpCol'),more=$('xpMore');col.addEventListener('scroll',()=>more.cla
 more.onclick=()=>$('xpLayW').scrollIntoView({behavior:'smooth',block:'start'});setInterval(()=>more.classList.toggle('gone',place==='over'||col.scrollHeight<=col.clientHeight+8||col.scrollTop+col.clientHeight>=col.scrollHeight-8),600);
 // phone bottom sheet: peek / open, tap or drag the handle
 {const mob=()=>innerWidth<=700,H={peek:.36,open:.78};let st='peek';
- const set=v=>{document.documentElement.style.setProperty('--sheet',v)};const apply=()=>{if(!mob())return;if(place==='over')more.classList.add('gone');const vis=[...col.children].filter(k=>getComputedStyle(k).display!=='none'),last=vis[vis.length-1],need=last?Math.ceil(last.getBoundingClientRect().bottom-col.getBoundingClientRect().top+col.scrollTop+18):col.scrollHeight;if(place==='over'){window._peekH=need;set(Math.round(Math.min(need,innerHeight*.7))+'px');return}
+ const set=v=>{document.documentElement.style.setProperty('--sheet',v)};const apply=()=>{if(!mob())return;if(place==='over')more.classList.add('gone');const vis=[...col.children].filter(k=>k.id!=='xpMore'&&k.id!=='xpGrab'&&getComputedStyle(k).display!=='none'),last=vis[vis.length-1],need=last?Math.ceil(last.getBoundingClientRect().bottom-col.getBoundingClientRect().top+col.scrollTop+18):col.scrollHeight;if(place==='over'){window._peekH=need;set(Math.round(Math.min(need,innerHeight*.7))+'px');return}
   const want=st==='open'?innerHeight*H.open:(window._peekH||innerHeight*H.peek);set(Math.round(Math.min(Math.max(want,innerHeight*.2),need))+'px')};window._sheetFit=()=>setTimeout(apply,30);
  const grab=$('xpGrab');grab.onclick=()=>{st=st==='peek'?'open':'peek';apply();if(st==='peek')col.scrollTop=0};
  let y0=null,h0=0;grab.addEventListener('pointerdown',e=>{if(!mob())return;y0=e.clientY;h0=col.getBoundingClientRect().height;col.classList.add('dragging');grab.setPointerCapture(e.pointerId)});
