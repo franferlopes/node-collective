@@ -912,7 +912,7 @@ body.ana #xpTop{z-index:45}body.ana #xpMis{visibility:hidden}
 #xpAna button{border:0;border-radius:10px;background:rgba(0,0,0,.08);font:600 14px 'Inter Tight',Inter,sans-serif;padding:10px 16px;cursor:pointer}
 #xpGrab{display:none}
 @media (max-width:700px){
- #xpTop{top:10px;left:10px;right:10px}#brand svg{height:18px!important}
+ #xpTop{top:10px;left:10px;right:10px}#brand svg{height:25px!important}
  /* bottom sheet: peek (nav, title, replay) or open (everything); drag the handle or tap it */
  #xpCol{top:auto!important;bottom:8px;left:8px;right:8px;width:auto;height:var(--sheet,36vh)!important;max-height:none!important;padding:0 14px 10px;font-size:14.5px;transition:height .35s cubic-bezier(.2,.8,.2,1);border-radius:18px}
  #xpCol.dragging{transition:none}
@@ -923,7 +923,10 @@ body.ana #xpTop{z-index:45}body.ana #xpMis{visibility:hidden}
  #xpBR{bottom:calc(var(--sheet,36vh) + 16px);right:10px;transition:bottom .35s cubic-bezier(.2,.8,.2,1)}
  #satCredit{bottom:calc(var(--sheet,36vh) + 10px)!important;font-size:8px!important}
  #depthHud{display:none!important}
- #xpMore{display:none}
+ #xpCol{-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-y}
+ /* phone: no titles or headings, just the text, the replay and the layers */
+ #xpK,#xpH,#xpSt{display:none!important}#xpCol .sec{font-size:0;letter-spacing:0;margin:12px 0 8px;padding-top:10px}
+ #xpMore{margin:0 -14px;padding:22px 14px 8px}#xpMore.gone{display:none}
 }
 </style>
 <div id="xpTop">
@@ -978,7 +981,7 @@ if(HERE==='bay'){LAY.str.only='jetty';
 }
 
 let place;
-function setPlace(p){place=p;document.querySelectorAll('#xpMis button').forEach(b=>b.classList.toggle('on',b.dataset.m===p));
+function setPlace(p){place=p;window._sheetFit&&window._sheetFit();document.querySelectorAll('#xpMis button').forEach(b=>b.classList.toggle('on',b.dataset.m===p));
  const T=TXT[p];$('xpK').textContent=T.k;$('xpH').textContent=T.h;$('xpB').innerHTML=T.b.map(x=>'<p>'+x+'</p>').join('');
  const here=p===HERE;$('xpRepW').style.display=here?'':'none';$('xpLayW').style.display=here?'':'none';$('xpSt').style.display=here?'':'none'}
 function buildLayers(){$('xpLay').innerHTML='';
@@ -1086,13 +1089,12 @@ const col=$('xpCol'),more=$('xpMore');col.addEventListener('scroll',()=>more.cla
 more.onclick=()=>$('xpLayW').scrollIntoView({behavior:'smooth',block:'start'});setInterval(()=>more.classList.toggle('gone',col.scrollHeight<=col.clientHeight+8||col.scrollTop+col.clientHeight>=col.scrollHeight-8),600);
 // phone bottom sheet: peek / open, tap or drag the handle
 {const mob=()=>innerWidth<=700,H={peek:.36,open:.78};let st='peek';
- const set=v=>{document.documentElement.style.setProperty('--sheet',v)};const apply=()=>{if(mob())set(Math.round(innerHeight*H[st])+'px')};
+ const set=v=>{document.documentElement.style.setProperty('--sheet',v)};const apply=()=>{if(!mob())return;const want=innerHeight*H[st],need=col.scrollHeight+2;set(Math.round(Math.min(want,need))+'px')};window._sheetFit=()=>setTimeout(apply,30);
  const grab=$('xpGrab');grab.onclick=()=>{st=st==='peek'?'open':'peek';apply();if(st==='peek')col.scrollTop=0};
  let y0=null,h0=0;grab.addEventListener('pointerdown',e=>{if(!mob())return;y0=e.clientY;h0=col.getBoundingClientRect().height;col.classList.add('dragging');grab.setPointerCapture(e.pointerId)});
  grab.addEventListener('pointermove',e=>{if(y0===null)return;const h=Math.max(innerHeight*.2,Math.min(innerHeight*.85,h0+(y0-e.clientY)));set(h+'px')});
  grab.addEventListener('pointerup',e=>{if(y0===null)return;const moved=Math.abs(e.clientY-y0)>8,h=col.getBoundingClientRect().height;y0=null;col.classList.remove('dragging');
   if(moved){st=h>innerHeight*.55?'open':'peek';apply()}});
- const order=()=>{if(mob())$('xpSt').after($('xpRepW'));else $('xpB').after($('xpRepW'))};order();addEventListener('resize',order);
  addEventListener('resize',apply);apply();window._sheet=v=>{st=v;apply()}}
 // base map menu
 $('xpBaseBtn').onclick=()=>$('xpBase').classList.toggle('open');$('xpSat').onchange=e=>chk('sat',e.target.checked);
