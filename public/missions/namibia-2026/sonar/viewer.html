@@ -224,7 +224,7 @@ const VIR=[[253,231,37],[94,201,98],[33,145,140],[59,82,139],[68,1,84]];
 function vir(t){t=Math.min(1,Math.max(0,t))*(VIR.length-1);const i=Math.min(VIR.length-2,Math.floor(t)),f=t-i;return VIR[i].map((c,k)=>(c+(VIR[i+1][k]-c)*f)/255)}
 async function ply(url){const b=await (await fetch(url)).arrayBuffer();const u=new Uint8Array(b);
  const hdr=new TextDecoder().decode(u.slice(0,1000));const n=+hdr.match(/element vertex (\d+)/)[1];const off=hdr.indexOf('end_header\n')+11;
- const dv=new DataView(b,off),P=new Float32Array(n*3);for(let i=0;i<n;i++){const o=i*19;P[3*i]=dv.getFloat32(o,true);P[3*i+1]=dv.getFloat32(o+4,true);P[3*i+2]=dv.getFloat32(o+8,true)}return P}
+ const st=/property uchar red/.test(hdr)?19:12;const dv=new DataView(b,off),P=new Float32Array(n*3);for(let i=0;i<n;i++){const o=i*st;P[3*i]=dv.getFloat32(o,true);P[3*i+1]=dv.getFloat32(o+4,true);P[3*i+2]=dv.getFloat32(o+8,true)}return P}
 async function csv(url){const t=(await (await fetch(url)).text()).trim().split('\n');const h=t[0].split(',');return t.slice(1).map(l=>{const v=l.split(',');return Object.fromEntries(h.map((k,i)=>[k,v[i]]))})}
 
 const r=new THREE.WebGLRenderer({canvas:document.getElementById('c'),antialias:true});r.setPixelRatio(Math.min(devicePixelRatio,1.5)); // capped: retina at full 2x made moving around lag
