@@ -49,7 +49,7 @@ addEventListener('message',e=>{const d=e.data||{};if(d.sonarView)views[d.sonarVi
  if(d.sonarFlyReq){const to=d.sonarFlyReq.to;if(!F[to])mk(to);const launch=()=>{const T=3600,t0=Date.now()+60,F2={S:d.sonarFlyReq.S,E:views[to],t0,T,to};
    for(const k in F)F[k].contentWindow.postMessage({sonarFly:F2},'*');setTimeout(()=>{F[to].classList.remove('off');F[cur].classList.add('off');cur=to},T*.5+60)};
   if(views[to]&&ready[to])launch();else{const L=document.getElementById('load'),lt=L&&L.querySelector('.lt');
-   if(L){if(lt)lt.textContent='Loading '+(to==='bay'?'Shearwater Bay':'Kelp Blue jetty');L.classList.remove('done')}   // still downloading: show the NODE loader
+   if(L){if(lt)lt.textContent='Loading '+(to==='bay'?'Shearwater Bay':'Kelp Blue Jetty');L.classList.remove('done')}   // still downloading: show the NODE loader
    const w=setInterval(()=>{if(views[to]&&ready[to]){clearInterval(w);if(L){L.classList.add('done');if(lt)setTimeout(()=>lt.textContent='Loading point clouds',700)}launch()}},200)}}if(d.sonarReady){ready[d.sonarReady]=true;if(d.sonarReady===first){const L=document.getElementById('load');if(L&&!L.classList.contains('done')){const fin=()=>L.classList.add('done');const an=L.querySelector('.cv i').getAnimations()[0];const ph=an?(an.currentTime%3400)/3400:1;setTimeout(fin,ph<.36?(.36-ph)*3400:0)}}const o=first==='jetty'?'bay':'jetty';if(d.sonarReady===first&&!F[o])setTimeout(()=>mk(o),600)}
  if(d.sonarPrep&&!F[d.sonarPrep])mk(d.sonarPrep);
  if(d.sonarPrep&&F[d.sonarPrep]){F[d.sonarPrep].contentWindow.postMessage({sonarJump:1,from:d.from},'*');window._from=d.from}

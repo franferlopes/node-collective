@@ -672,7 +672,7 @@ function dzcol(d){if(d>0){const t=Math.min(1,d/2.5);return[.55+.45*t,.55-.35*t,.
   const mon=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][+d[1]-1];
   document.getElementById('ttl').textContent=`ASKET sonar · ${+d[2]} ${mon} ${d[0]}`;document.title=`ASKET Sonar ${+d[2]} ${mon}`;
   if(rep.combined){const C=rep.combined,M=['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],day=x=>+x.date.slice(8,10)+' '+M[+x.date.slice(5,7)];
-   document.getElementById('ttl').textContent='ASKET sonar · '+(rep.place||'Kelp Blue jetty')+('');
+   document.getElementById('ttl').textContent='ASKET sonar · '+(rep.place||'Kelp Blue Jetty')+('');
    document.getElementById('sub').innerHTML=`${C.readings.length} surveys (${C.readings.slice().sort((a,b)=>a.date<b.date?-1:1).map(day).join(', ')}) · ${C.minutes} min<br>${Math.round(rc.track_m).toLocaleString()} m track · ${rc.points_total.toLocaleString()} points · ${rc.objects} objects`;placeLegend();return}
   document.getElementById('sub').textContent=`${rc.utc[0].slice(0,5)} to ${rc.utc[1].slice(0,5)} UTC · ${Math.round(rc.track_m)} m track · ${rc.pings.toLocaleString()} pings`;placeLegend()}).catch(()=>{});
  function currentSettings(){const r2=v=>+v.toFixed(2),q=id=>{const e=document.getElementById(id);return e?e.checked:null};
@@ -918,7 +918,7 @@ body.ana #xpTop{z-index:45}body.ana #xpMis{visibility:hidden}
 }
 </style>
 <div id="xpTop">
- <div class="xpPill" id="xpMis"><button id="xpOpen" class="on">Explore missions →</button><button data-m="over">Namibia 2026</button><span class="sep">›</span><button data-m="jetty">Kelp Blue jetty</button><button data-m="bay">Shearwater Bay</button><button id="xpClose" title="Collapse">‹</button></div>
+ <div class="xpPill" id="xpMis"><button id="xpOpen" class="on">Explore missions →</button><button data-m="over">Namibia 2026</button><span class="sep">›</span><button data-m="jetty">Kelp Blue Jetty</button><button data-m="bay">Shearwater Bay</button><button id="xpClose" title="Collapse">‹</button></div>
  <div class="xpPill" id="xpMode"><button class="on" data-x="exp">Experience</button><button data-x="ana">Analytics</button></div>
 </div>
 <div id="xpCol">
@@ -941,8 +941,8 @@ const RUNS={jetty:'2026-11-27-jetty-combined',bay:'2026-11-28-shearwater'};
 const S=q.get('run')||RUNS.jetty,HERE=S===RUNS.bay?'bay':'jetty';
 const chk=(id,v)=>{const e=$(id);if(e&&e.checked!==v)e.click()};
 const TXT={
- over:{k:'Namibia 2026',h:'ASKET in Lüderitz',b:['NODE took ASKET, our autonomous survey boat, to Lüderitz to map the seabed and Kelp Blue\'s kelp farm with sonar.','Pick a mission at the top: the Kelp Blue jetty, where we tested the system, or Shearwater Bay, where the kelp farm is. You can move the map freely at any time.']},
- jetty:{k:'Two surveys · 24 & 27 Nov 2026',h:'Kelp Blue jetty',b:['ASKET launched from the slipway by the Kelp Blue office: a 10-minute first test on 24 November and a 34-minute survey on 27 November, criss-crossing the bay to map the seabed from different directions.','The bay is 1.5 to 4 m deep. The sonar picked up the pier columns, the rocks around the bay and softer echoes on them that are probably algae. Press Play to watch the mission, or switch the layers below.']},
+ over:{k:'Namibia 2026',h:'ASKET in Lüderitz',b:['NODE took ASKET, our autonomous survey boat, to Lüderitz to map the seabed and Kelp Blue\'s kelp farm with sonar.','Pick a mission at the top: the Kelp Blue Jetty, where we tested the system, or Shearwater Bay, where the kelp farm is. You can move the map freely at any time.']},
+ jetty:{k:'Two surveys · 24 & 27 Nov 2026',h:'Kelp Blue Jetty',b:['ASKET launched from the slipway by the Kelp Blue office: a 10-minute first test on 24 November and a 34-minute survey on 27 November, criss-crossing the bay to map the seabed from different directions.','The bay is 1.5 to 4 m deep. The sonar picked up the pier columns, the rocks around the bay and softer echoes on them that are probably algae. Press Play to watch the mission, or switch the layers below.']},
  bay:{k:'Kelp farm survey · 28 Nov 2026',h:'Shearwater Bay',b:['Kelp Blue grows giant kelp offshore here, about 6 km west of Lüderitz. ASKET surveyed part of the farm for 17 minutes.','ASKET mapped about 9,500 m² of seabed here: flat, about 11 m deep.','We are still cleaning this data to remove the echoes between the netting and the seabed, so the structures shown here are a first look. The next step is to check what we see against the knowledge of the Kelp Blue team and divers who work on the farm\'s anchors and structures.']}};
 const LAY={
  seabed:{n:'Seabed',sw:'#9a9b98',d:'The bottom, mapped with sound: millions of echoes joined into a surface.',on:()=>document.querySelector('input[name=base][value=seabed]').checked,set:v=>document.querySelector(`input[name=base][value=${v?'seabed':'none'}]`).click()},
@@ -996,6 +996,7 @@ function go(p){if(p==='over'){if(playing())play.click();setPlace('over');window.
  if(p!==HERE){if(window.parent!==window){if(playing())play.click();window._focus='over';window.parent.postMessage({sonarFlyReq:{to:p,S:{t:home(ctr.target),c:home(cam.position)}}},'*')}else location.href=location.pathname+'?run='+RUNS[p]+'&at=run';return}
  window._toRun&&window._toRun(true);setPlace(p);autoPlay(1900)}
 document.querySelectorAll('#xpMis button').forEach(b=>b.onclick=()=>go(b.dataset.m));
+window._bayGo=()=>go('bay');window._kelpGo=()=>go('jetty');
 // one continuous flight between missions: out with ease-in here, in with ease-out in the other viewer
 const E={in:t=>t*t*t,out:t=>1-Math.pow(1-t,3)};
 function tween(T,C,ms,e,done){const t0=ctr.target.clone(),c0=cam.position.clone(),T3=new THREE.Vector3(...T),C3=new THREE.Vector3(...C),st=performance.now();
@@ -1068,7 +1069,8 @@ setInterval(()=>{if(document.activeElement!==T)T.value=scrub.max>0?Math.round(sc
 // Analytics placeholder
 $('xpAnaLogo').innerHTML=$('brand').innerHTML;
 document.querySelectorAll('#xpMode button').forEach(b=>b.onclick=()=>{const a=b.dataset.x==='ana';$('xpAna').classList.toggle('on',a);document.body.classList.toggle('ana',a);document.querySelectorAll('#xpMode button').forEach(x=>x.classList.toggle('on',x===b))});
-$('xpNav').appendChild($('xpMis'));$('xpMis').classList.add('open');
+$('xpNav').appendChild($('xpMis'));
+const placeCol=()=>{const g=16,t=$('brand').getBoundingClientRect().bottom+g;if(innerWidth>700){col.style.top=t+'px';col.style.maxHeight='none';col.style.height=(innerHeight-t-g)+'px'}};addEventListener('resize',placeCol);setTimeout(placeCol,0);setTimeout(placeCol,900);$('xpMis').classList.add('open');
 // scroll hint
 const col=$('xpCol'),more=$('xpMore');col.addEventListener('scroll',()=>more.classList.toggle('gone',col.scrollTop+col.clientHeight>=col.scrollHeight-8));
 more.onclick=()=>$('xpLayW').scrollIntoView({behavior:'smooth',block:'start'});setInterval(()=>more.classList.toggle('gone',col.scrollHeight<=col.clientHeight+8||col.scrollTop+col.clientHeight>=col.scrollHeight-8),600);
@@ -1091,7 +1093,7 @@ $('xpGlobe').onclick=()=>{const c=$('compass');c&&c.click()};
 function prep(){try{if(!TK)stamp();[window._Lsb,window._Lhl&&window._Lhl(),window._kelpL].forEach(o=>TK&&TK(o));const sb=window._Lsb;
  if(sb&&!sb.userData.grey){const c=sb.geometry.attributes.color;for(let i=0;i<c.array.length;i+=3){c.array[i]=.6;c.array[i+1]=.61;c.array[i+2]=.6}c.needsUpdate=true;sb.userData.grey=1}
  if(sb&&window._XR){const was=sb.visible;sb.visible=true;window._XR.gA.value=0;requestAnimationFrame(()=>requestAnimationFrame(()=>{sb.visible=was;window._prepDone=true}))}else window._prepDone=true}catch(_){window._prepDone=true}}
-const wait=setInterval(()=>{if(!document.body.classList.contains('ready'))return;clearInterval(wait);prep();loadDrone();
+const wait=setInterval(()=>{if(!document.body.classList.contains('ready'))return;clearInterval(wait);prep();loadDrone();setTimeout(placeCol,50);
  $('xpTop').prepend($('brand'));try{$('tut').classList.add('off')}catch(_){}
  chk('o',false);if(HERE==='bay')chk('hl',false);
  fetch('runs/'+S+'/report.json').then(r=>r.json()).then(rep=>{const rc=rep.recordings[0],C=rep.combined;
