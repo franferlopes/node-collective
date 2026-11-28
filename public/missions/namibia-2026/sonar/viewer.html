@@ -931,7 +931,7 @@ body.ana #xpTop{z-index:45}body.ana #xpMis{visibility:hidden}
  <div id="xpMore">↓ Sonar layers</div>
 </div>
 <div id="xpBR"><svg id="xpGlobe" viewBox="-25 -25 50 50"><circle r="21" fill="rgba(250,250,248,.55)" stroke="#151515" stroke-width="1.6"/><ellipse id="gEq" rx="21" ry="21" fill="none" stroke="#151515" stroke-width="1.1" opacity=".55"/><ellipse id="gMer" rx="8" ry="21" fill="none" stroke="#151515" stroke-width="1.1" opacity=".55"/><circle id="gN" r="3.2" fill="#e1ff4f" stroke="#151515" stroke-width="1.2"/><text id="gNt" font-size="7" font-weight="700" text-anchor="middle" fill="#151515" font-family="Inter Tight,Inter,sans-serif">N</text></svg>
-<div id="xpBase"><div id="xpBaseMenu"><label><input type="checkbox" id="xpSat" checked> Satellite</label><div class="op"><span>opacity</span><input type="range" id="xpSatOp" min="0" max="150" value="100"><span id="xpSatOpv">100 %</span></div><label class="dis"><input type="checkbox" disabled> Drone imagery (soon)</label><div class="op dis"><span>opacity</span><input type="range" disabled min="0" max="100" value="100"><span>100 %</span></div></div><button id="xpBaseBtn">Base map</button></div></div>
+<div id="xpBase"><div id="xpBaseMenu"><label><input type="checkbox" id="xpSat" checked> Satellite</label><div class="op"><span>opacity</span><input type="range" id="xpSatOp" min="0" max="150" value="100"><span id="xpSatOpv">100 %</span></div><label class="dis" id="xpDrL"><input type="checkbox" disabled id="xpDr"> <span id="xpDrT">Drone imagery (soon)</span></label><div class="op dis" id="xpDrO"><span>opacity</span><input type="range" disabled id="xpDrOp" min="0" max="100" value="65"><span id="xpDrOpv">65 %</span></div></div><button id="xpBaseBtn">Base map</button></div></div>
 <div id="xpAna"><div id="xpAnaLogo"></div><div class="uc">Analytics · under construction</div>
  <div style="max-width:420px;color:#4b4f55">Free tools to explore and analyse the sonar data are on their way.</div></div>
 <script>
@@ -1073,7 +1073,13 @@ $('xpNav').appendChild($('xpMis'));$('xpMis').classList.add('open');
 const col=$('xpCol'),more=$('xpMore');col.addEventListener('scroll',()=>more.classList.toggle('gone',col.scrollTop+col.clientHeight>=col.scrollHeight-8));
 more.onclick=()=>$('xpLayW').scrollIntoView({behavior:'smooth',block:'start'});setInterval(()=>more.classList.toggle('gone',col.scrollHeight<=col.clientHeight+8||col.scrollTop+col.clientHeight>=col.scrollHeight-8),600);
 // base map menu
-$('xpBaseBtn').onclick=()=>$('xpBase').classList.toggle('open');$('xpSat').onchange=e=>chk('sat',e.target.checked);$('xpSatOp').oninput=e=>{window._satMul=e.target.value/100;$('xpSatOpv').textContent=e.target.value+' %';if(!$('xpSat').checked){$('xpSat').checked=true;chk('sat',true)}};
+$('xpBaseBtn').onclick=()=>$('xpBase').classList.toggle('open');$('xpSat').onchange=e=>chk('sat',e.target.checked);
+// drone imagery: Kelp Blue's georeferenced drone strips, laid at the water surface (only where a mission has them)
+const loadDrone=()=>fetch('runs/'+S+'/'+S+'_drone.json').then(r=>{if(!r.ok)throw 0;return r.json()}).then(m=>new THREE.TextureLoader().load('runs/'+S+'/'+S+'_drone.webp',tex=>{
+ const mat=new THREE.MeshBasicMaterial({map:tex,transparent:true,opacity:.65,depthWrite:false,side:THREE.DoubleSide});
+ const pl=new THREE.Mesh(new THREE.PlaneGeometry(m.e-m.w,m.n-m.s),mat);pl.rotation.x=-Math.PI/2;pl.position.set((m.w+m.e)/2-cx,.06,-((m.s+m.n)/2-cy));pl.renderOrder=5;scene.add(pl);
+ $('xpDr').disabled=false;$('xpDr').checked=true;$('xpDrOp').disabled=false;$('xpDrL').classList.remove('dis');$('xpDrO').classList.remove('dis');$('xpDrT').textContent='Drone imagery (Kelp Blue, 17 Nov)';
+ $('xpDr').onchange=e=>pl.visible=e.target.checked;$('xpDrOp').oninput=e=>{mat.opacity=e.target.value/100;$('xpDrOpv').textContent=e.target.value+' %';if(!pl.visible){pl.visible=true;$('xpDr').checked=true}}})).catch(()=>{});$('xpSatOp').oninput=e=>{window._satMul=e.target.value/100;$('xpSatOpv').textContent=e.target.value+' %';if(!$('xpSat').checked){$('xpSat').checked=true;chk('sat',true)}};
 // globe compass: azimuth and tilt of the view; click = north up
 (function gl(){requestAnimationFrame(gl);if(typeof cam==='undefined')return;const v=cam.position.clone().sub(ctr.target),L=v.length()||1,pol=Math.acos(Math.max(-1,Math.min(1,v.y/L))),az=Math.atan2(v.x,v.z);
  const ry=21*Math.cos(pol);$('gEq').setAttribute('ry',Math.abs(ry).toFixed(2));const nx=-21*Math.sin(az),ny=ry*Math.cos(az)*-1;
@@ -1085,7 +1091,7 @@ $('xpGlobe').onclick=()=>{const c=$('compass');c&&c.click()};
 function prep(){try{if(!TK)stamp();[window._Lsb,window._Lhl&&window._Lhl(),window._kelpL].forEach(o=>TK&&TK(o));const sb=window._Lsb;
  if(sb&&!sb.userData.grey){const c=sb.geometry.attributes.color;for(let i=0;i<c.array.length;i+=3){c.array[i]=.6;c.array[i+1]=.61;c.array[i+2]=.6}c.needsUpdate=true;sb.userData.grey=1}
  if(sb&&window._XR){const was=sb.visible;sb.visible=true;window._XR.gA.value=0;requestAnimationFrame(()=>requestAnimationFrame(()=>{sb.visible=was;window._prepDone=true}))}else window._prepDone=true}catch(_){window._prepDone=true}}
-const wait=setInterval(()=>{if(!document.body.classList.contains('ready'))return;clearInterval(wait);prep();
+const wait=setInterval(()=>{if(!document.body.classList.contains('ready'))return;clearInterval(wait);prep();loadDrone();
  $('xpTop').prepend($('brand'));try{$('tut').classList.add('off')}catch(_){}
  chk('o',false);if(HERE==='bay')chk('hl',false);
  fetch('runs/'+S+'/report.json').then(r=>r.json()).then(rep=>{const rc=rep.recordings[0],C=rep.combined;
