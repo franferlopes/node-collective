@@ -927,6 +927,13 @@ body.ana #xpTop{z-index:45}body.ana #xpMis{visibility:hidden}
  /* phone: no titles or headings, just the text, the replay and the layers */
  #xpK,#xpH,#xpSt{display:none!important}#xpCol .sec{font-size:0;letter-spacing:0;margin:12px 0 8px;padding-top:10px}
  #xpMore{margin:0 -14px;padding:22px 14px 8px}#xpMore.gone{display:none}
+ #xpLay{display:flex;flex-wrap:wrap;gap:6px}
+ #xpLay>.xpL{display:inline-flex;align-items:center;gap:0;padding:7px 12px;border-radius:999px;background:rgba(0,0,0,.06);font-size:13px;position:relative}
+ #xpLay>.xpL .d,#xpLay>.xpL .sc,#xpLay>.xpL .sl{display:none}
+ #xpLay>.xpL input{position:absolute;opacity:0;pointer-events:none}
+ #xpLay>.xpL b{font-weight:600}
+ #xpLay>.xpL:has(input:checked){background:#151515;color:#e1ff4f}
+ #xpLay>div:not(.xpL){order:2;width:100%;margin:6px 0 0!important}
 }
 </style>
 <div id="xpTop">
@@ -1086,10 +1093,11 @@ $('xpNav').appendChild($('xpMis'));
 const placeCol=()=>{const g=16,t=$('brand').getBoundingClientRect().bottom+g;if(innerWidth>700){col.style.top=t+'px';col.style.maxHeight='none';col.style.height=(innerHeight-t-g)+'px'}};addEventListener('resize',placeCol);setTimeout(placeCol,0);setTimeout(placeCol,900);$('xpMis').classList.add('open');
 // scroll hint
 const col=$('xpCol'),more=$('xpMore');col.addEventListener('scroll',()=>more.classList.toggle('gone',col.scrollTop+col.clientHeight>=col.scrollHeight-8));
-more.onclick=()=>$('xpLayW').scrollIntoView({behavior:'smooth',block:'start'});setInterval(()=>more.classList.toggle('gone',col.scrollHeight<=col.clientHeight+8||col.scrollTop+col.clientHeight>=col.scrollHeight-8),600);
+more.onclick=()=>$('xpLayW').scrollIntoView({behavior:'smooth',block:'start'});setInterval(()=>more.classList.toggle('gone',place==='over'||col.scrollHeight<=col.clientHeight+8||col.scrollTop+col.clientHeight>=col.scrollHeight-8),600);
 // phone bottom sheet: peek / open, tap or drag the handle
 {const mob=()=>innerWidth<=700,H={peek:.36,open:.78};let st='peek';
- const set=v=>{document.documentElement.style.setProperty('--sheet',v)};const apply=()=>{if(!mob())return;const want=innerHeight*H[st],need=col.scrollHeight+2;set(Math.round(Math.min(want,need))+'px')};window._sheetFit=()=>setTimeout(apply,30);
+ const set=v=>{document.documentElement.style.setProperty('--sheet',v)};const apply=()=>{if(!mob())return;if(place==='over')more.classList.add('gone');const vis=[...col.children].filter(k=>getComputedStyle(k).display!=='none'),last=vis[vis.length-1],need=last?Math.ceil(last.getBoundingClientRect().bottom-col.getBoundingClientRect().top+col.scrollTop+18):col.scrollHeight;if(place==='over'){window._peekH=need;set(Math.round(Math.min(need,innerHeight*.7))+'px');return}
+  const want=st==='open'?innerHeight*H.open:(window._peekH||innerHeight*H.peek);set(Math.round(Math.min(Math.max(want,innerHeight*.2),need))+'px')};window._sheetFit=()=>setTimeout(apply,30);
  const grab=$('xpGrab');grab.onclick=()=>{st=st==='peek'?'open':'peek';apply();if(st==='peek')col.scrollTop=0};
  let y0=null,h0=0;grab.addEventListener('pointerdown',e=>{if(!mob())return;y0=e.clientY;h0=col.getBoundingClientRect().height;col.classList.add('dragging');grab.setPointerCapture(e.pointerId)});
  grab.addEventListener('pointermove',e=>{if(y0===null)return;const h=Math.max(innerHeight*.2,Math.min(innerHeight*.85,h0+(y0-e.clientY)));set(h+'px')});
@@ -1102,7 +1110,7 @@ $('xpBaseBtn').onclick=()=>$('xpBase').classList.toggle('open');$('xpSat').oncha
 const loadDrone=()=>fetch('runs/'+S+'/'+S+'_drone.json').then(r=>{if(!r.ok)throw 0;return r.json()}).then(m=>new THREE.TextureLoader().load('runs/'+S+'/'+S+'_drone.webp',tex=>{
  const mat=new THREE.MeshBasicMaterial({map:tex,transparent:true,opacity:.65,depthWrite:false,side:THREE.DoubleSide});
  const pl=new THREE.Mesh(new THREE.PlaneGeometry(m.e-m.w,m.n-m.s),mat);pl.rotation.x=-Math.PI/2;pl.position.set((m.w+m.e)/2-cx,.06,-((m.s+m.n)/2-cy));pl.renderOrder=5;scene.add(pl);
- $('xpDr').disabled=false;$('xpDr').checked=true;$('xpDrOp').disabled=false;$('xpDrL').classList.remove('dis');$('xpDrO').classList.remove('dis');$('xpDrT').textContent='Drone imagery (Kelp Blue, 17 Nov)';
+ pl.visible=false;$('xpDr').disabled=false;$('xpDr').checked=false;$('xpDrOp').disabled=false;$('xpDrL').classList.remove('dis');$('xpDrO').classList.remove('dis');$('xpDrT').textContent='Drone imagery (Kelp Blue, 17 Nov)';
  $('xpDr').onchange=e=>pl.visible=e.target.checked;$('xpDrOp').oninput=e=>{mat.opacity=e.target.value/100;$('xpDrOpv').textContent=e.target.value+' %';if(!pl.visible){pl.visible=true;$('xpDr').checked=true}}})).catch(()=>{});$('xpSatOp').oninput=e=>{window._satMul=e.target.value/100;$('xpSatOpv').textContent=e.target.value+' %';if(!$('xpSat').checked){$('xpSat').checked=true;chk('sat',true)}};
 // globe compass: azimuth and tilt of the view; click = north up
 (function gl(){requestAnimationFrame(gl);if(typeof cam==='undefined')return;const v=cam.position.clone().sub(ctr.target),L=v.length()||1,pol=Math.acos(Math.max(-1,Math.min(1,v.y/L))),az=Math.atan2(v.x,v.z);
